@@ -1,0 +1,40 @@
+### Проверка работы API
+GET http://localhost:9000
+
+### Получить все категории
+GET http://localhost:9000/store/categories
+
+### Получить одну категорию
+GET http://localhost:9000/store/categories/1
+
+### Создать категорию
+POST http://localhost:9000/store/categories
+Content-Type: application/json
+
+{
+  "name": "Игрушки",
+  "slug": "toys"
+}
+
+### Обновить категорию
+PUT http://localhost:9000/store/categories/1
+Content-Type: application/json
+
+{
+  "name": "Электроника и гаджеты",
+  "slug": "electronics-gadgets"
+}
+
+### Удалить категорию
+DELETE http://localhost:9000/store/categories/3
+
+### Встроенные эндпоинты Medusa
+
+### Получить товары
+GET http://localhost:9000/store/products
+
+### Получить регионы
+GET http://localhost:9000/store/regions
+
+### Получить коллекции
+GET http://localhost:9000/store/collections
