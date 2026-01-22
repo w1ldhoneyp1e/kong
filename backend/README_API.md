@@ -125,3 +125,6 @@ curl -X POST http://localhost:9000/store/categories \
 - Store API: https://docs.medusajs.com/api/store
 - Admin API: https://docs.medusajs.com/api/admin
 
+
+
+

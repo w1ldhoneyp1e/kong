@@ -53,14 +53,7 @@ services:
     ports:
       - "9000:9000"
       - "7001:7001"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - uploads:/app/uploads
-    command: yarn dev
 
 volumes:
   postgres_data:
   redis_data:
-  uploads:
-
