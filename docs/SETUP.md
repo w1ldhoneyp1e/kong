@@ -1,12 +1,3 @@
-# Быстрый старт
-
-## Стек
-
-- Next.js 16 + TypeScript
-- Tailwind CSS 4
-- Shadcn/ui
-- Medusa 2.x
-
 ## Запуск
 
 ### Frontend

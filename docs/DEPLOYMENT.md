@@ -1,14 +1,5 @@
 # Деплой
 
-## Архитектура
-
-```
-Frontend (Next.js) → Vercel (бесплатно)
-Backend (Medusa)   → Railway ($5/мес) или VPS (€4.5/мес)
-```
-
----
-
 ## Вариант 1: Vercel + Railway
 
 ### Frontend → Vercel
