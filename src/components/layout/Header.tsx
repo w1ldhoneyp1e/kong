@@ -15,6 +15,9 @@ const Header = () => {
           <Link href="/cart" className="hover:underline">
             Корзина
           </Link>
+          <Link href="/admin/categories" className="hover:underline text-blue-600">
+            Админ
+          </Link>
         </nav>
       </div>
     </header>
