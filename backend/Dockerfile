@@ -1,38 +1,10 @@
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-RUN apk add --no-cache python3 make g++
-
-COPY package.json yarn.lock* package-lock.json* ./
-
-RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then npm ci; \
-    else npm install; fi
-
+FROM node:20-slim
+WORKDIR /server
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile || pnpm install
 COPY . .
-
-RUN yarn build
-
-FROM node:20-alpine
-
-WORKDIR /app
-
-RUN apk add --no-cache python3 make g++
-
-COPY package.json yarn.lock* package-lock.json* ./
-
-RUN if [ -f yarn.lock ]; then yarn install --production --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then npm ci --omit=dev; \
-    else npm install --omit=dev; fi
-
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/medusa-config.js ./
-COPY --from=builder /app/package.json ./
-
-RUN mkdir -p uploads
-
+RUN pnpm run build
 EXPOSE 9000
-
-CMD ["yarn", "start"]
-
+ENTRYPOINT ["/bin/sh", "start.sh"]

@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
+const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [{ source: "/api/medusa/:path*", destination: `${backendUrl.replace(/\/$/, "")}/:path*` }]
+  },
 };
 
 export default nextConfig;

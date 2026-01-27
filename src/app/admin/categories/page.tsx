@@ -26,7 +26,7 @@ export default function CategoriesAdminPage() {
       setCategories(data)
       setError("")
     } catch (err) {
-      setError("Ошибка загрузки категорий. Проверь, что backend запущен.")
+      setError(err instanceof Error ? err.message : "Ошибка загрузки категорий. Проверь, что backend запущен.")
     } finally {
       setLoading(false)
     }

@@ -6,25 +6,27 @@ const products = [
   { id: "3", name: "Товар 3", price: 3990, description: "Тестовый товар 3" },
 ]
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
   const { id } = req.params
   const product = products.find((p) => p.id === id)
 
   if (!product) {
-    return res.status(404).json({ error: "Товар не найден" })
+    res.status(404).json({ error: "Товар не найден" })
+    return
   }
 
   res.json({ product })
 }
 
-export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
+export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
   const { id } = req.params
-  const { name, price, description } = req.body
+  const { name, price, description } = (req.body as { name?: string; price?: number; description?: string }) || {}
 
   const productIndex = products.findIndex((p) => p.id === id)
 
   if (productIndex === -1) {
-    return res.status(404).json({ error: "Товар не найден" })
+    res.status(404).json({ error: "Товар не найден" })
+    return
   }
 
   products[productIndex] = {
@@ -37,12 +39,13 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
   res.json({ product: products[productIndex] })
 }
 
-export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
+export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
   const { id } = req.params
   const productIndex = products.findIndex((p) => p.id === id)
 
   if (productIndex === -1) {
-    return res.status(404).json({ error: "Товар не найден" })
+    res.status(404).json({ error: "Товар не найден" })
+    return
   }
 
   const deletedProduct = products.splice(productIndex, 1)[0]

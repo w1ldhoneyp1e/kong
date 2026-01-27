@@ -6,19 +6,20 @@ const categories = [
   { id: "3", name: "Книги", slug: "books" },
 ]
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
   res.json({
     categories,
   })
 }
 
-export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-  const { name, slug } = req.body
+export const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+  const { name, slug } = (req.body as { name?: string; slug?: string }) || {}
 
   if (!name || !slug) {
-    return res.status(400).json({
+    res.status(400).json({
       error: "name и slug обязательны",
     })
+    return
   }
 
   const newCategory = {
