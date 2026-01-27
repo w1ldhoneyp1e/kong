@@ -45,13 +45,12 @@ services:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/medusa
       DATABASE_SSL: "false"
       REDIS_URL: redis://redis:6379
-      CACHE_REDIS_URL: redis://redis:6379
       JWT_SECRET: supersecret
       COOKIE_SECRET: supersecret
       PORT: 9000
       HOST: 0.0.0.0
       STORE_CORS: http://localhost:3000,http://127.0.0.1:3000
-      ADMIN_CORS: http://localhost:3000,http://127.0.0.1:3000,http://localhost:7001
+      ADMIN_CORS: http://localhost:3000,http://127.0.0.1:3000
       NODE_ENV: production
     ports:
       - "9000:9000"

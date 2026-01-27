@@ -4,7 +4,7 @@ const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localho
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    return [{ source: "/api/medusa/:path*", destination: `${backendUrl.replace(/\/$/, "")}/:path*` }]
+    return [{ source: "/api/:path*", destination: `${backendUrl.replace(/\/$/, "")}/:path*` }]
   },
 };
 

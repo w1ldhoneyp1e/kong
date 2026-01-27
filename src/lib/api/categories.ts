@@ -1,4 +1,4 @@
-const API_URL = typeof window !== "undefined" ? "/api/medusa" : (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000")
+const API_URL = typeof window !== "undefined" ? "/api" : (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000")
 
 async function parseRes(res: Response): Promise<unknown> {
   const text = await res.text()
@@ -20,7 +20,7 @@ export interface Category {
 
 export const categoriesApi = {
   getAll: async (): Promise<Category[]> => {
-    const res = await fetch(`${API_URL}/api/categories`)
+    const res = await fetch(`${API_URL}/categories`)
     const data = (await parseRes(res)) as { categories?: Category[]; message?: string; error?: string }
 
     if (!res.ok) {
@@ -31,7 +31,7 @@ export const categoriesApi = {
   },
 
   getById: async (id: string): Promise<Category> => {
-    const res = await fetch(`${API_URL}/store/categories/${id}`)
+    const res = await fetch(`${API_URL}/categories/${id}`)
     const data = (await parseRes(res)) as { category?: Category }
 
     if (!res.ok) throw new Error((data as { error?: string })?.error || `HTTP ${res.status}`)
@@ -40,7 +40,7 @@ export const categoriesApi = {
   },
 
   create: async (name: string, slug: string): Promise<Category> => {
-    const res = await fetch(`${API_URL}/api/categories`, {
+    const res = await fetch(`${API_URL}/categories`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, slug }),
@@ -53,7 +53,7 @@ export const categoriesApi = {
   },
 
   update: async (id: string, name: string, slug: string): Promise<Category> => {
-    const res = await fetch(`${API_URL}/api/categories/${id}`, {
+    const res = await fetch(`${API_URL}/categories/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, slug }),
@@ -66,7 +66,7 @@ export const categoriesApi = {
   },
 
   delete: async (id: string): Promise<void> => {
-    const res = await fetch(`${API_URL}/api/categories/${id}`, { method: "DELETE" })
+    const res = await fetch(`${API_URL}/categories/${id}`, { method: "DELETE" })
 
     if (!res.ok) {
       const data = (await parseRes(res)) as { error?: string }
