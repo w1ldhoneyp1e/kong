@@ -4,13 +4,14 @@
   "description": "Kong Store - Medusa backend",
   "private": true,
   "scripts": {
-    "dev": "medusa develop",
-    "start": "medusa start",
-    "build": "medusa build"
+    "dev": "./node_modules/.bin/medusa develop",
+    "start": "./node_modules/.bin/medusa start",
+    "build": "./node_modules/.bin/medusa build"
   },
   "dependencies": {
     "@medusajs/framework": "^2.13.0",
     "@medusajs/medusa": "^2.13.0",
+    "algoliasearch": "^4.13.1",
     "pg": "^8.13.1"
   },
   "devDependencies": {
