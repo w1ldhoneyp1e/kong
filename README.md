@@ -1,11 +1,11 @@
 # Kong Store
 
-Современный интернет-магазин на Next.js 16 с Medusa backend и Algolia Search.
+Современный интернет-магазин на Next.js 16 с Medusa backend и Yandex Suggest.
 
 ## Возможности
 
 - ✅ **Medusa Backend** - мощный e-commerce backend
-- ✅ **Algolia Search** - мгновенный поиск и фильтрация
+- ✅ **Поиск** - подсказки запросов (Yandex), товары и фильтрация через фронт и бэкенд
 - ✅ **Next.js 16 App Router** - современная архитектура
 - ✅ **TypeScript** - типизация для надежности
 - ✅ **Tailwind CSS v4** - современные стили
@@ -47,9 +47,6 @@ npm run dev
 #### Frontend (.env.local)
 
 ```env
-NEXT_PUBLIC_ALGOLIA_APP_ID=your_app_id
-NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY=your_search_api_key
-NEXT_PUBLIC_ALGOLIA_INDEX_NAME=kong_products
 NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://localhost:9000
 ```
 
@@ -58,9 +55,6 @@ NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://localhost:9000
 ```env
 DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa
 REDIS_URL=redis://redis:6379
-ALGOLIA_APP_ID=your_app_id
-ALGOLIA_ADMIN_API_KEY=your_admin_api_key
-ALGOLIA_INDEX_NAME=kong_products
 ```
 
 ### 3. Запуск проекта
@@ -90,11 +84,11 @@ src/
 ├── components/
 │   ├── layout/            # Header, Footer, Logo
 │   ├── product/           # ProductCard и связанные
-│   ├── search/            # Algolia Search компоненты
+│   ├── search/            # Поиск (подсказки Yandex + результаты с бэка)
 │   ├── pwa/              # PWA функциональность
 │   └── ui/               # shadcn/ui компоненты
 └── lib/
-    ├── algolia/          # Algolia клиент
+    ├── yandex/           # Yandex Suggest (подсказки запросов)
     └── medusa/           # Medusa клиент
 ```
 
@@ -103,27 +97,14 @@ src/
 ```
 backend/
 ├── src/
-│   ├── api/              # API endpoints
-│   └── subscribers/      # Event subscribers (Algolia sync)
+│   └── api/              # API endpoints
 └── medusa-config.js      # Конфигурация Medusa
 ```
 
-## Algolia интеграция
+## Поиск
 
-### Синхронизация продуктов
-
-Backend автоматически синхронизирует продукты с Algolia при:
-- Создании продукта
-- Обновлении продукта
-- Удалении продукта
-
-### Поиск на фронтенде
-
-Используется `react-instantsearch` для:
-- Мгновенный поиск
-- Фильтрация
-- Сортировка
-- Пагинация
+- **Подсказки запросов** — Yandex Suggest (прокси через `/api/suggest`).
+- **Результаты и фильтрация** — данные с Medusa Store API (`/store/products?q=...`), отображение и фильтрация на фронте.
 
 ## PWA
 
@@ -147,36 +128,11 @@ curl -X POST http://localhost:9000/admin/products \
   }'
 ```
 
-Продукт автоматически синхронизируется с Algolia.
-
 ### Создание новых компонентов UI
 
 ```bash
 # Используйте shadcn/ui CLI
 npx shadcn@latest add [component]
-```
-
-## Структура данных Algolia
-
-```typescript
-{
-  objectID: string
-  title: string
-  description: string
-  handle: string
-  thumbnail: string
-  variants: Array<{
-    id: string
-    title: string
-    sku: string
-    prices: Array<any>
-  }>
-  categories: string[]
-  collection: string | null
-  tags: string[]
-  created_at: string
-  updated_at: string
-}
 ```
 
 ## Деплой

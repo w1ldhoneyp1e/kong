@@ -24,8 +24,8 @@ console.log('DB host from URL:',host);
 const c=new Client({connectionString:u});
 c.connect().then(()=>{c.end();console.log('DB connection OK');process.exit(0);}).catch(e=>{console.error('DB connection FAIL:',e.message);process.exit(1);});
 " || exit 1
-printf 'DATABASE_URL=%s\nREDIS_URL=%s\nJWT_SECRET=%s\nCOOKIE_SECRET=%s\nPORT=%s\nNODE_ENV=%s\nDATABASE_SSL=%s\nSTORE_CORS=%s\nADMIN_CORS=%s\nALGOLIA_APP_ID=%s\nALGOLIA_ADMIN_API_KEY=%s\nALGOLIA_INDEX_NAME=%s\n' \
-  "${DATABASE_URL}" "${REDIS_URL}" "${JWT_SECRET}" "${COOKIE_SECRET}" "${PORT:-9000}" "${NODE_ENV:-production}" "${DATABASE_SSL}" "${STORE_CORS:-http://localhost:3000}" "${ADMIN_CORS:-http://localhost:3000,http://localhost:7001}" "${ALGOLIA_APP_ID:-}" "${ALGOLIA_ADMIN_API_KEY:-}" "${ALGOLIA_INDEX_NAME:-kong_store}" \
+printf 'DATABASE_URL=%s\nREDIS_URL=%s\nJWT_SECRET=%s\nCOOKIE_SECRET=%s\nPORT=%s\nNODE_ENV=%s\nDATABASE_SSL=%s\nSTORE_CORS=%s\nADMIN_CORS=%s\n' \
+  "${DATABASE_URL}" "${REDIS_URL}" "${JWT_SECRET}" "${COOKIE_SECRET}" "${PORT:-9000}" "${NODE_ENV:-production}" "${DATABASE_SSL}" "${STORE_CORS:-http://localhost:3000}" "${ADMIN_CORS:-http://localhost:3000,http://localhost:7001}" \
   > .env
 echo "Running database migrations..."
 ./node_modules/.bin/medusa db:migrate || true

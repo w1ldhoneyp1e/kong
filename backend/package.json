@@ -11,7 +11,6 @@
   "dependencies": {
     "@medusajs/framework": "^2.13.0",
     "@medusajs/medusa": "^2.13.0",
-    "algoliasearch": "^4.13.1",
     "pg": "^8.13.1"
   },
   "devDependencies": {
