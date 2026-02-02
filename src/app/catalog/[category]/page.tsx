@@ -1,4 +1,3 @@
-import { AnimatedGrid, AnimatedGridItem } from "../../../components/catalog/AnimatedGrid"
 import { ProductCard } from "../../../components/product/ProductCard"
 
 type PageProps = {
@@ -86,13 +85,11 @@ async function CatalogPage({ params }: PageProps) {
         </p>
       </div>
 
-      <AnimatedGrid className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-4">
         {mockProducts.map((product, idx) => (
-          <AnimatedGridItem key={idx}>
-            <ProductCard {...product} view="grid" />
-          </AnimatedGridItem>
+          <ProductCard key={idx} {...product} view="grid" />
         ))}
-      </AnimatedGrid>
+      </div>
     </div>
   )
 }
