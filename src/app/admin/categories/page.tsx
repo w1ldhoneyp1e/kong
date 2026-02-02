@@ -12,7 +12,7 @@ import {
 	CardTitle,
 } from '../../../components/ui/card'
 import {Input} from '../../../components/ui/input'
-import {type Category, categoriesApi} from '../../../lib/api/categories'
+import {type Category, api} from '../../../lib/api/categories'
 
 export default function CategoriesAdminPage() {
 	const [categories, setCategories] = useState<Category[]>([])
@@ -29,7 +29,7 @@ export default function CategoriesAdminPage() {
 	const loadCategories = async () => {
 		try {
 			setLoading(true)
-			const data = await categoriesApi.getAll()
+			const data = await api.getAll()
 			setCategories(data)
 			setError('')
 		}
@@ -57,7 +57,7 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await categoriesApi.create(newName, newSlug)
+			await api.create(newName, newSlug)
 			setNewName('')
 			setNewSlug('')
 			await loadCategories()
@@ -82,7 +82,7 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await categoriesApi.update(editId, editName, editSlug)
+			await api.update(editId, editName, editSlug)
 			setEditId(null)
 			setEditName('')
 			setEditSlug('')
@@ -101,7 +101,7 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await categoriesApi.delete(id)
+			await api.delete(id)
 			await loadCategories()
 			setError('')
 		}
