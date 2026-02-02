@@ -1,12 +1,14 @@
 "use client"
 
-import { useHits } from "react-instantsearch"
 import { ProductCard } from "../product/ProductCard"
+import type { MedusaProduct } from "../../lib/api/products"
 
-function SearchHits() {
-  const { hits } = useHits()
+type SearchHitsProps = {
+  products: MedusaProduct[]
+}
 
-  if (hits.length === 0) {
+function SearchHits({ products }: SearchHitsProps) {
+  if (products.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-600">Ничего не найдено. Попробуйте изменить запрос.</p>
@@ -16,19 +18,23 @@ function SearchHits() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {hits.map((hit: any) => (
-        <ProductCard
-          key={hit.objectID}
-          id={hit.objectID}
-          title={hit.title}
-          description={hit.description}
-          image={hit.thumbnail}
-          price={hit.variants?.[0]?.prices?.[0]?.amount}
-          currency="RUB"
-          tags={hit.tags}
-          handle={hit.handle}
-        />
-      ))}
+      {products.map((product) => {
+        const amount = product.variants?.[0]?.prices?.[0]?.amount
+        return (
+          <ProductCard
+            key={product.id}
+            url={product.handle ? `/product/${product.handle}` : ""}
+            title={product.title ?? undefined}
+            description={product.description ?? undefined}
+            image={product.thumbnail ?? undefined}
+            price={amount != null ? amount / 100 : undefined}
+            currency={{ symbol: "₽", position: "suffix" }}
+            tags={product.tags?.map((t) => ({ label: t.value, theme: "popular" as const }))}
+            available={true}
+            view="grid"
+          />
+        )
+      })}
     </div>
   )
 }

@@ -15,17 +15,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Kong Store - Интернет-магазин",
   description: "Современный интернет-магазин на Next.js и Medusa",
-  manifest: "/manifest.json",
-  themeColor: "#9333ea",
   viewport: {
     width: "device-width",
     initialScale: 1,
     maximumScale: 1,
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Kong Store",
   },
 }
 
