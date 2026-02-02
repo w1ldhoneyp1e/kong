@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@algolia/autocomplete-theme-classic/dist/theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -79,6 +78,19 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  
+  --color-brand-nebula: #5468ff;
+  --color-brand-black: #23263b;
+  --color-neutral-lightest: #f4f4f5;
+  --color-neutral-light: #d3d4d8;
+  --color-neutral-dark: #91929d;
+  --color-neutral-darkest: #4f5162;
+  --color-uranus-base: #89d9d3;
+  --color-venus-base: #aa086c;
+  --color-nebula-lightest: #e8eaff;
+  --color-nebula-light: #7884de;
+  --color-nebula-dark: #3f52e8;
+  --color-nebula-darkest: #1e2b8e;
 }
 
 .dark {
@@ -117,15 +129,191 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--color-border);
+    outline-color: oklch(from var(--color-ring) l c h / 50%);
+  }
+  html {
+    scroll-behavior: smooth;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }
 
-@layer utilities {
-  .container {
-    @apply max-w-7xl mx-auto px-4;
+/* Custom utilities - using plain CSS to avoid Tailwind v4 @apply issues */
+.container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.heading-1 {
+  font-size: 3rem;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.heading-2 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.heading-3 {
+  font-size: 2rem;
+  line-height: 1.1;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.heading-4 {
+  font-size: 1.5rem;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.heading-5 {
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.subhead {
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.body-regular {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+.body-bold {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.tag-regular {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.tag-bold {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.label-regular {
+  font-size: 0.75rem;
+}
+
+.label-semibold {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.label-uppercase {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.small-regular {
+  font-size: 0.75rem;
+}
+
+.small-bold {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.small-uppercase {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.btn-bold {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.highlighting {
+  font-weight: 700;
+  background-color: transparent;
+  font-style: normal;
+}
+
+.tag-theme-default {
+  background-color: rgb(156 163 175);
+  color: white;
+  text-transform: uppercase;
+}
+
+.tag-theme-eco {
+  background-color: var(--color-uranus-base);
+  color: white;
+  text-transform: uppercase;
+}
+
+.tag-theme-on-sale {
+  background-color: var(--color-venus-base);
+  color: white;
+  text-transform: uppercase;
+}
+
+.tag-theme-popular {
+  background-color: var(--color-nebula-dark);
+  color: white;
+  text-transform: uppercase;
+}
+
+.tag-theme-out-of-stock {
+  background-color: rgb(107 114 128);
+  color: white;
+  text-transform: uppercase;
+}
+
+@media (hover: hover) {
+  .can-hover\:hover\:bg-white:hover {
+    background-color: white;
   }
+
+  .can-hover\:hover\:text-neutral-dark:hover {
+    color: var(--color-neutral-dark);
+  }
+
+  .can-hover\:hover\:text-brand-black:hover {
+    color: var(--color-brand-black);
+  }
+
+  .can-hover\:hover\:bg-neutral-lightest:hover {
+    background-color: var(--color-neutral-lightest);
+  }
+
+  .can-hover\:hover\:scale-110:hover {
+    transform: scale(1.1);
+  }
+
+  .can-hover\:transition-colors {
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  .can-hover\:group-hover\:scale-110:hover {
+    transform: scale(1.1);
+  }
+}
+
+.group:hover .can-hover\:group-hover\:scale-110 {
+  transform: scale(1.1);
 }
