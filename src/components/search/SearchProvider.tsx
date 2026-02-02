@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
 type SearchProviderProps = {
-  children: React.ReactNode
+	children: React.ReactNode,
 }
 
-function SearchProvider({ children }: SearchProviderProps) {
-  return <>{children}</>
+function SearchProvider({children}: SearchProviderProps) {
+	return <>{children}</>
 }
 
-export { SearchProvider }
+export {SearchProvider}

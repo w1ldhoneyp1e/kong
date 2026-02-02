@@ -1,17 +1,17 @@
-"use client"
+'use client'
 
-import { usePathname } from "next/navigation"
-import { useEffect } from "react"
-import { scrollToTop } from "../../lib/scrollToTop"
+import {usePathname} from 'next/navigation'
+import {useEffect} from 'react'
+import {scrollToTop} from '../../lib/scrollToTop'
 
 function ScrollOnNavigate() {
-  const pathname = usePathname()
+	const pathname = usePathname()
 
-  useEffect(() => {
-    scrollToTop("auto")
-  }, [pathname])
+	useEffect(() => {
+		scrollToTop('auto')
+	}, [pathname])
 
-  return null
+	return null
 }
 
-export { ScrollOnNavigate }
+export {ScrollOnNavigate}

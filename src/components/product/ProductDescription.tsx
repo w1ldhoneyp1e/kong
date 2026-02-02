@@ -1,18 +1,25 @@
-import { cn } from "../../lib/utils"
+import {cn} from '../../lib/utils'
 
 type ProductDescriptionProps = {
-  children: React.ReactNode
-  snippeting?: React.ComponentType
-  className?: string
+	children: React.ReactNode,
+	snippeting?: React.ComponentType,
+	className?: string,
 }
 
 function ProductDescription({
-  children,
-  snippeting: Snippeting,
-  className = "small-regular",
+	children,
+	snippeting: snippetingComponent,
+	className = 'small-regular',
 }: ProductDescriptionProps) {
-  return <p className={cn(className)}>{Snippeting ? <Snippeting /> : children}</p>
+	const Snippeting = snippetingComponent
+	return (
+		<p className={cn(className)}>
+			{Snippeting
+				? <Snippeting />
+				: children}
+		</p>
+	)
 }
 
-export { ProductDescription }
-export type { ProductDescriptionProps }
+export {ProductDescription}
+export type {ProductDescriptionProps}
