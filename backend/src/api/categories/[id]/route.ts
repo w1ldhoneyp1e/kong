@@ -1,15 +1,27 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework"
+import { CATEGORY_MODULE } from "../../../modules/category"
 
-const categories = [
-  { id: "1", name: "Электроника", slug: "electronics" },
-  { id: "2", name: "Одежда", slug: "clothing" },
-  { id: "3", name: "Книги", slug: "books" },
-]
+type CategoryRecord = { id: string; name: string; slug: string; parent_id?: string | null }
+
+type CategoryService = {
+  retrieveCategory: (id: string) => Promise<CategoryRecord | null>,
+  updateCategories: (data: { id: string; name?: string; slug?: string }) => Promise<CategoryRecord[]>,
+  deleteCategories: (ids: string[]) => Promise<void>,
+}
+
+function toDto(record: CategoryRecord) {
+  return {
+    id: record.id,
+    name: record.name,
+    slug: record.slug,
+    parentId: record.parent_id ?? null,
+  }
+}
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
   const { id } = req.params
-
-  const category = categories.find((c) => c.id === id)
+  const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
+  const category = await categoryService.retrieveCategory(id).catch(() => null)
 
   if (!category) {
     res.status(404).json({
@@ -18,49 +30,42 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
     return
   }
 
-  res.json({
-    category,
-  })
+  res.json({ category: toDto(category) })
 }
 
 export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
   const { id } = req.params
   const { name, slug } = (req.body as { name?: string; slug?: string }) || {}
+  const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
+  const existing = await categoryService.retrieveCategory(id).catch(() => null)
 
-  const categoryIndex = categories.findIndex((c) => c.id === id)
-
-  if (categoryIndex === -1) {
+  if (!existing) {
     res.status(404).json({
       error: "Категория не найдена",
     })
     return
   }
 
-  if (name) categories[categoryIndex].name = name
-  if (slug) categories[categoryIndex].slug = slug
-
-  res.json({
-    category: categories[categoryIndex],
+  const [updated] = await categoryService.updateCategories({
+    id,
+    ...(name != null && { name }),
+    ...(slug != null && { slug }),
   })
+  res.json({ category: toDto(updated) })
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
   const { id } = req.params
+  const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
+  const existing = await categoryService.retrieveCategory(id).catch(() => null)
 
-  const categoryIndex = categories.findIndex((c) => c.id === id)
-
-  if (categoryIndex === -1) {
+  if (!existing) {
     res.status(404).json({
       error: "Категория не найдена",
     })
     return
   }
 
-  categories.splice(categoryIndex, 1)
-
+  await categoryService.deleteCategories([id])
   res.status(204).send()
 }
-
-
-
-

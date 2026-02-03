@@ -3,6 +3,9 @@ const { loadEnv, defineConfig } = require("@medusajs/framework/utils")
 loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
 module.exports = defineConfig({
+  modules: [
+    { resolve: "./src/modules/category" },
+  ],
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     databaseDriverOptions: process.env.DATABASE_SSL === "false" ? { ssl: false } : {},

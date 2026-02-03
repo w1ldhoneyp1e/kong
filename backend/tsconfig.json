@@ -11,6 +11,10 @@
     "removeComments": true,
     "strict": false,
     "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@medusajs/framework/utils": ["node_modules/@medusajs/framework/dist/utils"]
+    },
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
