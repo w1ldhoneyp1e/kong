@@ -34,3 +34,4 @@ export {
 	CarouselPrevious,
 } from './ui/carousel'
 export {HeroCarousel} from './ui/hero-carousel'
+export {BentoBanner} from './ui/bento-banner'

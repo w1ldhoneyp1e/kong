@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import {
+	BentoBanner,
 	Button,
 	Card,
 	CardContent,
@@ -12,7 +13,8 @@ import {
 export default function Home() {
 	return (
 		<div>
-			<HeroCarousel />
+			{/* <HeroCarousel /> */}
+			<BentoBanner />
 			<div className="container mx-auto px-4 py-12">
 			<section className="text-center mb-16">
 				<h1 className="text-5xl font-bold mb-4">
