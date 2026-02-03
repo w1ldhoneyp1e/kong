@@ -6,16 +6,15 @@ async function Home() {
 	const categories = await categoriesApi.getAll().catch(() => [])
 
 	return (
-		<div>
-			<BentoBanner />
-			<div className="container mx-auto px-4 py-8">
-				<nav className="flex flex-wrap gap-4 gap-y-2">
+		<div className="container mx-auto px-6 lg:px-8 max-w-6xl">
+			<div className="flex gap-10 py-8">
+				<nav className="w-44 flex-shrink-0 flex flex-col gap-3">
 					{categories.length > 0
 						? categories.map(cat => (
 							<Link
 								key={cat.id}
 								href={`/catalog/${cat.slug}`}
-								className="text-muted-foreground hover:text-foreground"
+								className="text-muted-foreground hover:text-foreground text-sm"
 							>
 								{cat.name}
 							</Link>
@@ -23,12 +22,15 @@ async function Home() {
 						: (
 							<Link
 								href="/products"
-								className="text-muted-foreground hover:text-foreground"
+								className="text-muted-foreground hover:text-foreground text-sm"
 							>
 								{'Все товары'}
 							</Link>
 							)}
 				</nav>
+				<main className="flex-1 min-w-0">
+					<BentoBanner />
+				</main>
 			</div>
 		</div>
 	)

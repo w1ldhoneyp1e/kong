@@ -54,7 +54,7 @@ function BentoBanner({blocks = DEFAULT_BLOCKS}: BentoBannerProps) {
 	const {cols, rows} = getGridDimensions(count)
 
 	const gridClass = [
-		'grid gap-2 md:gap-3 auto-rows-fr max-w-6xl mx-auto',
+		'grid gap-2 md:gap-3 auto-rows-fr w-full',
 		cols === 1 && 'grid-cols-1',
 		cols === 2 && 'grid-cols-2',
 		cols === 3 && 'grid-cols-2 md:grid-cols-3',
@@ -64,7 +64,7 @@ function BentoBanner({blocks = DEFAULT_BLOCKS}: BentoBannerProps) {
 	].filter(Boolean).join(' ')
 
 	return (
-		<div className="container mx-auto px-4 py-6">
+		<div className="w-full">
 			<div className={gridClass}>
 				{items.map((block, i) => {
 					const {colSpan, rowSpan} = getCellSpan(count, i)
