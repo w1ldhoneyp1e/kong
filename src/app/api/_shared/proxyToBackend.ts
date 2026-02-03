@@ -1,13 +1,5 @@
 import {NextResponse} from 'next/server'
-
-function getBackendUrl(): string {
-	const url = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
-	if (!url) {
-		throw new Error('NEXT_PUBLIC_MEDUSA_BACKEND_URL не задан')
-	}
-
-	return url
-}
+import {getBackendUrl} from '../../../shared'
 
 function errorMessage(e: unknown): string {
 	if (e instanceof Error) {
@@ -53,7 +45,6 @@ async function proxyToBackend(
 }
 
 export {
-	getBackendUrl,
 	errorMessage,
 	proxyToBackend,
 }

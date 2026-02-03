@@ -1,4 +1,4 @@
-import {medusaClient} from '../../shared'
+import {getBackendUrlOptional} from '../../shared'
 
 type MedusaProduct = {
 	id: string,
@@ -34,7 +34,7 @@ async function listProducts(params: {
 	if (params.offset !== undefined && params.offset !== null) {
 		searchParams.set('offset', String(params.offset))
 	}
-	const url = `${medusaClient.baseUrl}/store/products?${searchParams}`
+	const url = `${getBackendUrlOptional()}/store/products?${searchParams}`
 	const res = await fetch(url, {
 		next: params.q
 			? {revalidate: 0}

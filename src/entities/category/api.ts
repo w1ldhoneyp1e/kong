@@ -1,6 +1,4 @@
-const API_URL = typeof window !== 'undefined'
-	? '/api'
-	: (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localhost:9000')
+import {getApiBase} from '../../shared'
 
 async function parseRes(res: Response): Promise<unknown> {
 	const text = await res.text()
@@ -27,7 +25,7 @@ type Category = {
 
 const categoriesApi = {
 	getAll: async (): Promise<Category[]> => {
-		const res = await fetch(`${API_URL}/categories`)
+		const res = await fetch(`${getApiBase()}/categories`)
 		const data = (await parseRes(res)) as {
 			categories?: Category[],
 			message?: string,
@@ -42,7 +40,7 @@ const categoriesApi = {
 	},
 
 	getById: async (id: string): Promise<Category> => {
-		const res = await fetch(`${API_URL}/categories/${id}`)
+		const res = await fetch(`${getApiBase()}/categories/${id}`)
 		const data = (await parseRes(res)) as {category?: Category}
 
 		if (!res.ok) {
@@ -53,7 +51,7 @@ const categoriesApi = {
 	},
 
 	create: async (name: string, slug: string): Promise<Category> => {
-		const res = await fetch(`${API_URL}/categories`, {
+		const res = await fetch(`${getApiBase()}/categories`, {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
@@ -74,7 +72,7 @@ const categoriesApi = {
 	},
 
 	update: async (id: string, name: string, slug: string): Promise<Category> => {
-		const res = await fetch(`${API_URL}/categories/${id}`, {
+		const res = await fetch(`${getApiBase()}/categories/${id}`, {
 			method: 'PUT',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
@@ -95,7 +93,7 @@ const categoriesApi = {
 	},
 
 	delete: async (id: string): Promise<void> => {
-		const res = await fetch(`${API_URL}/categories/${id}`, {method: 'DELETE'})
+		const res = await fetch(`${getApiBase()}/categories/${id}`, {method: 'DELETE'})
 
 		if (!res.ok) {
 			const data = (await parseRes(res)) as {error?: string}

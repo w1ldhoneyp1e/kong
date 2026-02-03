@@ -1,6 +1,6 @@
 export {cn} from './lib/utils'
 export {scrollToTop} from './lib/scrollToTop'
-export {medusaClient} from './lib/medusa-client'
+export {getBackendUrl, getBackendUrlOptional, getApiBase} from './lib/url'
 export {fetchSuggestions} from './lib/yandex-suggest'
 export {Badge, badgeVariants} from './ui/badge'
 export {Button, buttonVariants} from './ui/button'

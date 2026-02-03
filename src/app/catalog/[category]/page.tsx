@@ -1,3 +1,5 @@
+import Link from 'next/link'
+import {categoriesApi} from '../../../entities/category'
 import {ProductCard} from '../../../entities/product'
 
 type PageProps = {
@@ -7,7 +9,9 @@ type PageProps = {
 }
 
 async function CatalogPage({params}: PageProps) {
-	const {category} = await params
+	const {category: categorySlug} = await params
+	const categories = await categoriesApi.getAll().catch(() => [])
+	const currentCategory = categories.find(c => c.slug === categorySlug)
 
 	const mockProducts = [
 		{
@@ -96,13 +100,24 @@ async function CatalogPage({params}: PageProps) {
 
 	return (
 		<div className="container mx-auto px-4 py-8 lg:py-10">
+			{categories.length > 0 && (
+				<nav className="flex flex-wrap gap-4 gap-y-2 mb-6 lg:mb-10">
+					{categories.map(cat => (
+						<Link
+							key={cat.id}
+							href={`/catalog/${cat.slug}`}
+							className={cat.slug === categorySlug
+								? 'text-foreground font-medium'
+								: 'text-muted-foreground hover:text-foreground'}
+						>
+							{cat.name}
+						</Link>
+					))}
+				</nav>
+			)}
 			<div className="mb-6 lg:mb-10">
 				<h1 className="heading-2">
-					{category === 'women'
-						? 'Женщинам'
-						: category === 'men'
-							? 'Мужчинам'
-							: 'Аксессуары'}
+					{currentCategory?.name ?? categorySlug}
 				</h1>
 				<p
 					className="small-regular mt-2"

@@ -1,5 +1,6 @@
 export {listProducts} from './api'
 export type {MedusaProduct, ListProductsResponse} from './api'
+export {mapMedusaProductToCardProps} from './mapMedusaToCard'
 export {ProductCard} from './ProductCard'
 export type {ProductCardProps} from './ProductCard'
 export {ProductColorVariationItem} from './ProductColorVariationItem'
