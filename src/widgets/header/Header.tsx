@@ -49,22 +49,28 @@ function Header() {
 					<div className="flex items-center justify-between gap-6">
 						<nav className="flex gap-6">
 							<Link
-								href="/catalog/women"
+								href="/"
 								className="text-sm font-medium uppercase hover:text-gray-600 transition-colors"
 							>
-								{'Женщинам'}
+								{'Главная'}
 							</Link>
 							<Link
-								href="/catalog/men"
+								href="/about"
 								className="text-sm font-medium uppercase hover:text-gray-600 transition-colors"
 							>
-								{'Мужчинам'}
+								{'О нас'}
 							</Link>
 							<Link
-								href="/catalog/accessories"
+								href="/catalog"
 								className="text-sm font-medium uppercase hover:text-gray-600 transition-colors"
 							>
-								{'Аксессуары'}
+								{'Каталог'}
+							</Link>
+							<Link
+								href="/contacts"
+								className="text-sm font-medium uppercase hover:text-gray-600 transition-colors"
+							>
+								{'Контакты'}
 							</Link>
 						</nav>
 						<div className="flex-1 max-w-md">
