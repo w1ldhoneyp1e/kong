@@ -1,18 +1,18 @@
 'use client'
 
 import {useEffect, useState} from 'react'
-import {Badge} from '../../../components/ui/badge'
-import {Button} from '../../../components/ui/button'
+import {type Category, categoriesApi} from '../../../entities/category'
 import {
+	Badge,
+	Button,
 	Card,
 	CardContent,
 	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from '../../../components/ui/card'
-import {Input} from '../../../components/ui/input'
-import {type Category, api} from '../../../lib/api/categories'
+	Input,
+} from '../../../shared'
 
 export default function CategoriesAdminPage() {
 	const [categories, setCategories] = useState<Category[]>([])
@@ -29,7 +29,7 @@ export default function CategoriesAdminPage() {
 	const loadCategories = async () => {
 		try {
 			setLoading(true)
-			const data = await api.getAll()
+			const data = await categoriesApi.getAll()
 			setCategories(data)
 			setError('')
 		}
@@ -57,7 +57,7 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await api.create(newName, newSlug)
+			await categoriesApi.create(newName, newSlug)
 			setNewName('')
 			setNewSlug('')
 			await loadCategories()
@@ -82,7 +82,7 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await api.update(editId, editName, editSlug)
+			await categoriesApi.update(editId, editName, editSlug)
 			setEditId(null)
 			setEditName('')
 			setEditSlug('')
@@ -101,7 +101,7 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await api.delete(id)
+			await categoriesApi.delete(id)
 			await loadCategories()
 			setError('')
 		}

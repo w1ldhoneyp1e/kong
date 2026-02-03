@@ -1,10 +1,9 @@
 import {type Metadata} from 'next'
 import {Inter} from 'next/font/google'
-import {Footer} from '../components/layout/Footer'
-import {Header} from '../components/layout/Header'
-import {ScrollOnNavigate} from '../components/layout/ScrollOnNavigate'
-import {ServiceWorkerRegistration} from '../components/pwa/ServiceWorkerRegistration'
-import {SearchProvider} from '../components/search/SearchProvider'
+import {ServiceWorkerRegistration} from '../features/pwa'
+import {SearchProvider} from '../features/search'
+import {Footer} from '../widgets/footer'
+import {Header, ScrollOnNavigate} from '../widgets/header'
 import './globals.css'
 
 const inter = Inter({

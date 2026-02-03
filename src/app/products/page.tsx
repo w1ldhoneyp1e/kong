@@ -1,12 +1,12 @@
-import {Badge} from '../../components/ui/badge'
-import {Button} from '../../components/ui/button'
 import {
+	Badge,
+	Button,
 	Card,
 	CardContent,
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from '../../components/ui/card'
+} from '../../shared'
 
 export default function ProductsPage() {
 	const products = [

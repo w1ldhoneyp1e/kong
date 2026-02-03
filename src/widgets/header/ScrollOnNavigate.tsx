@@ -1,0 +1,17 @@
+'use client'
+
+import {usePathname} from 'next/navigation'
+import {useEffect} from 'react'
+import {scrollToTop} from '../../shared'
+
+function ScrollOnNavigate() {
+	const pathname = usePathname()
+
+	useEffect(() => {
+		scrollToTop('auto')
+	}, [pathname])
+
+	return null
+}
+
+export {ScrollOnNavigate}
