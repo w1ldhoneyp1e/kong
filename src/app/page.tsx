@@ -6,11 +6,14 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	HeroCarousel,
 } from '../shared'
 
 export default function Home() {
 	return (
-		<div className="container mx-auto px-4 py-12">
+		<div>
+			<HeroCarousel />
+			<div className="container mx-auto px-4 py-12">
 			<section className="text-center mb-16">
 				<h1 className="text-5xl font-bold mb-4">
 					{'Добро пожаловать в Kong Store'}
@@ -65,6 +68,7 @@ export default function Home() {
 					</CardContent>
 				</Card>
 			</section>
+			</div>
 		</div>
 	)
 }

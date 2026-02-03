@@ -316,3 +316,12 @@
 .group:hover .can-hover\:group-hover\:scale-110 {
   transform: scale(1.1);
 }
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

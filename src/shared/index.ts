@@ -26,3 +26,11 @@ export {Input} from './ui/input'
 export {Label} from './ui/label'
 export {Link} from './ui/link'
 export type {LinkProps} from './ui/link'
+export {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+	CarouselNext,
+	CarouselPrevious,
+} from './ui/carousel'
+export {HeroCarousel} from './ui/hero-carousel'
