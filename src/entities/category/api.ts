@@ -21,6 +21,37 @@ type Category = {
 	id: string,
 	name: string,
 	slug: string,
+	parentId?: string | null,
+}
+
+type CategoryTreeNode = Category & {children: CategoryTreeNode[]}
+
+function buildCategoryTree(categories: Category[]): CategoryTreeNode[] {
+	const byId = new Map<string, CategoryTreeNode>(
+		categories.map(c => [
+			c.id, 
+			{
+				...c, 
+				children: [],
+			},
+		]),
+	)
+
+	const roots: CategoryTreeNode[] = []
+	categories.forEach(c => {
+		const node = byId.get(c.id)!
+		const parentId = c.parentId ?? null
+		const parent = parentId ? byId.get(parentId) : null
+		
+		if (parent) {
+			parent.children.push(node)
+		}
+		else {
+			roots.push(node)
+		}
+	})
+
+	return roots
 }
 
 const categoriesApi = {
@@ -50,13 +81,14 @@ const categoriesApi = {
 		return data.category as Category
 	},
 
-	create: async (name: string, slug: string): Promise<Category> => {
+	create: async (name: string, slug: string, parentId?: string | null): Promise<Category> => {
 		const res = await fetch(`${getApiBase()}/categories`, {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
 				name,
 				slug,
+				parentId: parentId ?? null,
 			}),
 		})
 		const data = (await parseRes(res)) as {
@@ -102,5 +134,5 @@ const categoriesApi = {
 	},
 }
 
-export type {Category}
-export {categoriesApi as api}
+export type {Category, CategoryTreeNode}
+export {buildCategoryTree, categoriesApi as api}
