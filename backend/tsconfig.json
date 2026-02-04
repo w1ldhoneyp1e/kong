@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "ES2021",
-    "module": "commonjs",
     "allowJs": true,
     "checkJs": false,
     "jsx": "react",
@@ -10,10 +9,12 @@
     "rootDir": "./src",
     "removeComments": true,
     "strict": false,
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
+    "module": "Node16",
     "baseUrl": ".",
     "paths": {
-      "@medusajs/framework/utils": ["node_modules/@medusajs/framework/dist/utils"]
+      "@medusajs/framework/utils": ["node_modules/@medusajs/framework/dist/utils"],
+      "@medusajs/framework/mikro-orm/migrations": ["node_modules/@medusajs/framework/dist/deps/mikro-orm-migrations"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true,
