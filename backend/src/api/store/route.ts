@@ -1,0 +1,12 @@
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework"
+import { Modules } from "@medusajs/framework/utils"
+
+export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+  const storeService = req.scope.resolve(Modules.STORE)
+  const [store] = await storeService.listStores({}, { take: 1 })
+  if (!store) {
+    res.status(404).json({ error: "Store not found" })
+    return
+  }
+  res.json({ store })
+}
