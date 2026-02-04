@@ -1,24 +1,25 @@
 'use client'
 
 import useEmblaCarousel from 'embla-carousel-react'
+import {ChevronLeft, ChevronRight} from 'lucide-react'
 import {
-	createContext,
 	type CSSProperties,
 	type ReactNode,
+	createContext,
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useState,
 } from 'react'
-import {ChevronLeft, ChevronRight} from 'lucide-react'
-import {Button} from './button'
 import {cn} from '../lib/utils'
+import {Button} from './button'
 
 type CarouselApi = ReturnType<typeof useEmblaCarousel>[1]
 type CarouselContextValue = {
-	api: CarouselApi | undefined
-	canScrollPrev: boolean
-	canScrollNext: boolean
+	api: CarouselApi | undefined,
+	canScrollPrev: boolean,
+	canScrollNext: boolean,
 }
 
 const CarouselContext = createContext<CarouselContextValue | null>(null)
@@ -32,12 +33,12 @@ function useCarousel() {
 }
 
 type CarouselProps = {
-	opts?: Parameters<typeof useEmblaCarousel>[0]
-	plugins?: Parameters<typeof useEmblaCarousel>[1]
-	orientation?: 'horizontal' | 'vertical'
-	className?: string
-	setApi?: (api: CarouselApi | undefined) => void
-	children: ReactNode
+	opts?: Parameters<typeof useEmblaCarousel>[0],
+	plugins?: Parameters<typeof useEmblaCarousel>[1],
+	orientation?: 'horizontal' | 'vertical',
+	className?: string,
+	setApi?: (api: CarouselApi | undefined) => void,
+	children: ReactNode,
 }
 
 function Carousel({
@@ -54,7 +55,9 @@ function Carousel({
 	const [emblaRef, emblaApi] = useEmblaCarousel(
 		{
 			...opts,
-			axis: orientation === 'horizontal' ? 'x' : 'y',
+			axis: orientation === 'horizontal'
+				? 'x'
+				: 'y',
 		},
 		plugins,
 	)
@@ -66,21 +69,31 @@ function Carousel({
 	}, [emblaApi, setApiProp])
 
 	useEffect(() => {
-		if (!emblaApi) return
+		if (!emblaApi) {
+			return
+		}
 		const onSelect = () => {
 			setCanScrollPrev(emblaApi.canScrollPrev())
 			setCanScrollNext(emblaApi.canScrollNext())
 		}
 		onSelect()
 		emblaApi.on('select', onSelect)
-		
+
 		return () => {
 			emblaApi.off('select', onSelect)
 		}
 	}, [emblaApi])
 
+	const carouselContextValue = useMemo(() => ({
+		api,
+		canScrollPrev,
+		canScrollNext,
+	}), [api, canScrollNext, canScrollPrev])
+
 	return (
-		<CarouselContext.Provider value={{api, canScrollPrev, canScrollNext}}>
+		<CarouselContext.Provider
+			value={carouselContextValue}
+		>
 			<div
 				ref={emblaRef}
 				className={cn('overflow-hidden', className)}
@@ -92,18 +105,22 @@ function Carousel({
 }
 
 type CarouselContentProps = {
-	className?: string
-	style?: CSSProperties
-	children: ReactNode
+	className?: string,
+	style?: CSSProperties,
+	children: ReactNode,
 }
 
-function CarouselContent({className, style, children}: CarouselContentProps) {
+function CarouselContent({
+	className, style, children,
+}: CarouselContentProps) {
 	const orientation = 'horizontal'
 	return (
 		<div
 			className={cn(
 				'flex',
-				orientation === 'horizontal' ? '-ml-4' : '-mt-4 flex-col',
+				orientation === 'horizontal'
+					? '-ml-4'
+					: '-mt-4 flex-col',
 				className,
 			)}
 			style={style}
@@ -114,8 +131,8 @@ function CarouselContent({className, style, children}: CarouselContentProps) {
 }
 
 type CarouselItemProps = {
-	className?: string
-	children: ReactNode
+	className?: string,
+	children: ReactNode,
 }
 
 function CarouselItem({className, children}: CarouselItemProps) {
@@ -124,7 +141,9 @@ function CarouselItem({className, children}: CarouselItemProps) {
 		<div
 			className={cn(
 				'min-w-0 shrink-0 grow-0 basis-full',
-				orientation === 'horizontal' ? 'pl-4' : 'pt-4',
+				orientation === 'horizontal'
+					? 'pl-4'
+					: 'pt-4',
 				className,
 			)}
 		>
@@ -134,7 +153,7 @@ function CarouselItem({className, children}: CarouselItemProps) {
 }
 
 type CarouselPreviousProps = {
-	className?: string
+	className?: string,
 }
 
 function CarouselPrevious({className}: CarouselPreviousProps) {
@@ -158,7 +177,7 @@ function CarouselPrevious({className}: CarouselPreviousProps) {
 }
 
 type CarouselNextProps = {
-	className?: string
+	className?: string,
 }
 
 function CarouselNext({className}: CarouselNextProps) {

@@ -3,7 +3,9 @@ import {getBackendUrl} from '../../../shared'
 
 function errorMessage(e: unknown): string {
 	if (e instanceof Error) {
-		return e.cause instanceof Error ? e.cause.message : e.message
+		return e.cause instanceof Error
+			? e.cause.message
+			: e.message
 	}
 
 	return 'Ошибка при запросе API'
@@ -17,7 +19,10 @@ async function proxyToBackend(
 		const base = getBackendUrl()
 		const res = await fetch(`${base}${path}`, {
 			cache: 'no-store',
-			headers: {Connection: 'close', ...init?.headers},
+			headers: {
+				Connection: 'close',
+				...init?.headers,
+			},
 			...init,
 		})
 

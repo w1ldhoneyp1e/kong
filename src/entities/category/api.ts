@@ -29,9 +29,9 @@ type CategoryTreeNode = Category & {children: CategoryTreeNode[]}
 function buildCategoryTree(categories: Category[]): CategoryTreeNode[] {
 	const byId = new Map<string, CategoryTreeNode>(
 		categories.map(c => [
-			c.id, 
+			c.id,
 			{
-				...c, 
+				...c,
 				children: [],
 			},
 		]),
@@ -41,8 +41,10 @@ function buildCategoryTree(categories: Category[]): CategoryTreeNode[] {
 	categories.forEach(c => {
 		const node = byId.get(c.id)!
 		const parentId = c.parentId ?? null
-		const parent = parentId ? byId.get(parentId) : null
-		
+		const parent = parentId
+			? byId.get(parentId)
+			: null
+
 		if (parent) {
 			parent.children.push(node)
 		}

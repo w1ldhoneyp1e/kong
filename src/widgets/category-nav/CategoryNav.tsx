@@ -2,8 +2,12 @@
 
 import {ChevronRight} from 'lucide-react'
 import {useState} from 'react'
-import type {CategoryTreeNode} from '../../entities/category'
-import {Collapse, cn, Link} from '../../shared'
+import {type CategoryTreeNode} from '../../entities/category'
+import {
+	cn,
+	Collapse,
+	Link,
+} from '../../shared'
 
 type CategoryNavItemProps = {
 	node: CategoryTreeNode,
@@ -11,12 +15,14 @@ type CategoryNavItemProps = {
 }
 
 function CategoryNavItem({
-	node, 
-	depth = 0
+	node,
+	depth = 0,
 }: CategoryNavItemProps) {
 	const [open, setOpen] = useState(false)
 	const hasChildren = node.children.length > 0
-	const paddingLeft = depth === 0 ? 0 : 12 + depth * 12
+	const paddingLeft = depth === 0
+		? 0
+		: 12 + depth * 12
 
 	return (
 		<div className="border-b border-border/60 last:border-b-0">
@@ -25,7 +31,11 @@ function CategoryNavItem({
 					'flex items-center gap-1.5 py-2.5 pr-2 rounded-md transition-colors',
 					'hover:bg-muted/50',
 				)}
-				style={{paddingLeft: paddingLeft ? `${paddingLeft}px` : undefined}}
+				style={{
+					paddingLeft: paddingLeft
+						? `${paddingLeft}px`
+						: undefined,
+				}}
 			>
 				{hasChildren
 					? (
@@ -41,13 +51,18 @@ function CategoryNavItem({
 						</button>
 					)
 					: (
-						<span className="w-5 flex-shrink-0" aria-hidden />
+						<span
+							className="w-5 flex-shrink-0"
+							aria-hidden={true}
+						/>
 					)}
 				<Link
 					href={`/catalog/${node.slug}`}
 					className={cn(
 						'flex-1 min-w-0 text-sm py-0.5',
-						depth === 0 ? 'font-medium text-foreground' : 'text-muted-foreground hover:text-foreground',
+						depth === 0
+							? 'font-medium text-foreground'
+							: 'text-muted-foreground hover:text-foreground',
 					)}
 				>
 					{node.name}
@@ -101,7 +116,10 @@ function CategoryNav({tree, className}: CategoryNavProps) {
 		>
 			<div className="px-2 py-2">
 				{tree.map(node => (
-					<CategoryNavItem key={node.id} node={node} />
+					<CategoryNavItem
+						key={node.id}
+						node={node}
+					/>
 				))}
 			</div>
 		</nav>
@@ -109,6 +127,6 @@ function CategoryNav({tree, className}: CategoryNavProps) {
 }
 
 export {
-	CategoryNav, 
-	type CategoryNavProps
+	CategoryNav,
+	type CategoryNavProps,
 }

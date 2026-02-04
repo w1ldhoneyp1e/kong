@@ -1,5 +1,5 @@
 import {type NextRequest} from 'next/server'
-import {proxyToBackend, errorMessage} from '../../_shared/proxyToBackend'
+import {errorMessage, proxyToBackend} from '../../_shared/proxyToBackend'
 
 async function GET(
 	_request: NextRequest,
@@ -39,7 +39,7 @@ async function DELETE(
 }
 
 export {
-	GET, 
-	PUT, 
-	DELETE
+	GET,
+	PUT,
+	DELETE,
 }

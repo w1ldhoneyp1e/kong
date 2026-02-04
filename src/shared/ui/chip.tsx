@@ -3,8 +3,8 @@ import {cn} from '../lib/utils'
 import {Button} from './button'
 
 type ChipProps = React.ComponentProps<typeof Button> & {
-	selected?: boolean
-	closeIcon?: boolean
+	selected?: boolean,
+	closeIcon?: boolean,
 }
 
 function Chip({
@@ -18,7 +18,9 @@ function Chip({
 }: ChipProps) {
 	return (
 		<Button
-			variant={selected ? 'default' : variant}
+			variant={selected
+				? 'default'
+				: variant}
 			size={size}
 			className={cn(
 				'rounded-sm transition-colors',

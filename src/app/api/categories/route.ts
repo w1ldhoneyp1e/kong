@@ -1,5 +1,5 @@
 import {type NextRequest} from 'next/server'
-import {proxyToBackend, errorMessage} from '../_shared/proxyToBackend'
+import {errorMessage, proxyToBackend} from '../_shared/proxyToBackend'
 
 async function GET() {
 	return proxyToBackend('/categories')
@@ -23,6 +23,6 @@ async function POST(request: NextRequest) {
 }
 
 export {
-	GET, 
-	POST
+	GET,
+	POST,
 }

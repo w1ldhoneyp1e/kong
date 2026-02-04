@@ -1,7 +1,12 @@
 'use client'
 
 import {useSearchParams} from 'next/navigation'
-import {Suspense, useCallback, useEffect, useState} from 'react'
+import {
+	Suspense,
+	useCallback,
+	useEffect,
+	useState,
+} from 'react'
 import {type MedusaProduct, listProducts} from '../../entities/product'
 import {SearchHits} from '../../features/search'
 

@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src/ --ext .ts,.tsx,.js,.jsx --fix",
+    "lint": "eslint src/ backend/ --ext .ts,.tsx,.js,.jsx --fix",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

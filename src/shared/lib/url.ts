@@ -16,8 +16,10 @@ function getApiBase(): string {
 		return '/api'
 	}
 	const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-	
+
 	return `${origin}/api`
 }
 
-export {getBackendUrl, getBackendUrlOptional, getApiBase}
+export {
+	getBackendUrl, getBackendUrlOptional, getApiBase,
+}

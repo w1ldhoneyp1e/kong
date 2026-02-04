@@ -1,6 +1,8 @@
 export {cn} from './lib/utils'
 export {scrollToTop} from './lib/scrollToTop'
-export {getBackendUrl, getBackendUrlOptional, getApiBase} from './lib/url'
+export {
+	getBackendUrl, getBackendUrlOptional, getApiBase,
+} from './lib/url'
 export {fetchSuggestions} from './lib/yandex-suggest'
 export {Badge, badgeVariants} from './ui/badge'
 export {Button, buttonVariants} from './ui/button'

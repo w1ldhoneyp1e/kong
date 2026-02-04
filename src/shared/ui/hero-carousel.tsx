@@ -1,8 +1,8 @@
 'use client'
 
 import {useEffect, useState} from 'react'
-import type {CarouselApi} from './carousel'
 import {
+	type CarouselApi,
 	Carousel,
 	CarouselContent,
 	CarouselItem,
@@ -11,11 +11,31 @@ import {
 } from './carousel'
 
 const SLIDES = [
-	{bg: '#9333ea', label: 'Акция'},
-	{bg: '#2563eb', label: 'Новая коллекция'},
-	{bg: '#059669', label: 'Скидки'},
-	{bg: '#dc2626', label: 'Хит продаж'},
-	{bg: '#ea580c', label: 'Распродажа'},
+	{
+		id: 'akcia',
+		bg: '#9333ea',
+		label: 'Акция',
+	},
+	{
+		id: 'new_collection',
+		bg: '#2563eb',
+		label: 'Новая коллекция',
+	},
+	{
+		id: 'discount',
+		bg: '#059669',
+		label: 'Скидки',
+	},
+	{
+		id: 'hot',
+		bg: '#dc2626',
+		label: 'Хит продаж',
+	},
+	{
+		id: 'sales',
+		bg: '#ea580c',
+		label: 'Распродажа',
+	},
 ]
 
 const AUTOPLAY_DELAY_MS = 4000
@@ -24,24 +44,32 @@ function HeroCarousel() {
 	const [api, setApi] = useState<CarouselApi>()
 
 	useEffect(() => {
-		if (!api) return
+		if (!api) {
+			return
+		}
 		const id = setInterval(() => {
 			api.scrollNext()
 		}, AUTOPLAY_DELAY_MS)
-		
+
 		return () => clearInterval(id)
 	}, [api])
 
 	return (
 		<div className="relative w-full group">
 			<Carousel
-				opts={{loop: true, align: 'start'}}
+				opts={{
+					loop: true,
+					align: 'start',
+				}}
 				setApi={setApi}
 				className="w-full"
 			>
 				<CarouselContent className="-ml-0">
-					{SLIDES.map((slide, i) => (
-						<CarouselItem key={i} className="pl-0">
+					{SLIDES.map(slide => (
+						<CarouselItem
+							key={slide.id}
+							className="pl-0"
+						>
 							<div
 								className="flex items-center justify-center min-h-[280px] md:min-h-[360px]"
 								style={{backgroundColor: slide.bg}}

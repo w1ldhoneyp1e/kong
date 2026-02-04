@@ -1,8 +1,8 @@
-import { MedusaService } from "@medusajs/framework/utils"
-import Category from "./models/category"
+import {MedusaService} from '@medusajs/framework/utils'
+import Category from './models/category'
 
 class CategoryModuleService extends MedusaService({
-  Category,
+	Category,
 }) {}
 
 export default CategoryModuleService
