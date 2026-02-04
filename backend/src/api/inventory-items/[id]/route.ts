@@ -11,3 +11,23 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	}
 	res.json({inventory_item: item})
 }
+
+export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const {id} = req.params
+	const inventoryService = req.scope.resolve(Modules.INVENTORY)
+	const body = req.body as Record<string, unknown>
+	const [updated] = await inventoryService.updateInventoryItems([{id, ...body}] as never)
+	res.json({inventory_item: updated})
+}
+
+export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const {id} = req.params
+	const inventoryService = req.scope.resolve(Modules.INVENTORY)
+	const existing = await inventoryService.retrieveInventoryItem(id).catch(() => null)
+	if (!existing) {
+		res.status(404).json({error: 'Inventory item not found'})
+		return
+	}
+	await inventoryService.deleteInventoryItems([id])
+	res.status(204).send()
+}

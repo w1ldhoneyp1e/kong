@@ -93,13 +93,18 @@ const categoriesApi = {
 				parentId: parentId ?? null,
 			}),
 		})
-		const data = (await parseRes(res)) as {
+		const raw = await parseRes(res)
+		const data = raw as {
 			category?: Category,
 			error?: string,
+			message?: string,
 		}
 
 		if (!res.ok) {
-			throw new Error(data?.error || `HTTP ${res.status}`)
+			const msg = typeof raw === 'string'
+				? raw
+				: (data?.error ?? data?.message ?? `HTTP ${res.status}`)
+			throw new Error(msg)
 		}
 
 		return data.category as Category

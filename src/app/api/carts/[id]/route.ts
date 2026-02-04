@@ -1,4 +1,5 @@
-import {proxyToBackend} from '../../_shared/proxyToBackend'
+import {type NextRequest} from 'next/server'
+import {errorMessage, proxyToBackend} from '../../_shared/proxyToBackend'
 
 export async function GET(
 	_request: Request,
@@ -6,4 +7,33 @@ export async function GET(
 ) {
 	const {id} = await params
 	return proxyToBackend(`/carts/${id}`)
+}
+
+export async function PUT(
+	request: NextRequest,
+	{params}: {params: Promise<{id: string}>},
+) {
+	const {id} = await params
+	try {
+		const body = await request.json()
+		return proxyToBackend(`/carts/${id}`, {
+			method: 'PUT',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify(body),
+		})
+	}
+	catch (e) {
+		return Response.json(
+			{error: errorMessage(e)},
+			{status: 500},
+		)
+	}
+}
+
+export async function DELETE(
+	_request: NextRequest,
+	{params}: {params: Promise<{id: string}>},
+) {
+	const {id} = await params
+	return proxyToBackend(`/carts/${id}`, {method: 'DELETE'})
 }

@@ -11,3 +11,23 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	}
 	res.json({customer})
 }
+
+export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const {id} = req.params
+	const customerService = req.scope.resolve(Modules.CUSTOMER)
+	const body = req.body as Record<string, unknown>
+	const [updated] = await customerService.updateCustomers([{id, ...body}] as never)
+	res.json({customer: updated})
+}
+
+export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const {id} = req.params
+	const customerService = req.scope.resolve(Modules.CUSTOMER)
+	const existing = await customerService.retrieveCustomer(id).catch(() => null)
+	if (!existing) {
+		res.status(404).json({error: 'Customer not found'})
+		return
+	}
+	await customerService.deleteCustomers([id])
+	res.status(204).send()
+}

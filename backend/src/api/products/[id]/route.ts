@@ -11,3 +11,23 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	}
 	res.json({product})
 }
+
+export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const {id} = req.params
+	const productService = req.scope.resolve(Modules.PRODUCT)
+	const body = req.body as Record<string, unknown>
+	const [updated] = await productService.updateProducts([{id, ...body}] as never)
+	res.json({product: updated})
+}
+
+export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const {id} = req.params
+	const productService = req.scope.resolve(Modules.PRODUCT)
+	const existing = await productService.retrieveProduct(id).catch(() => null)
+	if (!existing) {
+		res.status(404).json({error: 'Product not found'})
+		return
+	}
+	await productService.deleteProducts([id])
+	res.status(204).send()
+}

@@ -49,13 +49,19 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		return
 	}
 
-	const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
-	const [created] = await categoryService.createCategories({
-		name,
-		slug,
-		parent_id: parentId ?? null,
-	})
-	res.status(201).json({category: toDto(created)})
+	try {
+		const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
+		const [created] = await categoryService.createCategories({
+			name,
+			slug,
+			parent_id: parentId ?? null,
+		})
+		res.status(201).json({category: toDto(created)})
+	}
+	catch (e) {
+		const message = e instanceof Error ? e.message : 'Ошибка создания категории'
+		res.status(500).json({error: message})
+	}
 }
 
 export {

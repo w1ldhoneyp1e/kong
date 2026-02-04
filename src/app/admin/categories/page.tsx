@@ -63,8 +63,8 @@ export default function CategoriesAdminPage() {
 			await loadCategories()
 			setError('')
 		}
-		catch {
-			setError('Ошибка создания категории')
+		catch (e) {
+			setError(e instanceof Error ? e.message : 'Ошибка создания категории')
 		}
 	}
 

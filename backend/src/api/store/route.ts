@@ -10,3 +10,15 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	}
 	res.json({store})
 }
+
+export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const storeService = req.scope.resolve(Modules.STORE)
+	const [store] = await storeService.listStores({}, {take: 1})
+	if (!store) {
+		res.status(404).json({error: 'Store not found'})
+		return
+	}
+	const body = req.body as Record<string, unknown>
+	const [updated] = await storeService.updateStores([{id: store.id, ...body}] as never)
+	res.json({store: updated})
+}
