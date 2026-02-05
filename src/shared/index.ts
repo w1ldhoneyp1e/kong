@@ -1,4 +1,5 @@
 export {cn} from './lib/utils'
+export {match} from './lib/match'
 export {scrollToTop} from './lib/scrollToTop'
 export {
 	getBackendUrl, getBackendUrlOptional, getApiBase,

@@ -7,6 +7,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	match,
 } from '../../../shared'
 import {CategoryListItem} from './CategoryListItem'
 
@@ -37,6 +38,12 @@ function CategoryList({
 	onDelete,
 	onCancelEdit,
 }: CategoryListProps) {
+	const contentState = loading
+		? 'loading'
+		: categories.length === 0
+			? 'empty'
+			: 'list'
+
 	return (
 		<div className="lg:col-span-2">
 			<Card>
@@ -49,37 +56,37 @@ function CategoryList({
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					{loading
-						? (
+					{match(contentState, {
+						loading: () => (
 							<p className="text-center py-8 text-muted-foreground">
 								{'Загрузка...'}
 							</p>
-						)
-						: categories.length === 0
-							? (
-								<p className="text-center py-8 text-muted-foreground">
-									{'Категорий пока нет. Создай первую!'}
-								</p>
-							)
-							: (
-								<div className="space-y-4">
-									{categories.map(category => (
-										<CategoryListItem
-											key={category.id}
-											category={category}
-											isEditing={editId === category.id}
-											editName={editName}
-											editSlug={editSlug}
-											onEditNameChange={onEditNameChange}
-											onEditSlugChange={onEditSlugChange}
-											onUpdate={onUpdate}
-											onCancelEdit={onCancelEdit}
-											onEdit={onEdit}
-											onDelete={onDelete}
-										/>
-									))}
-								</div>
-							)}
+						),
+						empty: () => (
+							<p className="text-center py-8 text-muted-foreground">
+								{'Категорий пока нет. Создай первую!'}
+							</p>
+						),
+						list: () => (
+							<div className="space-y-4">
+								{categories.map(category => (
+									<CategoryListItem
+										key={category.id}
+										category={category}
+										isEditing={editId === category.id}
+										editName={editName}
+										editSlug={editSlug}
+										onEditNameChange={onEditNameChange}
+										onEditSlugChange={onEditSlugChange}
+										onUpdate={onUpdate}
+										onCancelEdit={onCancelEdit}
+										onEdit={onEdit}
+										onDelete={onDelete}
+									/>
+								))}
+							</div>
+						),
+					})}
 				</CardContent>
 			</Card>
 		</div>
