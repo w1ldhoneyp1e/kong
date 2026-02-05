@@ -4,11 +4,12 @@ const YANDEX_SUGGEST_URL = 'https://suggest.yandex.ru/suggest-ya'
 
 function parseSuggestions(text: string): string[] {
 	const lines = text.split('\n').filter(Boolean)
-	if (lines.length < 2) {
+	const line = lines[1]
+	if (lines.length < 2 || line === undefined) {
 		return []
 	}
 	try {
-		const second = JSON.parse(lines[1]) as unknown
+		const second = JSON.parse(line) as unknown
 		if (!Array.isArray(second) || second.length === 0) {
 			return []
 		}
@@ -18,6 +19,7 @@ function parseSuggestions(text: string): string[] {
 		return second
 			.filter((item): item is string[] => Array.isArray(item) && typeof item[0] === 'string')
 			.map(item => item[0])
+			.filter((s): s is string => typeof s === 'string')
 			.slice(0, 10)
 	}
 	catch {
