@@ -4,9 +4,9 @@ import {type Category} from '../../../entities/category'
 import {Badge, Button} from '../../../shared'
 
 type CategoryRowViewProps = {
-	category: Category
-	onEdit: (category: Category) => void
-	onDelete: (id: string) => void
+	category: Category,
+	onEdit: (category: Category) => void,
+	onDelete: (id: string) => void,
 }
 
 function CategoryRowView({

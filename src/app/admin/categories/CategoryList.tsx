@@ -1,14 +1,7 @@
 'use client'
 
 import {type Category} from '../../../entities/category'
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-	match,
-} from '../../../shared'
+import {match} from '../../../shared'
 import {CategoryListItem} from './CategoryListItem'
 
 type CategoryListProps = {
@@ -45,50 +38,46 @@ function CategoryList({
 			: 'list'
 
 	return (
-		<div className="lg:col-span-2">
-			<Card>
-				<CardHeader>
-					<CardTitle>{'Список категорий'}</CardTitle>
-					<CardDescription>
-						{loading
-							? 'Загрузка...'
-							: `Найдено: ${categories.length}`}
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					{match(contentState, {
-						loading: () => (
-							<p className="text-center py-8 text-muted-foreground">
-								{'Загрузка...'}
-							</p>
-						),
-						empty: () => (
-							<p className="text-center py-8 text-muted-foreground">
-								{'Категорий пока нет. Создай первую!'}
-							</p>
-						),
-						list: () => (
-							<div className="space-y-4">
-								{categories.map(category => (
-									<CategoryListItem
-										key={category.id}
-										category={category}
-										isEditing={editId === category.id}
-										editName={editName}
-										editSlug={editSlug}
-										onEditNameChange={onEditNameChange}
-										onEditSlugChange={onEditSlugChange}
-										onUpdate={onUpdate}
-										onCancelEdit={onCancelEdit}
-										onEdit={onEdit}
-										onDelete={onDelete}
-									/>
-								))}
-							</div>
-						),
-					})}
-				</CardContent>
-			</Card>
+		<div className="lg:col-span-2 space-y-4">
+			<div>
+				<h2 className="text-lg font-semibold">{'Список категорий'}</h2>
+				<p className="text-sm text-muted-foreground">
+					{loading
+						? 'Загрузка...'
+						: `Найдено: ${categories.length}`}
+				</p>
+			</div>
+			{match(contentState, {
+				loading: () => (
+					<p className="text-center py-8 text-muted-foreground">
+						{'Загрузка...'}
+					</p>
+				),
+				empty: () => (
+					<p className="text-center py-8 text-muted-foreground">
+						{'Категорий пока нет. Создай первую!'}
+					</p>
+				),
+				list: () => (
+					<div className="space-y-4">
+						{categories.map(category => (
+							<CategoryListItem
+								key={category.id}
+								category={category}
+								isEditing={editId === category.id}
+								editName={editName}
+								editSlug={editSlug}
+								onEditNameChange={onEditNameChange}
+								onEditSlugChange={onEditSlugChange}
+								onUpdate={onUpdate}
+								onCancelEdit={onCancelEdit}
+								onEdit={onEdit}
+								onDelete={onDelete}
+							/>
+						))}
+					</div>
+				),
+			})}
 		</div>
 	)
 }
