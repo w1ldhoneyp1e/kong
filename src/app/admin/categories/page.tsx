@@ -2,16 +2,8 @@
 
 import {useEffect, useState} from 'react'
 import {type Category, categoriesApi} from '../../../entities/category'
-import {
-	Badge,
-	Button,
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-	Input,
-} from '../../../shared'
+import {CategoryList} from './CategoryList'
+import {CreateCategoryForm} from './CreateCategoryForm'
 
 export default function CategoriesAdminPage() {
 	const [categories, setCategories] = useState<Category[]>([])
@@ -118,169 +110,34 @@ export default function CategoriesAdminPage() {
 	}
 
 	return (
-		<div className="container mx-auto px-4 py-12">
-			<h1 className="text-4xl font-bold mb-8">{'Управление категориями'}</h1>
+		<div className="container flex flex-col gap-5">
+			<h1 className="heading-4">{'Управление категориями'}</h1>
 			{error && (
 				<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
 					{error}
 				</div>
 			)}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<div className="lg:col-span-1">
-					<Card>
-						<CardHeader>
-							<CardTitle>{'Создать категорию'}</CardTitle>
-							<CardDescription>{'Добавь новую категорию товаров'}</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<form
-								onSubmit={handleCreate}
-								className="space-y-4"
-							>
-								<div>
-									<label className="text-sm font-medium mb-1 block">
-										{'Название'}
-									</label>
-									<Input
-										type="text"
-										placeholder="Электроника"
-										value={newName}
-										onChange={e => setNewName(e.target.value)}
-									/>
-								</div>
-								<div>
-									<label className="text-sm font-medium mb-1 block">
-										{'Slug (URL)'}
-									</label>
-									<Input
-										type="text"
-										placeholder="electronics"
-										value={newSlug}
-										onChange={e => setNewSlug(e.target.value)}
-									/>
-								</div>
-								<Button
-									type="submit"
-									className="w-full"
-								>
-									{'Создать'}
-								</Button>
-							</form>
-						</CardContent>
-					</Card>
-				</div>
-				<div className="lg:col-span-2">
-					<Card>
-						<CardHeader>
-							<CardTitle>{'Список категорий'}</CardTitle>
-							<CardDescription>
-								{loading
-									? 'Загрузка...'
-									: `Найдено: ${categories.length}`}
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							{loading
-								? (
-									<p className="text-center py-8 text-muted-foreground">
-										{'Загрузка...'}
-									</p>
-								)
-								: categories.length === 0
-									? (
-										<p className="text-center py-8 text-muted-foreground">
-											{'Категорий пока нет. Создай первую!'}
-										</p>
-									)
-									: (
-										<div className="space-y-4">
-											{categories.map(category => (
-												<div
-													key={category.id}
-													className="border rounded-lg p-4"
-												>
-													{editId === category.id
-														? (
-															<form
-																onSubmit={handleUpdate}
-																className="space-y-3"
-															>
-																<div>
-																	<label className="text-sm font-medium mb-1 block">
-																		{'Название'}
-																	</label>
-																	<Input
-																		type="text"
-																		value={editName}
-																		onChange={e => setEditName(e.target.value)}
-																	/>
-																</div>
-																<div>
-																	<label className="text-sm font-medium mb-1 block">
-																		{'Slug'}
-																	</label>
-																	<Input
-																		type="text"
-																		value={editSlug}
-																		onChange={e => setEditSlug(e.target.value)}
-																	/>
-																</div>
-																<div className="flex gap-2">
-																	<Button
-																		type="submit"
-																		size="sm"
-																	>
-																		{'Сохранить'}
-																	</Button>
-																	<Button
-																		type="button"
-																		size="sm"
-																		variant="outline"
-																		onClick={handleCancelEdit}
-																	>
-																		{'Отмена'}
-																	</Button>
-																</div>
-															</form>
-														)
-														: (
-															<div className="flex items-center justify-between">
-																<div>
-																	<h3 className="font-semibold text-lg">
-																		{category.name}
-																	</h3>
-																	<Badge
-																		variant="secondary"
-																		className="mt-1"
-																	>
-																		{category.slug}
-																	</Badge>
-																</div>
-																<div className="flex gap-2">
-																	<Button
-																		size="sm"
-																		variant="outline"
-																		onClick={() => handleEdit(category)}
-																	>
-																		{'Изменить'}
-																	</Button>
-																	<Button
-																		size="sm"
-																		variant="destructive"
-																		onClick={() => handleDelete(category.id)}
-																	>
-																		{'Удалить'}
-																	</Button>
-																</div>
-															</div>
-														)}
-												</div>
-											))}
-										</div>
-									)}
-						</CardContent>
-					</Card>
-				</div>
+				<CreateCategoryForm
+					name={newName}
+					slug={newSlug}
+					onNameChange={setNewName}
+					onSlugChange={setNewSlug}
+					onSubmit={handleCreate}
+				/>
+				<CategoryList
+					categories={categories}
+					loading={loading}
+					editId={editId}
+					editName={editName}
+					editSlug={editSlug}
+					onEditNameChange={setEditName}
+					onEditSlugChange={setEditSlug}
+					onEdit={handleEdit}
+					onUpdate={handleUpdate}
+					onDelete={handleDelete}
+					onCancelEdit={handleCancelEdit}
+				/>
 			</div>
 		</div>
 	)
