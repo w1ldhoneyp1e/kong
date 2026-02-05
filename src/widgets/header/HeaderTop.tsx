@@ -1,4 +1,8 @@
-import {Heart, ShoppingCart, User} from 'lucide-react'
+import {
+	Heart,
+	ShoppingCart,
+	User,
+} from 'lucide-react'
 import {Button, Link} from '../../shared'
 import {Logo} from './Logo'
 

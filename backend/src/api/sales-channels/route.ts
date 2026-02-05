@@ -10,7 +10,11 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 export const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const salesChannelService = req.scope.resolve(Modules.SALES_CHANNEL)
 	const body = req.body as Record<string, unknown> | Record<string, unknown>[]
-	const data = Array.isArray(body) ? body : [body]
+	const data = Array.isArray(body)
+		? body
+		: [body]
 	const created = await salesChannelService.createSalesChannels(data as never)
-	res.status(201).json(created.length === 1 ? {sales_channel: created[0]} : {sales_channels: created})
+	res.status(201).json(created.length === 1
+		? {sales_channel: created[0]}
+		: {sales_channels: created})
 }

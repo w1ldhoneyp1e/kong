@@ -16,7 +16,10 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	const {id} = req.params
 	const orderService = req.scope.resolve(Modules.ORDER)
 	const body = req.body as Record<string, unknown>
-	const [updated] = await orderService.updateOrders([{id, ...body}] as never)
+	const [updated] = await orderService.updateOrders([{
+		id,
+		...body,
+	}] as never)
 	res.json({order: updated})
 }
 

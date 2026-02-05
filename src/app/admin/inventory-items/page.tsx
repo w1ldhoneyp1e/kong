@@ -1,15 +1,33 @@
 import {AdminEntityList} from '../AdminEntityList'
 
 const columns = [
-	{ key: 'id', label: 'ID' },
-	{ key: 'sku', label: 'SKU' },
-	{ key: 'title', label: 'Название' },
-	{ key: 'created_at', label: 'Создан' },
+	{
+		key: 'id',
+		label: 'ID',
+	},
+	{
+		key: 'sku',
+		label: 'SKU',
+	},
+	{
+		key: 'title',
+		label: 'Название',
+	},
+	{
+		key: 'created_at',
+		label: 'Создан',
+	},
 ]
 
 const createFields = [
-	{ key: 'sku', label: 'SKU' },
-	{ key: 'title', label: 'Название' },
+	{
+		key: 'sku',
+		label: 'SKU',
+	},
+	{
+		key: 'title',
+		label: 'Название',
+	},
 ]
 
 export default function AdminInventoryItemsPage() {

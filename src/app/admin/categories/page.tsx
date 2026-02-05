@@ -64,7 +64,9 @@ export default function CategoriesAdminPage() {
 			setError('')
 		}
 		catch (e) {
-			setError(e instanceof Error ? e.message : 'Ошибка создания категории')
+			setError(e instanceof Error
+				? e.message
+				: 'Ошибка создания категории')
 		}
 	}
 

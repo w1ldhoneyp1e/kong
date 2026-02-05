@@ -59,7 +59,9 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		res.status(201).json({category: toDto(created)})
 	}
 	catch (e) {
-		const message = e instanceof Error ? e.message : 'Ошибка создания категории'
+		const message = e instanceof Error
+			? e.message
+			: 'Ошибка создания категории'
 		res.status(500).json({error: message})
 	}
 }

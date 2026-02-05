@@ -1,14 +1,29 @@
 import {AdminEntityList} from '../AdminEntityList'
 
 const columns = [
-	{ key: 'id', label: 'ID' },
-	{ key: 'status', label: 'Статус' },
-	{ key: 'region_id', label: 'Регион' },
-	{ key: 'created_at', label: 'Создана' },
+	{
+		key: 'id',
+		label: 'ID',
+	},
+	{
+		key: 'status',
+		label: 'Статус',
+	},
+	{
+		key: 'region_id',
+		label: 'Регион',
+	},
+	{
+		key: 'created_at',
+		label: 'Создана',
+	},
 ]
 
 const createFields = [
-	{ key: 'region_id', label: 'ID региона' },
+	{
+		key: 'region_id',
+		label: 'ID региона',
+	},
 ]
 
 export default function AdminCartsPage() {

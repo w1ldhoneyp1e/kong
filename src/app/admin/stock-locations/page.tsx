@@ -1,14 +1,30 @@
 import {AdminEntityList} from '../AdminEntityList'
 
 const columns = [
-	{ key: 'id', label: 'ID' },
-	{ key: 'name', label: 'Название' },
-	{ key: 'address', label: 'Адрес' },
+	{
+		key: 'id',
+		label: 'ID',
+	},
+	{
+		key: 'name',
+		label: 'Название',
+	},
+	{
+		key: 'address',
+		label: 'Адрес',
+	},
 ]
 
 const createFields = [
-	{ key: 'name', label: 'Название', required: true },
-	{ key: 'address', label: 'Адрес' },
+	{
+		key: 'name',
+		label: 'Название',
+		required: true,
+	},
+	{
+		key: 'address',
+		label: 'Адрес',
+	},
 ]
 
 export default function AdminStockLocationsPage() {

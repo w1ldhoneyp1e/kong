@@ -16,7 +16,10 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	const {id} = req.params
 	const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
 	const body = req.body as Record<string, unknown>
-	const [updated] = await stockLocationService.updateStockLocations([{id, ...body}] as never)
+	const [updated] = await stockLocationService.updateStockLocations([{
+		id,
+		...body,
+	}] as never)
 	res.json({stock_location: updated})
 }
 

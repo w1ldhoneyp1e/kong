@@ -10,7 +10,11 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 export const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const pricingService = req.scope.resolve(Modules.PRICING)
 	const body = req.body as Record<string, unknown> | Record<string, unknown>[]
-	const data = Array.isArray(body) ? body : [body]
+	const data = Array.isArray(body)
+		? body
+		: [body]
 	const created = await pricingService.createPriceLists(data as never)
-	res.status(201).json(created.length === 1 ? {price_list: created[0]} : {price_lists: created})
+	res.status(201).json(created.length === 1
+		? {price_list: created[0]}
+		: {price_lists: created})
 }

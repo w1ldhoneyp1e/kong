@@ -10,7 +10,11 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 export const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const cartService = req.scope.resolve(Modules.CART)
 	const body = req.body as Record<string, unknown> | Record<string, unknown>[]
-	const data = Array.isArray(body) ? body : [body]
+	const data = Array.isArray(body)
+		? body
+		: [body]
 	const created = await cartService.createCarts(data as never)
-	res.status(201).json(created.length === 1 ? {cart: created[0]} : {carts: created})
+	res.status(201).json(created.length === 1
+		? {cart: created[0]}
+		: {carts: created})
 }

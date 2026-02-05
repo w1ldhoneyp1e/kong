@@ -1,10 +1,22 @@
 import {AdminEntityList} from '../AdminEntityList'
 
 const columns = [
-	{ key: 'id', label: 'ID' },
-	{ key: 'status', label: 'Статус' },
-	{ key: 'display_id', label: 'Номер' },
-	{ key: 'created_at', label: 'Создан' },
+	{
+		key: 'id',
+		label: 'ID',
+	},
+	{
+		key: 'status',
+		label: 'Статус',
+	},
+	{
+		key: 'display_id',
+		label: 'Номер',
+	},
+	{
+		key: 'created_at',
+		label: 'Создан',
+	},
 ]
 
 export default function AdminOrdersPage() {

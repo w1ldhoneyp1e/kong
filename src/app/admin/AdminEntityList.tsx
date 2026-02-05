@@ -1,8 +1,11 @@
 'use client'
 
-import {useCallback, useEffect, useState} from 'react'
-import {Link} from '../../shared'
 import {
+useCallback,
+useEffect,
+useState
+} from 'react';
+import {Link,
 	Button,
 	Card,
 	CardContent,
@@ -11,12 +14,15 @@ import {
 	CardTitle,
 	Input,
 	Label,
-} from '../../shared'
-import {getApiBase} from '../../shared'
+,getApiBase} from '../../shared'
 
-type Column = { key: string, label: string }
+type Column = {key: string,
+label: string}
 
-type CreateField = { key: string, label: string, required?: boolean }
+type CreateField = {
+ key: string,
+label: string,
+required?: boolean}
 
 type AdminEntityListProps = {
 	title: string,
@@ -77,7 +83,9 @@ export function AdminEntityList({
 			setLoading(true)
 			setError('')
 			const base = getApiBase()
-			const path = apiPath.startsWith('/') ? apiPath.slice(1) : apiPath
+			const path = apiPath.startsWith('/')
+? apiPath.slice(1)
+: apiPath
 			const res = await fetch(`${base}/${path}`)
 
 			if (!res.ok) {
@@ -100,7 +108,9 @@ export function AdminEntityList({
 			setItems(list)
 		}
 		catch (e) {
-			setError(e instanceof Error ? e.message : 'Ошибка загрузки')
+			setError(e instanceof Error
+? e.message
+: 'Ошибка загрузки')
 		}
 		finally {
 			setLoading(false)
@@ -113,7 +123,7 @@ export function AdminEntityList({
 
 	const handleCreate = async (e: React.FormEvent) => {
 		e.preventDefault()
-		if (!createFields?.length) return
+		if (!createFields?.length) {return}
 
 		const body: Record<string, unknown> = {}
 		for (const f of createFields) {
@@ -129,7 +139,9 @@ export function AdminEntityList({
 		setCreateError('')
 		try {
 			const base = getApiBase()
-			const path = apiPath.startsWith('/') ? apiPath.slice(1) : apiPath
+			const path = apiPath.startsWith('/')
+? apiPath.slice(1)
+: apiPath
 			const res = await fetch(`${base}/${path}`, {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
@@ -138,7 +150,7 @@ export function AdminEntityList({
 
 			if (!res.ok) {
 				const err = await res.json().catch(() => ({}))
-				throw new Error((err as { error?: string }).error ?? `${res.status}`)
+				throw new Error((err as {error?: string}).error ?? `${res.status}`)
 			}
 
 			setCreateValues({})
@@ -146,7 +158,9 @@ export function AdminEntityList({
 			setRefreshKey(k => k + 1)
 		}
 		catch (e) {
-			setCreateError(e instanceof Error ? e.message : 'Ошибка создания')
+			setCreateError(e instanceof Error
+? e.message
+: 'Ошибка создания')
 		}
 		finally {
 			setCreateSubmitting(false)
@@ -155,12 +169,14 @@ export function AdminEntityList({
 
 	const handleDelete = async (id: string) => {
 		// eslint-disable-next-line no-alert -- подтверждение в админке
-		if (!confirm('Удалить запись?')) return
+		if (!confirm('Удалить запись?')) {return}
 
 		setDeletingId(id)
 		try {
 			const base = getApiBase()
-			const path = apiPath.startsWith('/') ? apiPath.slice(1) : apiPath
+			const path = apiPath.startsWith('/')
+? apiPath.slice(1)
+: apiPath
 			const res = await fetch(`${base}/${path}/${id}`, {method: 'DELETE'})
 
 			if (!res.ok) {
@@ -220,12 +236,15 @@ export function AdminEntityList({
 								size="sm"
 								onClick={() => setCreateOpen(v => !v)}
 							>
-								{createOpen ? 'Скрыть' : 'Показать форму'}
+								{createOpen
+? 'Скрыть'
+: 'Показать форму'}
 							</Button>
 						</CardHeader>
 						{createOpen && (
 							<CardContent>
-								<form onSubmit={handleCreate} className="space-y-4">
+								<form onSubmit={handleCreate}
+className="space-y-4">
 									{createError && (
 										<p className="text-destructive text-sm">{createError}</p>
 									)}
@@ -235,13 +254,17 @@ export function AdminEntityList({
 											<Input
 												id={`create-${f.key}`}
 												value={createValues[f.key] ?? ''}
-												onChange={e => setCreateValues(prev => ({...prev, [f.key]: e.target.value}))}
+												onChange={e => setCreateValues(prev => ({...prev,
+[f.key]: e.target.value}))}
 												className="mt-1"
 											/>
 										</div>
 									))}
-									<Button type="submit" disabled={createSubmitting}>
-										{createSubmitting ? 'Создаём...' : 'Создать'}
+									<Button type="submit"
+disabled={createSubmitting}>
+										{createSubmitting
+? 'Создаём...'
+: 'Создать'}
 									</Button>
 								</form>
 							</CardContent>
@@ -281,9 +304,11 @@ export function AdminEntityList({
 									</thead>
 									<tbody>
 										{items.map((item, i) => (
-											<tr key={(item.id as string) ?? i} className="border-b">
+											<tr key={(item.id as string) ?? i}
+className="border-b">
 												{columns.map(col => (
-													<td key={col.key} className="p-2">
+													<td key={col.key}
+className="p-2">
 														{cellValue(getNested(item, col.key))}
 													</td>
 												))}
@@ -303,7 +328,9 @@ export function AdminEntityList({
 																disabled={deletingId === item.id}
 																onClick={() => handleDelete(item.id as string)}
 															>
-																{deletingId === item.id ? '...' : 'Удалить'}
+																{deletingId === item.id
+? '...'
+: 'Удалить'}
 															</Button>
 														</>
 													)}

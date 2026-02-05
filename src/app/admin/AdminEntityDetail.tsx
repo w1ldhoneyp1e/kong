@@ -1,7 +1,11 @@
 'use client'
 
-import {useCallback, useEffect, useState} from 'react'
 import Link from 'next/link'
+import {
+	useCallback,
+	useEffect,
+	useState,
+} from 'react'
 import {
 	Button,
 	Card,
@@ -9,12 +13,15 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	getApiBase,
 	Input,
 	Label,
 } from '../../shared'
-import {getApiBase} from '../../shared'
 
-type EditField = { key: string, label: string }
+type EditField = {
+	key: string,
+	label: string,
+}
 
 type AdminEntityDetailProps = {
 	entity: string,
@@ -76,7 +83,9 @@ export function AdminEntityDetail({
 
 			const json = await res.json()
 
-			let payload = typeof json === 'object' && json !== null ? json : {}
+			let payload = typeof json === 'object' && json !== null
+				? json
+				: {}
 			if (payload && !Array.isArray(payload) && typeof payload === 'object') {
 				const values = Object.values(payload)
 				const single = values.length === 1 && values[0] && typeof values[0] === 'object' && !Array.isArray(values[0])
@@ -90,7 +99,9 @@ export function AdminEntityDetail({
 			setData(payload as Record<string, unknown>)
 		}
 		catch (e) {
-			setError(e instanceof Error ? e.message : 'Ошибка загрузки')
+			setError(e instanceof Error
+				? e.message
+				: 'Ошибка загрузки')
 		}
 		finally {
 			setLoading(false)
@@ -106,7 +117,9 @@ export function AdminEntityDetail({
 			const vals: Record<string, string> = {}
 			for (const f of editFields) {
 				const v = data[f.key]
-				vals[f.key] = v === null || v === undefined ? '' : String(v)
+				vals[f.key] = v === null || v === undefined
+					? ''
+					: String(v)
 			}
 			setEditValues(vals)
 		}
@@ -114,7 +127,9 @@ export function AdminEntityDetail({
 
 	const handleEdit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		if (!editFields?.length) return
+		if (!editFields?.length) {
+			return
+		}
 
 		setEditSubmitting(true)
 		setEditError('')
@@ -133,14 +148,16 @@ export function AdminEntityDetail({
 
 			if (!res.ok) {
 				const err = await res.json().catch(() => ({}))
-				throw new Error((err as { error?: string }).error ?? `${res.status}`)
+				throw new Error((err as {error?: string}).error ?? `${res.status}`)
 			}
 
 			setEditOpen(false)
 			await load()
 		}
 		catch (e) {
-			setEditError(e instanceof Error ? e.message : 'Ошибка сохранения')
+			setEditError(e instanceof Error
+				? e.message
+				: 'Ошибка сохранения')
 		}
 		finally {
 			setEditSubmitting(false)
@@ -152,11 +169,11 @@ export function AdminEntityDetail({
 			<Card>
 				<CardHeader>
 					<CardTitle>{title}</CardTitle>
-					<CardDescription>Загрузка...</CardDescription>
+					<CardDescription>{'Загрузка...'}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<p className="text-muted-foreground py-8 text-center">
-						Загрузка...
+						{'Загрузка...'}
 					</p>
 				</CardContent>
 			</Card>
@@ -168,7 +185,7 @@ export function AdminEntityDetail({
 			<Card>
 				<CardHeader>
 					<CardTitle>{title}</CardTitle>
-					<CardDescription>Ошибка</CardDescription>
+					<CardDescription>{'Ошибка'}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<p className="text-destructive py-4">{error}</p>
@@ -176,7 +193,7 @@ export function AdminEntityDetail({
 						href={backHref}
 						className="text-primary hover:underline"
 					>
-						← Назад к списку
+						{'← Назад к списку'}
 					</Link>
 				</CardContent>
 			</Card>
@@ -188,17 +205,17 @@ export function AdminEntityDetail({
 			<Card>
 				<CardHeader>
 					<CardTitle>{title}</CardTitle>
-					<CardDescription>Нет данных</CardDescription>
+					<CardDescription>{'Нет данных'}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<p className="text-muted-foreground py-8 text-center">
-						Нет данных
+						{'Нет данных'}
 					</p>
 					<Link
 						href={backHref}
 						className="text-primary hover:underline"
 					>
-						← Назад к списку
+						{'← Назад к списку'}
 					</Link>
 				</CardContent>
 			</Card>
@@ -222,12 +239,17 @@ export function AdminEntityDetail({
 								size="sm"
 								onClick={() => setEditOpen(v => !v)}
 							>
-								{editOpen ? 'Скрыть' : 'Показать форму'}
+								{editOpen
+									? 'Скрыть'
+									: 'Показать форму'}
 							</Button>
 						</CardHeader>
 						{editOpen && (
 							<CardContent>
-								<form onSubmit={handleEdit} className="space-y-4">
+								<form
+									onSubmit={handleEdit}
+									className="space-y-4"
+								>
 									{editError && (
 										<p className="text-destructive text-sm">{editError}</p>
 									)}
@@ -237,13 +259,21 @@ export function AdminEntityDetail({
 											<Input
 												id={`edit-${f.key}`}
 												value={editValues[f.key] ?? ''}
-												onChange={e => setEditValues(prev => ({...prev, [f.key]: e.target.value}))}
+												onChange={e => setEditValues(prev => ({
+													...prev,
+													[f.key]: e.target.value,
+												}))}
 												className="mt-1"
 											/>
 										</div>
 									))}
-									<Button type="submit" disabled={editSubmitting}>
-										{editSubmitting ? 'Сохранение...' : 'Сохранить'}
+									<Button
+										type="submit"
+										disabled={editSubmitting}
+									>
+										{editSubmitting
+											? 'Сохранение...'
+											: 'Сохранить'}
 									</Button>
 								</form>
 							</CardContent>
@@ -258,16 +288,19 @@ export function AdminEntityDetail({
 							href={backHref}
 							className="text-muted-foreground hover:text-foreground text-sm"
 						>
-							← Назад
+							{'← Назад'}
 						</Link>
 					</div>
 					<CardTitle>{title}</CardTitle>
-					<CardDescription>ID: {id}</CardDescription>
+					<CardDescription>{'ID: '}{id}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<dl className="grid gap-4 sm:grid-cols-1">
 						{entries.map(([key, value]) => (
-							<div key={key} className="border-b pb-4">
+							<div
+								key={key}
+								className="border-b pb-4"
+							>
 								<dt className="text-muted-foreground text-sm font-medium">
 									{key}
 								</dt>

@@ -16,7 +16,10 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	const {id} = req.params
 	const pricingService = req.scope.resolve(Modules.PRICING)
 	const body = req.body as Record<string, unknown>
-	const [updated] = await pricingService.updatePriceLists([{id, ...body}] as never)
+	const [updated] = await pricingService.updatePriceLists([{
+		id,
+		...body,
+	}] as never)
 	res.json({price_list: updated})
 }
 

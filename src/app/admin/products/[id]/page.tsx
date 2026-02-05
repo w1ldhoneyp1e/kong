@@ -1,12 +1,21 @@
 import {AdminEntityDetail} from '../../AdminEntityDetail'
 
 const editFields = [
-	{ key: 'title', label: 'Название' },
-	{ key: 'handle', label: 'Handle' },
-	{ key: 'status', label: 'Статус' },
+	{
+		key: 'title',
+		label: 'Название',
+	},
+	{
+		key: 'handle',
+		label: 'Handle',
+	},
+	{
+		key: 'status',
+		label: 'Статус',
+	},
 ]
 
-type Props = { params: Promise<{ id: string }> }
+type Props = {params: Promise<{id: string}>}
 
 export default async function AdminProductDetailPage({params}: Props) {
 	const {id} = await params
