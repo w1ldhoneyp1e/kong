@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import {Badge, Button} from '../../../shared'
+import {Badge, Button} from '../../../../shared'
 
 type PageProps = {
 	params: Promise<{

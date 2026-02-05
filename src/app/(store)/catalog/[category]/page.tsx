@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import {categoriesApi} from '../../../entities/category'
-import {ProductCard} from '../../../entities/product'
+import {categoriesApi} from '../../../../entities/category'
+import {ProductCard} from '../../../../entities/product'
 
 type PageProps = {
 	params: Promise<{

@@ -7,8 +7,8 @@ import {
 	useEffect,
 	useState,
 } from 'react'
-import {type MedusaProduct, listProducts} from '../../entities/product'
-import {SearchHits} from '../../features/search'
+import {type MedusaProduct, listProducts} from '../../../entities/product'
+import {SearchHits} from '../../../features/search'
 
 function SearchPageContent() {
 	const searchParams = useSearchParams()

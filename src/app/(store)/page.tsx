@@ -1,6 +1,6 @@
-import {buildCategoryTree, categoriesApi} from '../entities/category'
-import {BentoBanner} from '../shared'
-import {CategoryNav} from '../widgets/category-nav'
+import {buildCategoryTree, categoriesApi} from '../../entities/category'
+import {BentoBanner} from '../../shared'
+import {CategoryNav} from '../../widgets/category-nav'
 
 async function Home() {
 	const categories = await categoriesApi.getAll().catch(() => [])

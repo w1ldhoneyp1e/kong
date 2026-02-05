@@ -3,7 +3,7 @@ import {Inter} from 'next/font/google'
 import {ServiceWorkerRegistration} from '../features/pwa'
 import {SearchProvider} from '../features/search'
 import {Footer} from '../widgets/footer'
-import {Header, ScrollOnNavigate} from '../widgets/header'
+import {ScrollOnNavigate} from '../widgets/header'
 import './globals.css'
 
 const inter = Inter({
@@ -31,9 +31,10 @@ export default function RootLayout({
 			<body className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}>
 				<ServiceWorkerRegistration />
 				<SearchProvider>
-					<Header />
 					<ScrollOnNavigate />
-					<main className="flex-1 min-h-0">{children}</main>
+					<div className="flex-1 min-h-0">
+						{children}
+					</div>
 					<Footer />
 				</SearchProvider>
 			</body>

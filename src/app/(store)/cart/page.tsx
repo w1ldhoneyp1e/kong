@@ -5,7 +5,7 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from '../../shared'
+} from '../../../shared'
 
 export default function CartPage() {
 	return (
