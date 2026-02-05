@@ -1,7 +1,7 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const storeService = req.scope.resolve(Modules.STORE)
 	const [store] = await storeService.listStores({}, {take: 1})
 	if (!store) {
@@ -11,7 +11,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	res.json({store})
 }
 
-export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const storeService = req.scope.resolve(Modules.STORE)
 	const [store] = await storeService.listStores({}, {take: 1})
 	if (!store) {
@@ -25,3 +25,5 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	}] as never)
 	res.json({store: updated})
 }
+
+export {GET, PUT}

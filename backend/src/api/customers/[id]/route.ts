@@ -1,7 +1,7 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const customerService = req.scope.resolve(Modules.CUSTOMER)
 	const customer = await customerService.retrieveCustomer(id).catch(() => null)
@@ -12,7 +12,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	res.json({customer})
 }
 
-export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const customerService = req.scope.resolve(Modules.CUSTOMER)
 	const body = req.body as Record<string, unknown>
@@ -23,7 +23,7 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	res.json({customer: updated})
 }
 
-export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const customerService = req.scope.resolve(Modules.CUSTOMER)
 	const existing = await customerService.retrieveCustomer(id).catch(() => null)
@@ -33,4 +33,8 @@ export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<v
 	}
 	await customerService.deleteCustomers([id])
 	res.status(204).send()
+}
+
+export {
+	DELETE, GET, PUT,
 }

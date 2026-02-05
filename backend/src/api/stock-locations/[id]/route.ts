@@ -1,7 +1,7 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
 	const location = await stockLocationService.retrieveStockLocation(id).catch(() => null)
@@ -12,7 +12,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	res.json({stock_location: location})
 }
 
-export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
 	const body = req.body as Record<string, unknown>
@@ -23,7 +23,7 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	res.json({stock_location: updated})
 }
 
-export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
 	const existing = await stockLocationService.retrieveStockLocation(id).catch(() => null)
@@ -33,4 +33,8 @@ export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<v
 	}
 	await stockLocationService.deleteStockLocations([id])
 	res.status(204).send()
+}
+
+export {
+	DELETE, GET, PUT,
 }

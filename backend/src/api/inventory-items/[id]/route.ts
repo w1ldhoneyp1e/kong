@@ -1,7 +1,7 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const inventoryService = req.scope.resolve(Modules.INVENTORY)
 	const item = await inventoryService.retrieveInventoryItem(id).catch(() => null)
@@ -12,7 +12,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	res.json({inventory_item: item})
 }
 
-export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const inventoryService = req.scope.resolve(Modules.INVENTORY)
 	const body = req.body as Record<string, unknown>
@@ -23,7 +23,7 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void
 	res.json({inventory_item: updated})
 }
 
-export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const inventoryService = req.scope.resolve(Modules.INVENTORY)
 	const existing = await inventoryService.retrieveInventoryItem(id).catch(() => null)
@@ -33,4 +33,8 @@ export const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<v
 	}
 	await inventoryService.deleteInventoryItems([id])
 	res.status(204).send()
+}
+
+export {
+	DELETE, GET, PUT,
 }

@@ -1,13 +1,13 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const customerService = req.scope.resolve(Modules.CUSTOMER)
 	const data = await customerService.listCustomers({}, {take: 100})
 	res.json({customers: data})
 }
 
-export const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const customerService = req.scope.resolve(Modules.CUSTOMER)
 	const body = req.body as Record<string, unknown> | Record<string, unknown>[]
 	const data = Array.isArray(body)
@@ -18,3 +18,5 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<voi
 		? {customer: created[0]}
 		: {customers: created})
 }
+
+export {GET, POST}

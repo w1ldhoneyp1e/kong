@@ -1,11 +1,11 @@
 import {type NextRequest} from 'next/server'
 import {errorMessage, proxyToBackend} from '../_shared/proxyToBackend'
 
-export async function GET() {
+async function GET() {
 	return proxyToBackend('/store')
 }
 
-export async function PUT(request: NextRequest) {
+async function PUT(request: NextRequest) {
 	try {
 		const body = await request.json()
 		return proxyToBackend('/store', {
@@ -21,3 +21,5 @@ export async function PUT(request: NextRequest) {
 		)
 	}
 }
+
+export {GET, PUT}

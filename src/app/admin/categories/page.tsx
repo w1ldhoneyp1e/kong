@@ -33,9 +33,9 @@ export default function CategoriesAdminPage() {
 			setCategories(data)
 			setError('')
 		}
-		catch (e) {
-			setError(e instanceof Error
-				? e.message
+		catch (err) {
+			setError(err instanceof Error
+				? err.message
 				: 'Ошибка загрузки категорий. Проверь, что backend запущен.')
 		}
 		finally {
@@ -47,8 +47,8 @@ export default function CategoriesAdminPage() {
 		loadCategories()
 	}, [])
 
-	const handleCreate = async (e: React.FormEvent) => {
-		e.preventDefault()
+	const handleCreate = async (ev: React.FormEvent) => {
+		ev.preventDefault()
 
 		if (!newName || !newSlug) {
 			setError('Заполни все поля')
@@ -63,9 +63,9 @@ export default function CategoriesAdminPage() {
 			await loadCategories()
 			setError('')
 		}
-		catch (e) {
-			setError(e instanceof Error
-				? e.message
+		catch (err) {
+			setError(err instanceof Error
+				? err.message
 				: 'Ошибка создания категории')
 		}
 	}

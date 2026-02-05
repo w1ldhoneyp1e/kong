@@ -125,8 +125,8 @@ export function AdminEntityDetail({
 		}
 	}, [data, editFields])
 
-	const handleEdit = async (e: React.FormEvent) => {
-		e.preventDefault()
+	const handleEdit = async (ev: React.FormEvent) => {
+		ev.preventDefault()
 		if (!editFields?.length) {
 			return
 		}
@@ -154,9 +154,9 @@ export function AdminEntityDetail({
 			setEditOpen(false)
 			await load()
 		}
-		catch (e) {
-			setEditError(e instanceof Error
-				? e.message
+		catch (err) {
+			setEditError(err instanceof Error
+				? err.message
 				: 'Ошибка сохранения')
 		}
 		finally {

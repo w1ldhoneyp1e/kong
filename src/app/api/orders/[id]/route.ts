@@ -1,7 +1,7 @@
 import {type NextRequest} from 'next/server'
 import {errorMessage, proxyToBackend} from '../../_shared/proxyToBackend'
 
-export async function GET(
+async function GET(
 	_request: Request,
 	{params}: {params: Promise<{id: string}>},
 ) {
@@ -9,7 +9,7 @@ export async function GET(
 	return proxyToBackend(`/orders/${id}`)
 }
 
-export async function PUT(
+async function PUT(
 	request: NextRequest,
 	{params}: {params: Promise<{id: string}>},
 ) {
@@ -30,10 +30,14 @@ export async function PUT(
 	}
 }
 
-export async function DELETE(
+async function DELETE(
 	_request: NextRequest,
 	{params}: {params: Promise<{id: string}>},
 ) {
 	const {id} = await params
 	return proxyToBackend(`/orders/${id}`, {method: 'DELETE'})
+}
+
+export {
+	DELETE, GET, PUT,
 }

@@ -81,8 +81,8 @@ export default function AdminStorePage() {
 		}
 	}, [store])
 
-	const handleEdit = async (e: React.FormEvent) => {
-		e.preventDefault()
+	const handleEdit = async (ev: React.FormEvent) => {
+		ev.preventDefault()
 		setEditSubmitting(true)
 		setEditError('')
 		try {
@@ -106,9 +106,9 @@ export default function AdminStorePage() {
 				}
 				: null)
 		}
-		catch (e) {
-			setEditError(e instanceof Error
-				? e.message
+		catch (err) {
+			setEditError(err instanceof Error
+				? err.message
 				: 'Ошибка сохранения')
 		}
 		finally {
