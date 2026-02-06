@@ -13,7 +13,7 @@ export default function AdminLayout({
 				<aside className="hidden md:block">
 					<AdminNav />
 				</aside>
-				<main className="flex-1 overflow-auto p-6">
+				<main className="flex-1 overflow-auto p-10">
 					{children}
 				</main>
 			</div>
