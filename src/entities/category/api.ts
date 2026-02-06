@@ -56,6 +56,29 @@ function buildCategoryTree(categories: Category[]): CategoryTreeNode[] {
 	return roots
 }
 
+type FlattenCategoryItem = {
+	id: string,
+	name: string,
+	depth: number,
+}
+
+function flattenCategoryTree(
+	nodes: CategoryTreeNode[],
+	depth = 0,
+): FlattenCategoryItem[] {
+	const result: FlattenCategoryItem[] = []
+	for (const node of nodes) {
+		result.push({
+			id: node.id,
+			name: node.name,
+			depth,
+		})
+		result.push(...flattenCategoryTree(node.children, depth + 1))
+	}
+
+	return result
+}
+
 const categoriesApi = {
 	getAll: async (): Promise<Category[]> => {
 		const res = await fetch(`${getApiBase()}/categories`)
@@ -141,5 +164,9 @@ const categoriesApi = {
 	},
 }
 
-export type {Category, CategoryTreeNode}
-export {buildCategoryTree, categoriesApi as api}
+export type {
+	Category, CategoryTreeNode, FlattenCategoryItem,
+}
+export {
+	buildCategoryTree, categoriesApi as api, flattenCategoryTree,
+}

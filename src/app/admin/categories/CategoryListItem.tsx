@@ -15,6 +15,7 @@ type CategoryListItemProps = {
 	onCancelEdit: () => void,
 	onEdit: (category: Category) => void,
 	onDelete: (id: string) => void,
+	onAddChild?: (category: Category) => void,
 }
 
 function CategoryListItem({
@@ -28,6 +29,7 @@ function CategoryListItem({
 	onCancelEdit,
 	onEdit,
 	onDelete,
+	onAddChild,
 }: CategoryListItemProps) {
 	return (
 		<div className="border rounded-lg p-4">
@@ -47,6 +49,7 @@ function CategoryListItem({
 						category={category}
 						onEdit={onEdit}
 						onDelete={onDelete}
+						onAddChild={onAddChild}
 					/>
 				)}
 		</div>

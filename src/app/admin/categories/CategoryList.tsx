@@ -1,8 +1,8 @@
 'use client'
 
-import {type Category} from '../../../entities/category'
+import {type Category, buildCategoryTree} from '../../../entities/category'
 import {match} from '../../../shared'
-import {CategoryListItem} from './CategoryListItem'
+import {CategoryTreeBranch} from './CategoryTreeBranch'
 
 type CategoryListProps = {
 	categories: Category[],
@@ -16,6 +16,7 @@ type CategoryListProps = {
 	onUpdate: (ev: React.FormEvent) => void,
 	onDelete: (id: string) => void,
 	onCancelEdit: () => void,
+	onAddChild: (category: Category) => void,
 }
 
 function CategoryList({
@@ -30,10 +31,12 @@ function CategoryList({
 	onUpdate,
 	onDelete,
 	onCancelEdit,
+	onAddChild,
 }: CategoryListProps) {
+	const tree = buildCategoryTree(categories)
 	const contentState = loading
 		? 'loading'
-		: categories.length === 0
+		: tree.length === 0
 			? 'empty'
 			: 'list'
 
@@ -59,12 +62,13 @@ function CategoryList({
 					</p>
 				),
 				list: () => (
-					<div className="space-y-4">
-						{categories.map(category => (
-							<CategoryListItem
-								key={category.id}
-								category={category}
-								isEditing={editId === category.id}
+					<div className="space-y-2">
+						{tree.map(node => (
+							<CategoryTreeBranch
+								key={node.id}
+								node={node}
+								depth={0}
+								editId={editId}
 								editName={editName}
 								editSlug={editSlug}
 								onEditNameChange={onEditNameChange}
@@ -73,6 +77,7 @@ function CategoryList({
 								onCancelEdit={onCancelEdit}
 								onEdit={onEdit}
 								onDelete={onDelete}
+								onAddChild={onAddChild}
 							/>
 						))}
 					</div>

@@ -1,7 +1,16 @@
 'use client'
 
-import {useEffect, useState} from 'react'
-import {type Category, categoriesApi} from '../../../entities/category'
+import {
+	useEffect,
+	useRef,
+	useState,
+} from 'react'
+import {
+	type Category,
+	buildCategoryTree,
+	categoriesApi,
+	flattenCategoryTree,
+} from '../../../entities/category'
 import {CategoryList} from './CategoryList'
 import {CreateCategoryForm} from './CreateCategoryForm'
 
@@ -12,7 +21,9 @@ export default function CategoriesAdminPage() {
 
 	const [newName, setNewName] = useState('')
 	const [newSlug, setNewSlug] = useState('')
+	const [newParentId, setNewParentId] = useState<string | null>(null)
 
+	const createFormRef = useRef<HTMLDivElement>(null)
 	const [editId, setEditId] = useState<string | null>(null)
 	const [editName, setEditName] = useState('')
 	const [editSlug, setEditSlug] = useState('')
@@ -48,9 +59,10 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await categoriesApi.create(newName, newSlug)
+			await categoriesApi.create(newName, newSlug, newParentId)
 			setNewName('')
 			setNewSlug('')
+			setNewParentId(null)
 			await loadCategories()
 			setError('')
 		}
@@ -118,13 +130,18 @@ export default function CategoriesAdminPage() {
 				</div>
 			)}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<CreateCategoryForm
-					name={newName}
-					slug={newSlug}
-					onNameChange={setNewName}
-					onSlugChange={setNewSlug}
-					onSubmit={handleCreate}
-				/>
+				<div ref={createFormRef}>
+					<CreateCategoryForm
+						name={newName}
+						slug={newSlug}
+						parentId={newParentId}
+						parentOptions={flattenCategoryTree(buildCategoryTree(categories))}
+						onNameChange={setNewName}
+						onSlugChange={setNewSlug}
+						onParentIdChange={setNewParentId}
+						onSubmit={handleCreate}
+					/>
+				</div>
 				<CategoryList
 					categories={categories}
 					loading={loading}
@@ -137,6 +154,10 @@ export default function CategoriesAdminPage() {
 					onUpdate={handleUpdate}
 					onDelete={handleDelete}
 					onCancelEdit={handleCancelEdit}
+					onAddChild={cat => {
+						setNewParentId(cat.id)
+						createFormRef.current?.scrollIntoView({behavior: 'smooth'})
+					}}
 				/>
 			</div>
 		</div>

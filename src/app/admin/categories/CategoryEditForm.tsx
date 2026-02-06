@@ -3,12 +3,12 @@
 import {Button, Input} from '../../../shared'
 
 type CategoryEditFormProps = {
-	name: string
-	slug: string
-	onNameChange: (value: string) => void
-	onSlugChange: (value: string) => void
-	onSubmit: (ev: React.FormEvent) => void
-	onCancel: () => void
+	name: string,
+	slug: string,
+	onNameChange: (value: string) => void,
+	onSlugChange: (value: string) => void,
+	onSubmit: (ev: React.FormEvent) => void,
+	onCancel: () => void,
 }
 
 function CategoryEditForm({
