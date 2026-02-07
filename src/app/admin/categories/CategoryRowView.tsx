@@ -1,7 +1,7 @@
 'use client'
 
 import {type Category} from '../../../entities/category'
-import {Badge, Button} from '../../../shared'
+import {Button} from '../../../shared'
 import {useCategoriesStore} from './categoriesStore'
 
 type CategoryRowViewProps = {
@@ -20,15 +20,12 @@ function CategoryRowView({category}: CategoryRowViewProps) {
 	return (
 		<div className="flex items-center justify-between">
 			<div>
-				<h3 className="font-semibold text-lg">
+				<h3 className="font-semibold text-xl">
 					{category.name}
 				</h3>
-				<Badge
-					variant="secondary"
-					className="mt-1"
-				>
-					{category.slug}
-				</Badge>
+				<p className="mt-1 text-sm text-muted-foreground">
+					{`/catalog/${category.slug}`}
+				</p>
 			</div>
 			<div className="flex gap-2 flex-wrap">
 				<Button

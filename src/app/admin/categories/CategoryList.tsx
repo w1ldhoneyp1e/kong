@@ -27,7 +27,7 @@ function CategoryList({
 				<p className="text-sm text-muted-foreground">
 					{loading
 						? 'Загрузка...'
-						: `Найдено: ${categories.length}`}
+						: `Всего: ${categories.length}`}
 				</p>
 			</div>
 			{match(contentState, {
@@ -42,7 +42,7 @@ function CategoryList({
 					</p>
 				),
 				list: () => (
-					<div className="space-y-2">
+					<div>
 						{tree.map(node => (
 							<CategoryTreeBranch
 								key={node.id}
