@@ -11,7 +11,6 @@ import {
 } from '../../../entities/category'
 import {
 	AlertDialog,
-	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -44,6 +43,8 @@ export default function CategoriesAdminPage() {
 	const setNewSlug = useCategoriesStore(s => s.setNewSlug)
 	const setNewParentId = useCategoriesStore(s => s.setNewParentId)
 	const setDeleteConfirmId = useCategoriesStore(s => s.setDeleteConfirmId)
+	const setDeletePending = useCategoriesStore(s => s.setDeletePending)
+	const setDeleteTargetId = useCategoriesStore(s => s.setDeleteTargetId)
 	const resetCreateForm = useCategoriesStore(s => s.resetCreateForm)
 
 	const errorMessage = (err: unknown) => (err instanceof Error
@@ -61,12 +62,13 @@ export default function CategoriesAdminPage() {
 			onUpdate: e => {
 				e.preventDefault()
 				const {
-					editId, editName, editSlug,
+					editId, editName, editSlug, setUpdatePending,
 				} = useCategoriesStore.getState()
 				if (!editId) {
 					return
 				}
 
+				setUpdatePending(true)
 				updateMutation.mutateAsync({
 					id: editId,
 					name: editName,
@@ -75,6 +77,9 @@ export default function CategoriesAdminPage() {
 					cancelEdit()
 				})
 					.catch(() => {})
+					.finally(() => {
+						useCategoriesStore.getState().setUpdatePending(false)
+					})
 			},
 			onDelete: id => {
 				setDeleteConfirmId(id)
@@ -111,8 +116,15 @@ export default function CategoriesAdminPage() {
 			return
 		}
 
-		setDeleteConfirmId(null)
-		deleteMutation.mutateAsync(id).catch(() => {})
+		setDeleteTargetId(id)
+		setDeletePending(true)
+		deleteMutation.mutateAsync(id)
+			.finally(() => {
+				useCategoriesStore.getState().setDeleteConfirmId(null)
+				useCategoriesStore.getState().setDeletePending(false)
+				useCategoriesStore.getState().setDeleteTargetId(null)
+			})
+			.catch(() => {})
 	}
 
 	return (
@@ -165,14 +177,15 @@ export default function CategoriesAdminPage() {
 								{'Отмена'}
 							</Button>
 						</AlertDialogCancel>
-						<AlertDialogAction asChild={true}>
-							<Button
-								variant="destructive"
-								onClick={handleConfirmDelete}
-							>
-								{'Удалить'}
-							</Button>
-						</AlertDialogAction>
+						<Button
+							variant="destructive"
+							state={deleteMutation.isPending
+								? 'loading'
+								: 'default'}
+							onClick={handleConfirmDelete}
+						>
+							{'Удалить'}
+						</Button>
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>

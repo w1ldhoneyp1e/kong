@@ -1,8 +1,8 @@
 'use client'
 
 import {type Category} from '../../../entities/category'
-import {CategoryEditForm} from './CategoryEditForm'
 import {useCategoriesStore} from './categoriesStore'
+import {CategoryEditForm} from './CategoryEditForm'
 import {CategoryRowView} from './CategoryRowView'
 
 type CategoryListItemProps = {

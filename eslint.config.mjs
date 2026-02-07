@@ -35,6 +35,9 @@ export default [
 			'**/dist-pub/',
 
 			'/**/node_modules/',
+			'**/pnpm-lock.yaml',
+			'**/package-lock.json',
+			'**/yarn.lock',
 			'**/coverage/',
 			'libs/**',
 

@@ -269,7 +269,9 @@ export function AdminEntityDetail({
 									))}
 									<Button
 										type="submit"
-										disabled={editSubmitting}
+										state={editSubmitting
+											? 'loading'
+											: 'default'}
 									>
 										{editSubmitting
 											? 'Сохранение...'

@@ -50,7 +50,7 @@ export default function CartPage() {
 						<CardFooter>
 							<Button
 								className="w-full"
-								disabled={true}
+								state="disabled"
 							>
 								{'Оформить заказ'}
 							</Button>

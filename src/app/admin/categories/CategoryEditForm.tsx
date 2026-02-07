@@ -10,6 +10,7 @@ function CategoryEditForm() {
 	const setEditSlug = useCategoriesStore(s => s.setEditSlug)
 	const update = useCategoriesStore(s => s.update)
 	const cancelEdit = useCategoriesStore(s => s.cancelEdit)
+	const updatePending = useCategoriesStore(s => s.updatePending)
 
 	return (
 		<form
@@ -40,6 +41,11 @@ function CategoryEditForm() {
 				<Button
 					type="submit"
 					size="sm"
+					state={updatePending
+						? 'loading'
+						: (!editName.trim() || !editSlug.trim()
+							? 'disabled'
+							: 'default')}
 				>
 					{'Сохранить'}
 				</Button>

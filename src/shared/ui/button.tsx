@@ -1,4 +1,5 @@
 import {type VariantProps, cva} from 'class-variance-authority'
+import {Loader2} from 'lucide-react'
 import {Slot} from 'radix-ui'
 import * as React from 'react'
 import {cn} from '../lib/utils'
@@ -37,33 +38,79 @@ const buttonVariants = cva(
 	},
 )
 
+type ButtonState = 'default' | 'loading' | 'disabled'
+
+type ButtonProps = React.ComponentProps<'button'> &
+	VariantProps<typeof buttonVariants> & {
+		asChild?: boolean,
+		state?: ButtonState,
+	}
+
 function Button({
 	className,
 	variant = 'default',
 	size = 'default',
 	asChild = false,
+	state = 'default',
+	children,
 	...props
-}: React.ComponentProps<'button'> &
-	VariantProps<typeof buttonVariants> & {
-		asChild?: boolean,
-	}) {
+}: ButtonProps) {
 	const Comp = asChild
 		? Slot.Root
 		: 'button'
+
+	const isLoading = state === 'loading'
+	const isDisabled = state === 'disabled' || state === 'loading'
+
+	if (asChild) {
+		return (
+			<Comp
+				data-slot="button"
+				data-variant={variant}
+				data-size={size}
+				className={cn(buttonVariants({
+					variant,
+					size,
+					className,
+				}))}
+				{...props}
+			>
+				{children}
+			</Comp>
+		)
+	}
 
 	return (
 		<Comp
 			data-slot="button"
 			data-variant={variant}
 			data-size={size}
-			className={cn(buttonVariants({
-				variant,
-				size,
-				className,
-			}))}
+			className={cn(
+				buttonVariants({
+					variant,
+					size,
+					className,
+				}),
+				isLoading && 'relative',
+			)}
 			{...props}
-		/>
+			disabled={isDisabled}
+		>
+			{isLoading
+				? (
+					<>
+						<span className="invisible">
+							{children}
+						</span>
+						<span className="absolute inset-0 flex items-center justify-center">
+							<Loader2 className="size-4 animate-spin" />
+						</span>
+					</>
+				)
+				: children}
+		</Comp>
 	)
 }
 
 export {Button, buttonVariants}
+export type {ButtonState}

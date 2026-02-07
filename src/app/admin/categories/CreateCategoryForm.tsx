@@ -116,11 +116,13 @@ function CreateCategoryForm({
 						<Button
 							type="submit"
 							className="w-full"
-							disabled={submitPending}
+							state={submitPending
+								? 'loading'
+								: (!name.trim() || !slug.trim()
+									? 'disabled'
+									: 'default')}
 						>
-							{submitPending
-								? 'Создание...'
-								: 'Создать'}
+							{'Создать'}
 						</Button>
 					</form>
 				</CardContent>

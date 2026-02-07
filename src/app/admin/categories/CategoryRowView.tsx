@@ -9,9 +9,13 @@ type CategoryRowViewProps = {
 }
 
 function CategoryRowView({category}: CategoryRowViewProps) {
+	const deleteTargetId = useCategoriesStore(s => s.deleteTargetId)
+	const deletePending = useCategoriesStore(s => s.deletePending)
 	const setEdit = useCategoriesStore(s => s.setEdit)
 	const deleteCategory = useCategoriesStore(s => s.deleteCategory)
 	const addChild = useCategoriesStore(s => s.addChild)
+
+	const isDeleting = deleteTargetId === category.id && deletePending
 
 	return (
 		<div className="flex items-center justify-between">
@@ -44,6 +48,9 @@ function CategoryRowView({category}: CategoryRowViewProps) {
 				<Button
 					size="sm"
 					variant="destructive"
+					state={isDeleting
+						? 'loading'
+						: 'default'}
 					onClick={() => deleteCategory(category.id)}
 				>
 					{'Удалить'}

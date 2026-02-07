@@ -60,7 +60,9 @@ export default function ProductsPage() {
 						<CardFooter>
 							<Button
 								className="w-full"
-								disabled={!product.inStock}
+								state={!product.inStock
+									? 'disabled'
+									: 'default'}
 							>
 								{product.inStock
 									? 'В корзину'

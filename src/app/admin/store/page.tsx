@@ -202,7 +202,9 @@ export default function AdminStorePage() {
 							</div>
 							<Button
 								type="submit"
-								disabled={editSubmitting}
+								state={editSubmitting
+									? 'loading'
+									: 'default'}
 							>
 								{editSubmitting
 									? 'Сохранение...'

@@ -275,7 +275,9 @@ export function AdminEntityList({
 									))}
 									<Button
 										type="submit"
-										disabled={createSubmitting}
+										state={createSubmitting
+											? 'loading'
+											: 'default'}
 									>
 										{createSubmitting
 											? 'Создаём...'
@@ -344,7 +346,9 @@ export function AdminEntityList({
 																type="button"
 																variant="destructive"
 																size="sm"
-																disabled={deletingId === item.id}
+																state={deletingId === item.id
+																	? 'loading'
+																	: 'default'}
 																onClick={() => handleDelete(item.id as string)}
 															>
 																{deletingId === item.id
