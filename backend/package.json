@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Kong Store - Medusa backend",
   "private": true,
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "./node_modules/.bin/medusa develop",
     "start": "./node_modules/.bin/medusa start",
