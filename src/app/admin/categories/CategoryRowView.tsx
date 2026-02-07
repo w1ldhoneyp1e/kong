@@ -1,7 +1,8 @@
 'use client'
 
+import {Pencil, Trash2} from 'lucide-react'
 import {type Category} from '../../../entities/category'
-import {Button} from '../../../shared'
+import {Button, cn} from '../../../shared'
 import {useCategoriesStore} from './categoriesStore'
 
 type CategoryRowViewProps = {
@@ -27,30 +28,40 @@ function CategoryRowView({category}: CategoryRowViewProps) {
 					{`/catalog/${category.slug}`}
 				</p>
 			</div>
-			<div className="flex gap-2 flex-wrap">
+			<div
+				className={cn(
+					'flex gap-2 flex-wrap transition-opacity',
+					'opacity-0 group-hover:opacity-100 focus-within:opacity-100',
+					isDeleting && 'opacity-100',
+				)}
+			>
 				<Button
 					size="sm"
 					variant="outline"
+					className="text-foreground/70"
 					onClick={() => addChild(category)}
 				>
 					{'Добавить подкатегорию'}
 				</Button>
 				<Button
-					size="sm"
+					className="text-foreground/70"
+					size="icon-sm"
 					variant="outline"
 					onClick={() => setEdit(category)}
+					aria-label="Изменить"
 				>
-					{'Изменить'}
+					<Pencil className="size-4" />
 				</Button>
 				<Button
-					size="sm"
+					size="icon-sm"
 					variant="destructive"
 					state={isDeleting
 						? 'loading'
 						: 'default'}
 					onClick={() => deleteCategory(category.id)}
+					aria-label="Удалить"
 				>
-					{'Удалить'}
+					<Trash2 className="size-4" />
 				</Button>
 			</div>
 		</div>

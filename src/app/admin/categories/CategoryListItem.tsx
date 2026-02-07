@@ -31,7 +31,7 @@ function CategoryListItem({
 	return (
 		<div className="border-b border-border/60 last:border-b-0">
 			<div
-				className="py-4 pr-5 rounded-md transition-colors hover:bg-muted/50"
+				className="group py-4 pr-5 rounded-md transition-colors hover:bg-muted/50"
 				style={{paddingLeft: `${paddingLeft}px`}}
 			>
 				<div className="flex items-start gap-2">
