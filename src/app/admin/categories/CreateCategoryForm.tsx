@@ -63,7 +63,7 @@ function CreateCategoryForm({
 										key={args.id}
 										value={args.id}
 									>
-										{'\u00A0'.repeat(args.depth * 2)}{name}
+										{'\u00A0'.repeat(args.depth * 2)}{args.name}
 									</option>
 								))}
 							</select>

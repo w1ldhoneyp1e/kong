@@ -5,7 +5,7 @@ type CategoryRecord = {
 	id: string,
 	name: string,
 	slug: string,
-	parent_id?: string | null,
+	parent_id?: string | null | {id?: string},
 }
 
 type CategoryService = {
@@ -17,12 +17,26 @@ type CategoryService = {
 	}) => Promise<CategoryRecord[]>,
 }
 
+function parentIdFromRecord(record: CategoryRecord): string | null {
+	const p = record.parent_id
+	if (p === null || p === undefined) {
+		return null
+	}
+	if (typeof p === 'object' && p !== null && 'id' in p) {
+		const id = (p as {id?: string}).id
+		return id ?? null
+	}
+	return typeof p === 'string'
+		? p
+		: null
+}
+
 function toDto(record: CategoryRecord) {
 	return {
 		id: record.id,
 		name: record.name,
 		slug: record.slug,
-		parentId: record.parent_id ?? null,
+		parentId: parentIdFromRecord(record),
 	}
 }
 
@@ -51,11 +65,16 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 
 	try {
 		const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
-		const [created] = await categoryService.createCategories({
+		const createdList = await categoryService.createCategories({
 			name,
 			slug,
 			parent_id: parentId ?? null,
 		})
+		const created = createdList?.[0]
+		if (!created) {
+			res.status(500).json({error: 'Сервер не вернул созданную категорию'})
+			return
+		}
 		res.status(201).json({category: toDto(created)})
 	}
 	catch (e) {
