@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {
 	buildCategoryTree,
 	flattenCategoryTree,
@@ -9,6 +9,17 @@ import {
 	useDeleteCategoryMutation,
 	useUpdateCategoryMutation,
 } from '../../../entities/category'
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	Button,
+} from '../../../shared'
 import {useCategoriesStore} from './categoriesStore'
 import {CategoryList} from './CategoryList'
 import {CreateCategoryForm} from './CreateCategoryForm'
@@ -29,8 +40,7 @@ export default function CategoriesAdminPage() {
 	const [newName, setNewName] = useState('')
 	const [newSlug, setNewSlug] = useState('')
 	const [newParentId, setNewParentId] = useState<string | null>(null)
-
-	const createFormRef = useRef<HTMLDivElement>(null)
+	const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
 	const errorMessage = (err: unknown) => (err instanceof Error
 		? err.message
@@ -46,7 +56,9 @@ export default function CategoriesAdminPage() {
 		setHandlers({
 			onUpdate: e => {
 				e.preventDefault()
-				const {editId, editName, editSlug} = useCategoriesStore.getState()
+				const {
+					editId, editName, editSlug,
+				} = useCategoriesStore.getState()
 				if (!editId) {
 					return
 				}
@@ -57,19 +69,14 @@ export default function CategoriesAdminPage() {
 					slug: editSlug,
 				}).then(() => {
 					cancelEdit()
-				}).catch(() => {})
+				})
+					.catch(() => {})
 			},
 			onDelete: id => {
-				// eslint-disable-next-line no-alert -- подтверждение удаления в админке
-				if (!confirm('Точно удалить категорию?')) {
-					return
-				}
-
-				deleteMutation.mutateAsync(id).catch(() => {})
+				setDeleteConfirmId(id)
 			},
 			onAddChild: cat => {
 				setNewParentId(cat.id)
-				createFormRef.current?.scrollIntoView({behavior: 'smooth'})
 			},
 		})
 	}, [setHandlers, cancelEdit, updateMutation, deleteMutation, setNewParentId])
@@ -96,6 +103,16 @@ export default function CategoriesAdminPage() {
 		}
 	}
 
+	const handleConfirmDelete = () => {
+		const id = deleteConfirmId
+		if (!id) {
+			return
+		}
+
+		setDeleteConfirmId(null)
+		deleteMutation.mutateAsync(id).catch(() => {})
+	}
+
 	return (
 		<div className="flex flex-col gap-5">
 			<h1 className="heading-4">{'Управление категориями'}</h1>
@@ -105,7 +122,7 @@ export default function CategoriesAdminPage() {
 				</div>
 			)}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<div ref={createFormRef}>
+				<div>
 					<CreateCategoryForm
 						name={newName}
 						slug={newSlug}
@@ -123,6 +140,40 @@ export default function CategoriesAdminPage() {
 					loading={isLoading}
 				/>
 			</div>
+			<AlertDialog
+				open={deleteConfirmId !== null}
+				onOpenChange={open => {
+					if (!open) {
+						setDeleteConfirmId(null)
+					}
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>
+							{'Удалить категорию?'}
+						</AlertDialogTitle>
+						<AlertDialogDescription>
+							{'Точно удалить категорию? Это действие нельзя отменить.'}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel asChild={true}>
+							<Button variant="outline">
+								{'Отмена'}
+							</Button>
+						</AlertDialogCancel>
+						<AlertDialogAction asChild={true}>
+							<Button
+								variant="destructive"
+								onClick={handleConfirmDelete}
+							>
+								{'Удалить'}
+							</Button>
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	)
 }

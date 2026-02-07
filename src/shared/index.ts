@@ -5,6 +5,16 @@ export {
 	getBackendUrl, getBackendUrlOptional, getApiBase,
 } from './lib/url'
 export {fetchSuggestions} from './lib/yandex-suggest'
+export {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from './ui/alert-dialog'
 export {Badge, badgeVariants} from './ui/badge'
 export {Button, buttonVariants} from './ui/button'
 export {
