@@ -16,10 +16,7 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const inventoryService = req.scope.resolve(Modules.INVENTORY)
 	const body = req.body as Record<string, unknown>
-	const [updated] = await inventoryService.updateInventoryItems([{
-		id,
-		...body,
-	}] as never)
+	const updated = await inventoryService.updateInventoryItems({id, ...body} as never)
 	res.json({inventory_item: updated})
 }
 

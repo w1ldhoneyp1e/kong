@@ -14,9 +14,10 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		? body
 		: [body]
 	const created = await stockLocationService.createStockLocations(data as never)
-	res.status(201).json(created.length === 1
-		? {stock_location: created[0]}
-		: {stock_locations: created})
+	const list = Array.isArray(created) ? created : [created]
+	res.status(201).json(list.length === 1
+		? {stock_location: list[0]}
+		: {stock_locations: list})
 }
 
 export {GET, POST}

@@ -16,10 +16,7 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const productService = req.scope.resolve(Modules.PRODUCT)
 	const body = req.body as Record<string, unknown>
-	const [updated] = await productService.updateProducts([{
-		id,
-		...body,
-	}] as never)
+	const updated = await productService.updateProducts(id, body as never)
 	res.json({product: updated})
 }
 

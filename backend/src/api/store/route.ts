@@ -19,10 +19,7 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		return
 	}
 	const body = req.body as Record<string, unknown>
-	const [updated] = await storeService.updateStores([{
-		id: store.id,
-		...body,
-	}] as never)
+	const updated = await storeService.updateStores(store.id, body as never)
 	res.json({store: updated})
 }
 

@@ -16,10 +16,7 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const regionService = req.scope.resolve(Modules.REGION)
 	const body = req.body as Record<string, unknown>
-	const [updated] = await regionService.updateRegions([{
-		id,
-		...body,
-	}] as never)
+	const updated = await regionService.updateRegions(id, body as never)
 	res.json({region: updated})
 }
 

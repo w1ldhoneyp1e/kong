@@ -16,10 +16,7 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const customerService = req.scope.resolve(Modules.CUSTOMER)
 	const body = req.body as Record<string, unknown>
-	const [updated] = await customerService.updateCustomers([{
-		id,
-		...body,
-	}] as never)
+	const updated = await customerService.updateCustomers(id, body as never)
 	res.json({customer: updated})
 }
 
