@@ -109,7 +109,7 @@ function ParentCategorySelect({
 								value={node.id}
 								indicator="background"
 								style={{
-									paddingLeft: 28 + depth * 12,
+									paddingLeft: 8 + depth * 12,
 								}}
 							>
 								<span className="flex items-center gap-1.5 min-w-0">
