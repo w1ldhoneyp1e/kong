@@ -1,23 +1,27 @@
 'use client'
 
-import {
-	useEffect,
-	useRef,
-	useState,
-} from 'react'
+import {useRef, useState} from 'react'
 import {
 	type Category,
 	buildCategoryTree,
-	categoriesApi,
 	flattenCategoryTree,
+	useCategoriesQuery,
+	useCreateCategoryMutation,
+	useDeleteCategoryMutation,
+	useUpdateCategoryMutation,
 } from '../../../entities/category'
 import {CategoryList} from './CategoryList'
 import {CreateCategoryForm} from './CreateCategoryForm'
 
 export default function CategoriesAdminPage() {
-	const [categories, setCategories] = useState<Category[]>([])
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState('')
+	const {
+		data: categories = [],
+		isLoading,
+		error: queryError,
+	} = useCategoriesQuery()
+	const createMutation = useCreateCategoryMutation()
+	const updateMutation = useUpdateCategoryMutation()
+	const deleteMutation = useDeleteCategoryMutation()
 
 	const [newName, setNewName] = useState('')
 	const [newSlug, setNewSlug] = useState('')
@@ -28,48 +32,35 @@ export default function CategoriesAdminPage() {
 	const [editName, setEditName] = useState('')
 	const [editSlug, setEditSlug] = useState('')
 
-	const loadCategories = async () => {
-		try {
-			setLoading(true)
-			const data = await categoriesApi.getAll()
-			setCategories(data)
-			setError('')
-		}
-		catch (err) {
-			setError(err instanceof Error
-				? err.message
-				: 'Ошибка загрузки категорий. Проверь, что backend запущен.')
-		}
-		finally {
-			setLoading(false)
-		}
-	}
-
-	useEffect(() => {
-		loadCategories()
-	}, [])
+	const errorMessage = (err: unknown) => (err instanceof Error
+		? err.message
+		: String(err))
+	const error
+		= (queryError && errorMessage(queryError))
+		?? (createMutation.error && errorMessage(createMutation.error))
+		?? (updateMutation.error && errorMessage(updateMutation.error))
+		?? (deleteMutation.error && errorMessage(deleteMutation.error))
+		?? ''
 
 	const handleCreate = async (ev: React.FormEvent) => {
 		ev.preventDefault()
 
 		if (!newName || !newSlug) {
-			setError('Заполни все поля')
-
 			return
 		}
 
 		try {
-			await categoriesApi.create(newName, newSlug, newParentId)
+			await createMutation.mutateAsync({
+				name: newName,
+				slug: newSlug,
+				parentId: newParentId,
+			})
 			setNewName('')
 			setNewSlug('')
 			setNewParentId(null)
-			await loadCategories()
-			setError('')
 		}
-		catch (err) {
-			setError(err instanceof Error
-				? err.message
-				: 'Ошибка создания категории')
+		catch {
+			// error shown via mutation.error
 		}
 	}
 
@@ -87,15 +78,17 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await categoriesApi.update(editId, editName, editSlug)
+			await updateMutation.mutateAsync({
+				id: editId,
+				name: editName,
+				slug: editSlug,
+			})
 			setEditId(null)
 			setEditName('')
 			setEditSlug('')
-			await loadCategories()
-			setError('')
 		}
 		catch {
-			setError('Ошибка обновления категории')
+			// error shown via mutation.error
 		}
 	}
 
@@ -106,12 +99,10 @@ export default function CategoriesAdminPage() {
 		}
 
 		try {
-			await categoriesApi.delete(id)
-			await loadCategories()
-			setError('')
+			await deleteMutation.mutateAsync(id)
 		}
 		catch {
-			setError('Ошибка удаления категории')
+			// error shown via mutation.error
 		}
 	}
 
@@ -140,11 +131,12 @@ export default function CategoriesAdminPage() {
 						onSlugChange={setNewSlug}
 						onParentIdChange={setNewParentId}
 						onSubmit={handleCreate}
+						submitPending={createMutation.isPending}
 					/>
 				</div>
 				<CategoryList
 					categories={categories}
-					loading={loading}
+					loading={isLoading}
 					editId={editId}
 					editName={editName}
 					editSlug={editSlug}
@@ -163,5 +155,3 @@ export default function CategoriesAdminPage() {
 		</div>
 	)
 }
-
-

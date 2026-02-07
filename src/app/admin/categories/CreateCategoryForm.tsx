@@ -26,6 +26,7 @@ type CreateCategoryFormProps = {
 	onSlugChange: (value: string) => void,
 	onParentIdChange: (value: string | null) => void,
 	onSubmit: (ev: React.FormEvent) => void,
+	submitPending?: boolean,
 }
 
 function CreateCategoryForm({
@@ -37,6 +38,7 @@ function CreateCategoryForm({
 	onSlugChange,
 	onParentIdChange,
 	onSubmit,
+	submitPending = false,
 }: CreateCategoryFormProps) {
 	return (
 		<div className="lg:col-span-1">
@@ -114,8 +116,11 @@ function CreateCategoryForm({
 						<Button
 							type="submit"
 							className="w-full"
+							disabled={submitPending}
 						>
-							{'Создать'}
+							{submitPending
+								? 'Создание...'
+								: 'Создать'}
 						</Button>
 					</form>
 				</CardContent>

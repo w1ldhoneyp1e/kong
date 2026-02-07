@@ -1,5 +1,4 @@
 import {getApiBase} from '../../shared'
-import {isObject} from '@/shared/lib/isObject'
 
 async function parseRes(res: Response): Promise<unknown> {
 	const text = await res.text()
@@ -107,7 +106,7 @@ const categoriesApi = {
 		return data.category as Category
 	},
 
-	create: async (name: string, slug: string, parentId?: string | null): Promise<Category> => {
+	create: async (name: string, slug: string, parentId?: string | null): Promise<{id: string}> => {
 		const res = await fetch(`${getApiBase()}/categories`, {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
@@ -119,7 +118,7 @@ const categoriesApi = {
 		})
 		const raw = await parseRes(res)
 		const data = raw as {
-			category?: Category,
+			id?: string,
 			error?: string,
 			message?: string,
 		}
@@ -131,16 +130,11 @@ const categoriesApi = {
 			throw new Error(msg)
 		}
 
-		if (isObject(data?.category)) {
-			return data.category as Category
+		if (typeof data?.id === 'string') {
+			return {id: data.id}
 		}
 
-		return {
-			id: '',
-			name,
-			slug,
-			parentId: parentId ?? null,
-		}
+		throw new Error('Ответ без id')
 	},
 
 	update: async (id: string, name: string, slug: string): Promise<Category> => {

@@ -5,6 +5,7 @@ import {SearchProvider} from '../features/search'
 import {Footer} from '../widgets/footer'
 import {ScrollOnNavigate} from '../widgets/header'
 import './globals.css'
+import {QueryProvider} from './QueryProvider'
 
 const inter = Inter({
 	subsets: ['latin', 'cyrillic'],
@@ -29,14 +30,16 @@ export default function RootLayout({
 	return (
 		<html lang="ru">
 			<body className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}>
-				<ServiceWorkerRegistration />
-				<SearchProvider>
-					<ScrollOnNavigate />
-					<div className="flex-1 min-h-0">
-						{children}
-					</div>
-					<Footer />
-				</SearchProvider>
+				<QueryProvider>
+					<ServiceWorkerRegistration />
+					<SearchProvider>
+						<ScrollOnNavigate />
+						<div className="flex-1 min-h-0">
+							{children}
+						</div>
+						<Footer />
+					</SearchProvider>
+				</QueryProvider>
 			</body>
 		</html>
 	)
