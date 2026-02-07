@@ -93,22 +93,27 @@ function ParentCategorySelect({
 					<SelectValue placeholder="Без родителя" />
 				</SelectTrigger>
 				<SelectContent>
-					<SelectItem value={PARENT_NONE_VALUE}>
+					<SelectItem
+						value={PARENT_NONE_VALUE}
+						indicator="background"
+					>
 						{'Без родителя'}
 					</SelectItem>
 					{visibleNodes.map(({node, depth}) => {
 						const hasChildren = node.children.length > 0
 						const isExpanded = expandedIds.has(node.id)
+						const showChevron = parentSelectOpen && hasChildren
 						return (
 							<SelectItem
 								key={node.id}
 								value={node.id}
+								indicator="background"
 								style={{
-									paddingLeft: 32 + 8 + depth * 12,
+									paddingLeft: 28 + depth * 12,
 								}}
 							>
 								<span className="flex items-center gap-1.5 min-w-0">
-									{hasChildren
+									{showChevron
 										? (
 											<button
 												type="button"
