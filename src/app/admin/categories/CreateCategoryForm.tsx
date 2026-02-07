@@ -1,6 +1,6 @@
 'use client'
 
-import {type FlattenCategoryItem} from '../../../entities/category'
+import {type CategoryTreeNode} from '../../../entities/category'
 import {
 	Button,
 	Card,
@@ -8,21 +8,15 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-	cn,
 	Input,
-	Select,
-	SelectClearButton,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
 } from '../../../shared'
+import {ParentCategorySelect} from './ParentCategorySelect'
 
 type CreateCategoryFormProps = {
 	name: string,
 	slug: string,
 	parentId: string | null,
-	parentOptions: FlattenCategoryItem[],
+	parentTree: CategoryTreeNode[],
 	onNameChange: (value: string) => void,
 	onSlugChange: (value: string) => void,
 	onParentIdChange: (value: string | null) => void,
@@ -35,7 +29,7 @@ function CreateCategoryForm({
 	name,
 	slug,
 	parentId,
-	parentOptions,
+	parentTree,
 	onNameChange,
 	onSlugChange,
 	onParentIdChange,
@@ -59,45 +53,12 @@ function CreateCategoryForm({
 							<label className="text-sm font-medium mb-1 block">
 								{'Родительская категория'}
 							</label>
-							<div
-								className={cn(
-									'flex h-9 w-full items-center overflow-hidden rounded-md border border-input transition-[box-shadow,background-color] duration-300',
-									highlightParentField && 'ring-2 ring-[var(--color-brand)]/50 bg-[var(--color-brand)]/12',
-								)}
-							>
-								<Select
-									value={parentId ?? ''}
-									onValueChange={v => onParentIdChange(v === ''
-										? null
-										: v)}
-								>
-									<SelectTrigger
-										className={parentId
-											? 'flex-1 rounded-none border-0 border-r border-input focus:ring-0 data-[state=open]:rounded-none'
-											: 'flex-1 rounded-r-md border-0 focus:ring-0'}
-									>
-										<SelectValue placeholder="Без родителя" />
-									</SelectTrigger>
-									<SelectContent>
-										{parentOptions.map(args => (
-											<SelectItem
-												key={args.id}
-												value={args.id}
-											>
-												{'\u00A0'.repeat(args.depth * 2)}{args.name}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-								{parentId
-									? (
-										<SelectClearButton
-											onClick={() => onParentIdChange(null)}
-											aria-label="Снять выбор"
-										/>
-									)
-									: null}
-							</div>
+							<ParentCategorySelect
+								parentId={parentId}
+								parentTree={parentTree}
+								onParentIdChange={onParentIdChange}
+								highlightParentField={highlightParentField}
+							/>
 						</div>
 						<div>
 							<label className="text-sm font-medium mb-1 block">

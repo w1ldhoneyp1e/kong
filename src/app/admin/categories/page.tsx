@@ -3,7 +3,6 @@
 import {useEffect} from 'react'
 import {
 	buildCategoryTree,
-	flattenCategoryTree,
 	useCategoriesQuery,
 	useCreateCategoryMutation,
 	useDeleteCategoryMutation,
@@ -155,7 +154,7 @@ export default function CategoriesAdminPage() {
 						name={newName}
 						slug={newSlug}
 						parentId={newParentId}
-						parentOptions={flattenCategoryTree(buildCategoryTree(categories))}
+						parentTree={buildCategoryTree(categories)}
 						onNameChange={setNewName}
 						onSlugChange={setNewSlug}
 						onParentIdChange={setNewParentId}
