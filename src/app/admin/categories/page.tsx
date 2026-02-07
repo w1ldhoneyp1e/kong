@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {
 	buildCategoryTree,
 	flattenCategoryTree,
@@ -36,11 +36,15 @@ export default function CategoriesAdminPage() {
 
 	const cancelEdit = useCategoriesStore(s => s.cancelEdit)
 	const setHandlers = useCategoriesStore(s => s.setHandlers)
-
-	const [newName, setNewName] = useState('')
-	const [newSlug, setNewSlug] = useState('')
-	const [newParentId, setNewParentId] = useState<string | null>(null)
-	const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+	const newName = useCategoriesStore(s => s.newName)
+	const newSlug = useCategoriesStore(s => s.newSlug)
+	const newParentId = useCategoriesStore(s => s.newParentId)
+	const deleteConfirmId = useCategoriesStore(s => s.deleteConfirmId)
+	const setNewName = useCategoriesStore(s => s.setNewName)
+	const setNewSlug = useCategoriesStore(s => s.setNewSlug)
+	const setNewParentId = useCategoriesStore(s => s.setNewParentId)
+	const setDeleteConfirmId = useCategoriesStore(s => s.setDeleteConfirmId)
+	const resetCreateForm = useCategoriesStore(s => s.resetCreateForm)
 
 	const errorMessage = (err: unknown) => (err instanceof Error
 		? err.message
@@ -79,7 +83,7 @@ export default function CategoriesAdminPage() {
 				setNewParentId(cat.id)
 			},
 		})
-	}, [setHandlers, cancelEdit, updateMutation, deleteMutation, setNewParentId])
+	}, [setHandlers, cancelEdit, updateMutation, deleteMutation, setNewParentId, setDeleteConfirmId])
 
 	const handleCreate = async (ev: React.FormEvent) => {
 		ev.preventDefault()
@@ -94,9 +98,7 @@ export default function CategoriesAdminPage() {
 				slug: newSlug,
 				parentId: newParentId,
 			})
-			setNewName('')
-			setNewSlug('')
-			setNewParentId(null)
+			resetCreateForm()
 		}
 		catch {
 			// error shown via mutation.error
