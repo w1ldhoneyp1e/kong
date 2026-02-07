@@ -1,4 +1,5 @@
 import {getApiBase} from '../../shared'
+import {isObject} from '@/shared/lib/isObject'
 
 async function parseRes(res: Response): Promise<unknown> {
 	const text = await res.text()
@@ -130,7 +131,16 @@ const categoriesApi = {
 			throw new Error(msg)
 		}
 
-		return data.category as Category
+		if (isObject(data?.category)) {
+			return data.category as Category
+		}
+
+		return {
+			id: '',
+			name,
+			slug,
+			parentId: parentId ?? null,
+		}
 	},
 
 	update: async (id: string, name: string, slug: string): Promise<Category> => {
