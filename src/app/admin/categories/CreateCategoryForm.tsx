@@ -8,6 +8,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	cn,
 	Input,
 	Select,
 	SelectClearButton,
@@ -27,6 +28,7 @@ type CreateCategoryFormProps = {
 	onParentIdChange: (value: string | null) => void,
 	onSubmit: (ev: React.FormEvent) => void,
 	submitPending?: boolean,
+	highlightParentField?: boolean,
 }
 
 function CreateCategoryForm({
@@ -39,6 +41,7 @@ function CreateCategoryForm({
 	onParentIdChange,
 	onSubmit,
 	submitPending = false,
+	highlightParentField = false,
 }: CreateCategoryFormProps) {
 	return (
 		<div className="lg:col-span-1">
@@ -56,7 +59,12 @@ function CreateCategoryForm({
 							<label className="text-sm font-medium mb-1 block">
 								{'Родительская категория'}
 							</label>
-							<div className="flex h-9 w-full items-center overflow-hidden rounded-md border border-input">
+							<div
+								className={cn(
+									'flex h-9 w-full items-center overflow-hidden rounded-md border border-input transition-[box-shadow,background-color] duration-300',
+									highlightParentField && 'ring-2 ring-[var(--color-brand)]/50 bg-[var(--color-brand)]/12',
+								)}
+							>
 								<Select
 									value={parentId ?? ''}
 									onValueChange={v => onParentIdChange(v === ''

@@ -38,11 +38,13 @@ export default function CategoriesAdminPage() {
 	const newName = useCategoriesStore(s => s.newName)
 	const newSlug = useCategoriesStore(s => s.newSlug)
 	const newParentId = useCategoriesStore(s => s.newParentId)
+	const highlightParentField = useCategoriesStore(s => s.highlightParentField)
 	const deleteConfirmId = useCategoriesStore(s => s.deleteConfirmId)
 	const setNewName = useCategoriesStore(s => s.setNewName)
 	const setNewSlug = useCategoriesStore(s => s.setNewSlug)
 	const setNewParentId = useCategoriesStore(s => s.setNewParentId)
 	const setDeleteConfirmId = useCategoriesStore(s => s.setDeleteConfirmId)
+	const setHighlightParentField = useCategoriesStore(s => s.setHighlightParentField)
 	const setDeletePending = useCategoriesStore(s => s.setDeletePending)
 	const setDeleteTargetId = useCategoriesStore(s => s.setDeleteTargetId)
 	const resetCreateForm = useCategoriesStore(s => s.resetCreateForm)
@@ -86,9 +88,21 @@ export default function CategoriesAdminPage() {
 			},
 			onAddChild: cat => {
 				setNewParentId(cat.id)
+				setHighlightParentField(true)
+				setTimeout(() => {
+					useCategoriesStore.getState().setHighlightParentField(false)
+				}, 2500)
 			},
 		})
-	}, [setHandlers, cancelEdit, updateMutation, deleteMutation, setNewParentId, setDeleteConfirmId])
+	}, [
+		setHandlers,
+		cancelEdit,
+		updateMutation,
+		deleteMutation,
+		setNewParentId,
+		setHighlightParentField,
+		setDeleteConfirmId,
+	])
 
 	const handleCreate = async (ev: React.FormEvent) => {
 		ev.preventDefault()
@@ -147,6 +161,7 @@ export default function CategoriesAdminPage() {
 						onParentIdChange={setNewParentId}
 						onSubmit={handleCreate}
 						submitPending={createMutation.isPending}
+						highlightParentField={highlightParentField}
 					/>
 				</div>
 				<CategoryList
