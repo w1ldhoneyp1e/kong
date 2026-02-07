@@ -14,7 +14,7 @@ type CategoryService = {
 		id: string,
 		name?: string,
 		slug?: string,
-	}) => Promise<CategoryRecord[]>,
+	}[]) => Promise<CategoryRecord[]>,
 	deleteCategories: (ids: string[]) => Promise<void>,
 }
 
@@ -58,11 +58,20 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		return
 	}
 
-	const [updated] = await categoryService.updateCategories({
-		id,
-		...(name !== null && {name}),
-		...(slug !== null && {slug}),
-	})
+	const updatedList = await categoryService.updateCategories([
+		{
+			id,
+			...(name !== undefined && name !== null && {name}),
+			...(slug !== undefined && slug !== null && {slug}),
+		},
+	])
+	const updated = Array.isArray(updatedList)
+		? updatedList[0]
+		: updatedList
+	if (!updated) {
+		res.status(500).json({error: 'Сервер не вернул обновлённую категорию'})
+		return
+	}
 	res.json({category: toDto(updated)})
 }
 
