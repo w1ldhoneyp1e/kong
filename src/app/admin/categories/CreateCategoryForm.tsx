@@ -9,6 +9,12 @@ import {
 	CardHeader,
 	CardTitle,
 	Input,
+	Select,
+	SelectClearButton,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '../../../shared'
 
 type CreateCategoryFormProps = {
@@ -48,25 +54,40 @@ function CreateCategoryForm({
 							<label className="text-sm font-medium mb-1 block">
 								{'Родительская категория'}
 							</label>
-							<select
-								className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-								value={parentId ?? ''}
-								onChange={e => onParentIdChange(e.target.value === ''
-									? null
-									: e.target.value)}
-							>
-								<option value="">
-									{'Без родителя'}
-								</option>
-								{parentOptions.map(args => (
-									<option
-										key={args.id}
-										value={args.id}
+							<div className="flex h-9 w-full items-center overflow-hidden rounded-md border border-input">
+								<Select
+									value={parentId ?? ''}
+									onValueChange={v => onParentIdChange(v === ''
+										? null
+										: v)}
+								>
+									<SelectTrigger
+										className={parentId
+											? 'flex-1 rounded-none border-0 border-r border-input focus:ring-0 data-[state=open]:rounded-none'
+											: 'flex-1 rounded-r-md border-0 focus:ring-0'}
 									>
-										{'\u00A0'.repeat(args.depth * 2)}{args.name}
-									</option>
-								))}
-							</select>
+										<SelectValue placeholder="Без родителя" />
+									</SelectTrigger>
+									<SelectContent>
+										{parentOptions.map(args => (
+											<SelectItem
+												key={args.id}
+												value={args.id}
+											>
+												{'\u00A0'.repeat(args.depth * 2)}{args.name}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								{parentId
+									? (
+										<SelectClearButton
+											onClick={() => onParentIdChange(null)}
+											aria-label="Снять выбор"
+										/>
+									)
+									: null}
+							</div>
 						</div>
 						<div>
 							<label className="text-sm font-medium mb-1 block">
@@ -81,7 +102,7 @@ function CreateCategoryForm({
 						</div>
 						<div>
 							<label className="text-sm font-medium mb-1 block">
-								{'Slug (URL)'}
+								{'Путь (url-адрес)'}
 							</label>
 							<Input
 								type="text"

@@ -27,6 +27,14 @@ export type {CountProps} from './ui/count'
 export {Icon} from './ui/icon'
 export {Input} from './ui/input'
 export {Label} from './ui/label'
+export {
+	Select,
+	SelectClearButton,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from './ui/select'
 export {Link} from './ui/link'
 export type {LinkProps} from './ui/link'
 export {

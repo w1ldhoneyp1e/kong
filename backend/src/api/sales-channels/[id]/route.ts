@@ -32,4 +32,6 @@ const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> =>
 	res.status(204).send()
 }
 
-export {DELETE, GET, PUT}
+export {
+	DELETE, GET, PUT,
+}
