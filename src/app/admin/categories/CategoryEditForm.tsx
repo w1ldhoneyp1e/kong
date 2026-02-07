@@ -29,7 +29,7 @@ function CategoryEditForm() {
 			</div>
 			<div>
 				<label className="text-sm font-medium mb-1 block">
-					{'Slug'}
+					{'URL'}
 				</label>
 				<Input
 					type="text"

@@ -73,7 +73,10 @@ function CreateCategoryForm({
 						</div>
 						<div>
 							<label className="text-sm font-medium mb-1 block">
-								{'Путь (url-адрес)'}
+								{'URL '}
+								<span className="font-normal italic text-muted-foreground">
+									{`(${process.env.NEXT_PUBLIC_APP_URL ?? ''}/catalog/...)`}
+								</span>
 							</label>
 							<Input
 								type="text"
