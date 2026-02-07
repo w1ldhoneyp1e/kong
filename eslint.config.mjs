@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-
 import {fixupPluginRules} from '@eslint/compat'
 import stylisticPlugin from '@stylistic/eslint-plugin'
 import tseslintPlugin from '@typescript-eslint/eslint-plugin'
@@ -433,7 +431,6 @@ export default [
 				{
 					'prefer-inline': true,
 				}],
-			'import/no-extraneous-dependencies': 'error',
 			'import/no-relative-packages': 'error',
 			'import/order': ['error',
 				{

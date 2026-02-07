@@ -1,6 +1,6 @@
 'use client'
 
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import * as SelectPrimitive from '@radix-ui/react-select'
 import {
 	Check,
