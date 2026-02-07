@@ -2,20 +2,17 @@
 
 import {type Category} from '../../../entities/category'
 import {Badge, Button} from '../../../shared'
+import {useCategoriesStore} from './categoriesStore'
 
 type CategoryRowViewProps = {
 	category: Category,
-	onEdit: (category: Category) => void,
-	onDelete: (id: string) => void,
-	onAddChild?: (category: Category) => void,
 }
 
-function CategoryRowView({
-	category,
-	onEdit,
-	onDelete,
-	onAddChild,
-}: CategoryRowViewProps) {
+function CategoryRowView({category}: CategoryRowViewProps) {
+	const setEdit = useCategoriesStore(s => s.setEdit)
+	const deleteCategory = useCategoriesStore(s => s.deleteCategory)
+	const addChild = useCategoriesStore(s => s.addChild)
+
 	return (
 		<div className="flex items-center justify-between">
 			<div>
@@ -30,26 +27,24 @@ function CategoryRowView({
 				</Badge>
 			</div>
 			<div className="flex gap-2 flex-wrap">
-				{onAddChild && (
-					<Button
-						size="sm"
-						variant="outline"
-						onClick={() => onAddChild(category)}
-					>
-						{'Добавить подкатегорию'}
-					</Button>
-				)}
 				<Button
 					size="sm"
 					variant="outline"
-					onClick={() => onEdit(category)}
+					onClick={() => addChild(category)}
+				>
+					{'Добавить подкатегорию'}
+				</Button>
+				<Button
+					size="sm"
+					variant="outline"
+					onClick={() => setEdit(category)}
 				>
 					{'Изменить'}
 				</Button>
 				<Button
 					size="sm"
 					variant="destructive"
-					onClick={() => onDelete(category.id)}
+					onClick={() => deleteCategory(category.id)}
 				>
 					{'Удалить'}
 				</Button>

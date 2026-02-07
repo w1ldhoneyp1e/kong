@@ -1,27 +1,19 @@
 'use client'
 
 import {Button, Input} from '../../../shared'
+import {useCategoriesStore} from './categoriesStore'
 
-type CategoryEditFormProps = {
-	name: string,
-	slug: string,
-	onNameChange: (value: string) => void,
-	onSlugChange: (value: string) => void,
-	onSubmit: (ev: React.FormEvent) => void,
-	onCancel: () => void,
-}
+function CategoryEditForm() {
+	const editName = useCategoriesStore(s => s.editName)
+	const editSlug = useCategoriesStore(s => s.editSlug)
+	const setEditName = useCategoriesStore(s => s.setEditName)
+	const setEditSlug = useCategoriesStore(s => s.setEditSlug)
+	const update = useCategoriesStore(s => s.update)
+	const cancelEdit = useCategoriesStore(s => s.cancelEdit)
 
-function CategoryEditForm({
-	name,
-	slug,
-	onNameChange,
-	onSlugChange,
-	onSubmit,
-	onCancel,
-}: CategoryEditFormProps) {
 	return (
 		<form
-			onSubmit={onSubmit}
+			onSubmit={update}
 			className="space-y-3"
 		>
 			<div>
@@ -30,8 +22,8 @@ function CategoryEditForm({
 				</label>
 				<Input
 					type="text"
-					value={name}
-					onChange={e => onNameChange(e.target.value)}
+					value={editName}
+					onChange={e => setEditName(e.target.value)}
 				/>
 			</div>
 			<div>
@@ -40,8 +32,8 @@ function CategoryEditForm({
 				</label>
 				<Input
 					type="text"
-					value={slug}
-					onChange={e => onSlugChange(e.target.value)}
+					value={editSlug}
+					onChange={e => setEditSlug(e.target.value)}
 				/>
 			</div>
 			<div className="flex gap-2">
@@ -55,7 +47,7 @@ function CategoryEditForm({
 					type="button"
 					size="sm"
 					variant="outline"
-					onClick={onCancel}
+					onClick={cancelEdit}
 				>
 					{'Отмена'}
 				</Button>
@@ -65,4 +57,3 @@ function CategoryEditForm({
 }
 
 export {CategoryEditForm}
-export type {CategoryEditFormProps}

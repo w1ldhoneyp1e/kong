@@ -7,31 +7,11 @@ import {CategoryTreeBranch} from './CategoryTreeBranch'
 type CategoryListProps = {
 	categories: Category[],
 	loading: boolean,
-	editId: string | null,
-	editName: string,
-	editSlug: string,
-	onEditNameChange: (value: string) => void,
-	onEditSlugChange: (value: string) => void,
-	onEdit: (category: Category) => void,
-	onUpdate: (ev: React.FormEvent) => void,
-	onDelete: (id: string) => void,
-	onCancelEdit: () => void,
-	onAddChild: (category: Category) => void,
 }
 
 function CategoryList({
 	categories,
 	loading,
-	editId,
-	editName,
-	editSlug,
-	onEditNameChange,
-	onEditSlugChange,
-	onEdit,
-	onUpdate,
-	onDelete,
-	onCancelEdit,
-	onAddChild,
 }: CategoryListProps) {
 	const tree = buildCategoryTree(categories)
 	const contentState = loading
@@ -68,16 +48,6 @@ function CategoryList({
 								key={node.id}
 								node={node}
 								depth={0}
-								editId={editId}
-								editName={editName}
-								editSlug={editSlug}
-								onEditNameChange={onEditNameChange}
-								onEditSlugChange={onEditSlugChange}
-								onUpdate={onUpdate}
-								onCancelEdit={onCancelEdit}
-								onEdit={onEdit}
-								onDelete={onDelete}
-								onAddChild={onAddChild}
 							/>
 						))}
 					</div>

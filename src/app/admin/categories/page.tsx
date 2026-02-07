@@ -1,8 +1,7 @@
 'use client'
 
-import {useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {
-	type Category,
 	buildCategoryTree,
 	flattenCategoryTree,
 	useCategoriesQuery,
@@ -10,6 +9,7 @@ import {
 	useDeleteCategoryMutation,
 	useUpdateCategoryMutation,
 } from '../../../entities/category'
+import {useCategoriesStore} from './categoriesStore'
 import {CategoryList} from './CategoryList'
 import {CreateCategoryForm} from './CreateCategoryForm'
 
@@ -23,14 +23,14 @@ export default function CategoriesAdminPage() {
 	const updateMutation = useUpdateCategoryMutation()
 	const deleteMutation = useDeleteCategoryMutation()
 
+	const cancelEdit = useCategoriesStore(s => s.cancelEdit)
+	const setHandlers = useCategoriesStore(s => s.setHandlers)
+
 	const [newName, setNewName] = useState('')
 	const [newSlug, setNewSlug] = useState('')
 	const [newParentId, setNewParentId] = useState<string | null>(null)
 
 	const createFormRef = useRef<HTMLDivElement>(null)
-	const [editId, setEditId] = useState<string | null>(null)
-	const [editName, setEditName] = useState('')
-	const [editSlug, setEditSlug] = useState('')
 
 	const errorMessage = (err: unknown) => (err instanceof Error
 		? err.message
@@ -41,6 +41,38 @@ export default function CategoriesAdminPage() {
 		?? (updateMutation.error && errorMessage(updateMutation.error))
 		?? (deleteMutation.error && errorMessage(deleteMutation.error))
 		?? ''
+
+	useEffect(() => {
+		setHandlers({
+			onUpdate: e => {
+				e.preventDefault()
+				const {editId, editName, editSlug} = useCategoriesStore.getState()
+				if (!editId) {
+					return
+				}
+
+				updateMutation.mutateAsync({
+					id: editId,
+					name: editName,
+					slug: editSlug,
+				}).then(() => {
+					cancelEdit()
+				}).catch(() => {})
+			},
+			onDelete: id => {
+				// eslint-disable-next-line no-alert -- подтверждение удаления в админке
+				if (!confirm('Точно удалить категорию?')) {
+					return
+				}
+
+				deleteMutation.mutateAsync(id).catch(() => {})
+			},
+			onAddChild: cat => {
+				setNewParentId(cat.id)
+				createFormRef.current?.scrollIntoView({behavior: 'smooth'})
+			},
+		})
+	}, [setHandlers, cancelEdit, updateMutation, deleteMutation, setNewParentId])
 
 	const handleCreate = async (ev: React.FormEvent) => {
 		ev.preventDefault()
@@ -62,54 +94,6 @@ export default function CategoriesAdminPage() {
 		catch {
 			// error shown via mutation.error
 		}
-	}
-
-	const handleEdit = (category: Category) => {
-		setEditId(category.id)
-		setEditName(category.name)
-		setEditSlug(category.slug)
-	}
-
-	const handleUpdate = async (e: React.FormEvent) => {
-		e.preventDefault()
-
-		if (!editId) {
-			return
-		}
-
-		try {
-			await updateMutation.mutateAsync({
-				id: editId,
-				name: editName,
-				slug: editSlug,
-			})
-			setEditId(null)
-			setEditName('')
-			setEditSlug('')
-		}
-		catch {
-			// error shown via mutation.error
-		}
-	}
-
-	const handleDelete = async (id: string) => {
-		// eslint-disable-next-line no-alert -- подтверждение удаления в админке
-		if (!confirm('Точно удалить категорию?')) {
-			return
-		}
-
-		try {
-			await deleteMutation.mutateAsync(id)
-		}
-		catch {
-			// error shown via mutation.error
-		}
-	}
-
-	const handleCancelEdit = () => {
-		setEditId(null)
-		setEditName('')
-		setEditSlug('')
 	}
 
 	return (
@@ -137,19 +121,6 @@ export default function CategoriesAdminPage() {
 				<CategoryList
 					categories={categories}
 					loading={isLoading}
-					editId={editId}
-					editName={editName}
-					editSlug={editSlug}
-					onEditNameChange={setEditName}
-					onEditSlugChange={setEditSlug}
-					onEdit={handleEdit}
-					onUpdate={handleUpdate}
-					onDelete={handleDelete}
-					onCancelEdit={handleCancelEdit}
-					onAddChild={cat => {
-						setNewParentId(cat.id)
-						createFormRef.current?.scrollIntoView({behavior: 'smooth'})
-					}}
 				/>
 			</div>
 		</div>
