@@ -27,6 +27,10 @@ c.connect().then(()=>{c.end();console.log('DB connection OK');process.exit(0);})
 printf 'DATABASE_URL=%s\nREDIS_URL=%s\nJWT_SECRET=%s\nCOOKIE_SECRET=%s\nPORT=%s\nNODE_ENV=%s\nDATABASE_SSL=%s\nSTORE_CORS=%s\nADMIN_CORS=%s\n' \
   "${DATABASE_URL}" "${REDIS_URL}" "${JWT_SECRET}" "${COOKIE_SECRET}" "${PORT:-9000}" "${NODE_ENV:-production}" "${DATABASE_SSL}" "${STORE_CORS:-http://localhost:3000}" "${ADMIN_CORS:-http://localhost:3000,http://localhost:7001}" \
   > .env
+if [ "$MEDUSA_DEV" = "1" ]; then
+  echo "Dev mode: installing dependencies..."
+  pnpm install
+fi
 echo "Running database migrations..."
 ./node_modules/.bin/medusa db:migrate || true
 echo "Creating publishable API key..."
@@ -36,4 +40,8 @@ VALUES ('pk_01', 'pk_test_123', 'salt', 'publishable', 'Development Key', 'syste
 ON CONFLICT (id) DO NOTHING;
 " 2>/dev/null || echo "API key already exists or table not ready"
 echo "Starting Medusa..."
-exec ./node_modules/.bin/medusa start --host 0.0.0.0
+if [ "$MEDUSA_DEV" = "1" ]; then
+  exec ./node_modules/.bin/medusa develop --host 0.0.0.0
+else
+  exec ./node_modules/.bin/medusa start --host 0.0.0.0
+fi

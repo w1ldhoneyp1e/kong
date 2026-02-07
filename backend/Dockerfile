@@ -1,9 +1,9 @@
 FROM node:20-slim
 WORKDIR /server
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ postgresql-client && rm -rf /var/lib/apt/lists/*
-COPY package.json ./
-RUN npm install
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 COPY . .
-RUN npm run build
+RUN pnpm install --frozen-lockfile
+RUN pnpm exec medusa build
 EXPOSE 9000
 ENTRYPOINT ["/bin/sh", "start.sh"]

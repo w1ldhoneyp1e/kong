@@ -52,8 +52,11 @@ services:
       STORE_CORS: http://localhost:3000,http://127.0.0.1:3000
       ADMIN_CORS: http://localhost:3000,http://127.0.0.1:3000
       NODE_ENV: production
+      MEDUSA_DEV: "1"
     ports:
       - "9000:9000"
+    volumes:
+      - .:/server
     networks:
       - kong
 
