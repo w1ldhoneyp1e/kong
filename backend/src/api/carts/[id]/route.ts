@@ -1,7 +1,13 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
+import {requirePermission} from '../../_shared/staffAuth'
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'carts:manage')
+	if (!actor) {
+		return
+	}
+
 	const {id} = req.params
 	const cartService = req.scope.resolve(Modules.CART)
 	const cart = await cartService.retrieveCart(id).catch(() => null)
@@ -13,6 +19,11 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'carts:manage')
+	if (!actor) {
+		return
+	}
+
 	const {id} = req.params
 	const cartService = req.scope.resolve(Modules.CART)
 	const body = req.body as Record<string, unknown>
@@ -24,6 +35,11 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'carts:manage')
+	if (!actor) {
+		return
+	}
+
 	const {id} = req.params
 	const cartService = req.scope.resolve(Modules.CART)
 	const existing = await cartService.retrieveCart(id).catch(() => null)

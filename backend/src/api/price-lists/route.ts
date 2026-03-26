@@ -1,13 +1,24 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
+import {requirePermission} from '../_shared/staffAuth'
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'pricing:manage')
+	if (!actor) {
+		return
+	}
+
 	const pricingService = req.scope.resolve(Modules.PRICING)
 	const data = await pricingService.listPriceLists({}, {take: 100})
 	res.json({price_lists: data})
 }
 
 const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'pricing:manage')
+	if (!actor) {
+		return
+	}
+
 	const pricingService = req.scope.resolve(Modules.PRICING)
 	const body = req.body as Record<string, unknown> | Record<string, unknown>[]
 	const data = Array.isArray(body)

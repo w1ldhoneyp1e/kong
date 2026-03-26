@@ -1,5 +1,6 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {CATEGORY_MODULE} from '../../../modules/category'
+import {requirePermission} from '../../_shared/staffAuth'
 
 type CategoryRecord = {
 	id: string,
@@ -43,6 +44,11 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'catalog:manage')
+	if (!actor) {
+		return
+	}
+
 	const {id} = req.params
 	const {name, slug} = (req.body as {
 		name?: string,
@@ -76,6 +82,11 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'catalog:manage')
+	if (!actor) {
+		return
+	}
+
 	const {id} = req.params
 	const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
 	const existing = await categoryService.retrieveCategory(id).catch(() => null)

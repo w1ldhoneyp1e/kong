@@ -13,6 +13,8 @@
     "@medusajs/draft-order": "^2.13.4",
     "@medusajs/framework": "^2.13.0",
     "@medusajs/medusa": "^2.13.0",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.13.1"
   },
   "devDependencies": {

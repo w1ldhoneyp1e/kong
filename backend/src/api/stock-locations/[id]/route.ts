@@ -1,7 +1,13 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
+import {requirePermission} from '../../_shared/staffAuth'
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'inventory:manage')
+	if (!actor) {
+		return
+	}
+
 	const {id} = req.params
 	const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
 	const location = await stockLocationService.retrieveStockLocation(id).catch(() => null)
@@ -13,6 +19,11 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'inventory:manage')
+	if (!actor) {
+		return
+	}
+
 	const {id} = req.params
 	const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
 	const body = req.body as Record<string, unknown>
@@ -21,6 +32,11 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'inventory:manage')
+	if (!actor) {
+		return
+	}
+
 	const {id} = req.params
 	const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
 	const existing = await stockLocationService.retrieveStockLocation(id).catch(() => null)

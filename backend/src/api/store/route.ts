@@ -1,7 +1,13 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
+import {requirePermission} from '../_shared/staffAuth'
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'store:update')
+	if (!actor) {
+		return
+	}
+
 	const storeService = req.scope.resolve(Modules.STORE)
 	const [store] = await storeService.listStores({}, {take: 1})
 	if (!store) {
@@ -12,6 +18,11 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'store:update')
+	if (!actor) {
+		return
+	}
+
 	const storeService = req.scope.resolve(Modules.STORE)
 	const [store] = await storeService.listStores({}, {take: 1})
 	if (!store) {

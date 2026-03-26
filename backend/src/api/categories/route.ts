@@ -1,5 +1,6 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {CATEGORY_MODULE} from '../../modules/category'
+import {requirePermission} from '../_shared/staffAuth'
 
 type CategoryRecord = {
 	id: string,
@@ -48,6 +49,11 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
+	const actor = requirePermission(req, res, 'catalog:manage')
+	if (!actor) {
+		return
+	}
+
 	const {
 		name, slug, parentId,
 	} = (req.body as {
