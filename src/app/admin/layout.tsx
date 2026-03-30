@@ -3,13 +3,23 @@ import {redirect} from 'next/navigation'
 import {getBackendUrl} from '../../shared'
 import {HeaderTop} from '../../widgets/header'
 import {AdminNav} from './AdminNav'
+import {StaffSessionProvider} from './StaffSessionContext'
 
 const STAFF_TOKEN_COOKIE = 'kong_staff_token'
 
-async function hasValidStaffSession(): Promise<boolean> {
+type StaffMeJson = {
+	staff?: {
+		id?: string,
+		email?: string | null,
+		roleCode?: string | null,
+	},
+	permissions?: string[],
+}
+
+async function loadStaffSession() {
 	const staffToken = (await cookies()).get(STAFF_TOKEN_COOKIE)?.value
 	if (!staffToken) {
-		return false
+		return null
 	}
 
 	const backendUrl = getBackendUrl()
@@ -18,24 +28,33 @@ async function hasValidStaffSession(): Promise<boolean> {
 			headers: {Authorization: `Bearer ${staffToken}`},
 			cache: 'no-store',
 		})
+		if (!res.ok) {
+			return null
+		}
 
-		return res.ok
+		const data = (await res.json()) as StaffMeJson
+
+		return {
+			email: data.staff?.email ?? null,
+			role: data.staff?.roleCode ?? null,
+			permissions: data.permissions ?? [],
+		}
 	}
 	catch {
-		return false
+		return null
 	}
 }
 
 export default async function AdminLayout({
 	children,
 }: Readonly<{children: React.ReactNode}>) {
-	const isValidStaff = await hasValidStaffSession()
-	if (!isValidStaff) {
+	const session = await loadStaffSession()
+	if (!session) {
 		redirect('/account/login')
 	}
 
 	return (
-		<>
+		<StaffSessionProvider session={session}>
 			<header className="sticky top-0 z-50 bg-white shadow-md">
 				<HeaderTop />
 			</header>
@@ -47,6 +66,6 @@ export default async function AdminLayout({
 					{children}
 				</main>
 			</div>
-		</>
+		</StaffSessionProvider>
 	)
 }
