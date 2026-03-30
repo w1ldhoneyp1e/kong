@@ -9,7 +9,10 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	}
 
 	const productService = req.scope.resolve(Modules.PRODUCT)
-	const data = await productService.listProducts({}, {take: 50})
+	const data = await productService.listProducts({}, {
+		take: 50,
+		relations: ['variants', 'images'],
+	})
 	res.json({products: data})
 }
 
