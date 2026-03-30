@@ -1,3 +1,22 @@
+export {
+	adminProductApi,
+	adminProductQueryKey,
+	adminProductsQueryKey,
+	useCreateProductMutation,
+	useDeleteProductMutation,
+	useProductQuery,
+	useProductsQuery,
+	useUpdateProductMutation,
+} from './admin'
+export type {
+	AdminMoneyAmount,
+	AdminProduct,
+	AdminProductImage,
+	AdminProductOption,
+	AdminProductVariant,
+	CreateProductPayload,
+	UpdateProductPayload,
+} from './admin'
 export {listProducts} from './api'
 export type {MedusaProduct, ListProductsResponse} from './api'
 export {mapMedusaProductToCardProps} from './mapMedusaToCard'
