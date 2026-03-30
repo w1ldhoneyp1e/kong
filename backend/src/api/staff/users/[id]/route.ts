@@ -8,7 +8,7 @@ function normalizeActorId(id: string): string {
 }
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'staff:manage')
+	const actor = await requirePermission(req, res, 'staff:manage')
 	if (!actor) {
 		return
 	}
@@ -61,7 +61,7 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'staff:manage')
+	const actor = await requirePermission(req, res, 'staff:manage')
 	if (!actor) {
 		return
 	}

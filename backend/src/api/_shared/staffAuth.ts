@@ -1,10 +1,10 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import jwt from 'jsonwebtoken'
+import {getStaffPermissions} from './staffPermissions'
 
 type StaffJwtPayload = {
 	actor_type: 'staff',
 	actor_id: string,
-	permissions?: string[],
 }
 
 function getJwtSecret(): string {
@@ -36,6 +36,40 @@ function getTokenFromAuthHeader(authHeader: string | undefined): string | null {
 	return token
 }
 
+function getTokenFromCookieHeader(req: MedusaRequest, cookieName: string): string | null {
+	const headers = req.headers as unknown as Record<string, string | string[]>
+	const cookieHeader = headers.cookie
+		?? (Array.isArray(headers.Cookie)
+			? headers.Cookie.join('; ')
+			: headers.Cookie)
+
+	if (!cookieHeader || typeof cookieHeader !== 'string') {
+		return null
+	}
+
+	const parts = cookieHeader.split(';').map(p => p.trim())
+		.filter(Boolean)
+	for (const part of parts) {
+		const eqIndex = part.indexOf('=')
+		if (eqIndex === -1) {
+			continue
+		}
+
+		const name = part.slice(0, eqIndex)
+		const value = part.slice(eqIndex + 1)
+		if (name === cookieName) {
+			try {
+				return decodeURIComponent(value)
+			}
+			catch {
+				return value
+			}
+		}
+	}
+
+	return null
+}
+
 function error(res: MedusaResponse, status: number, message: string): void {
 	res.status(status).json({error: message})
 }
@@ -45,7 +79,9 @@ function verifyStaffJwt(
 	res: MedusaResponse,
 ): StaffJwtPayload | null {
 	const authHeader = getAuthHeader(req)
-	const token = getTokenFromAuthHeader(authHeader)
+	const tokenFromHeader = getTokenFromAuthHeader(authHeader)
+	const tokenFromCookie = getTokenFromCookieHeader(req, 'kong_staff_token')
+	const token = tokenFromHeader ?? tokenFromCookie
 	if (!token) {
 		error(res, 401, 'Необходима авторизация')
 		return null
@@ -68,17 +104,17 @@ function verifyStaffJwt(
 	return payload
 }
 
-function requirePermission(
+async function requirePermission(
 	req: MedusaRequest,
 	res: MedusaResponse,
 	permissionKey: string,
-): StaffJwtPayload | null {
+): Promise<StaffJwtPayload | null> {
 	const payload = verifyStaffJwt(req, res)
 	if (!payload) {
 		return null
 	}
 
-	const perms = payload.permissions ?? []
+	const perms = await getStaffPermissions(req, payload.actor_id).catch(() => [])
 	if (!perms.includes(permissionKey)) {
 		error(res, 403, 'Недостаточно прав')
 		return null
@@ -89,6 +125,7 @@ function requirePermission(
 
 export {
 	error,
+	getAuthHeader,
 	getJwtSecret,
 	getTokenFromAuthHeader,
 	requirePermission,

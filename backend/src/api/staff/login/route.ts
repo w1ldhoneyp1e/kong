@@ -22,25 +22,24 @@ async function ensureOwnerUser(
 
 	const staffService = req.scope.resolve(STAFF_MODULE) as any
 	const existing = await staffService.listStaffUsers({email}, {take: 1}).catch(() => ([]))
-	if (Array.isArray(existing) && existing.length > 0) {
-		return
-	}
+	const hasUser = Array.isArray(existing) && existing.length > 0
+	if (!hasUser) {
+		let passwordHash = process.env.OWNER_PASSWORD_HASH
+		const ownerPassword = process.env.OWNER_PASSWORD
+		if (!passwordHash && ownerPassword) {
+			passwordHash = await bcrypt.hash(ownerPassword, 12)
+		}
 
-	let passwordHash = process.env.OWNER_PASSWORD_HASH
-	const ownerPassword = process.env.OWNER_PASSWORD
-	if (!passwordHash && ownerPassword) {
-		passwordHash = await bcrypt.hash(ownerPassword, 12)
-	}
+		if (!passwordHash) {
+			throw new Error('Для OWNER_EMAIL нужно задать OWNER_PASSWORD или OWNER_PASSWORD_HASH')
+		}
 
-	if (!passwordHash) {
-		throw new Error('Для OWNER_EMAIL нужно задать OWNER_PASSWORD или OWNER_PASSWORD_HASH')
+		await staffService.createStaffUsers([{
+			id: email,
+			email,
+			password_hash: passwordHash,
+		}]).catch(() => {})
 	}
-
-	await staffService.createStaffUsers([{
-		id: email,
-		email,
-		password_hash: passwordHash,
-	}]).catch(() => {})
 
 	const rbacService = req.scope.resolve(RBAC_MODULE) as any
 
@@ -53,50 +52,23 @@ async function ensureOwnerUser(
 		return
 	}
 
+	const actorRoles = await rbacService.listActorRoles({
+		actor_type: 'staff',
+		actor_id: email,
+	}, {take: 100}).catch(() => ([]))
+	const hasOwnerRole = (Array.isArray(actorRoles)
+		? actorRoles
+		: [])
+		.some((ar: any) => (ar.role_id ?? ar.role?.id) === ownerRole.id)
+	if (hasOwnerRole) {
+		return
+	}
+
 	await rbacService.createActorRoles([{
 		actor_type: 'staff',
 		actor_id: email,
 		role_id: ownerRole.id,
 	}]).catch(() => {})
-}
-
-async function getStaffPermissions(
-	req: MedusaRequest,
-	actorId: string,
-): Promise<string[]> {
-	const rbacService = req.scope.resolve(RBAC_MODULE) as any
-
-	const actorRoles = await rbacService.listActorRoles({
-		actor_type: 'staff',
-		actor_id: actorId,
-	}).catch(() => ([]))
-
-	const roleIds = (actorRoles as any[]).map(r => r.role_id ?? r.role?.id).filter((v: unknown) => typeof v === 'string')
-	if (!roleIds.length) {
-		return []
-	}
-
-	const rolePermissions = await rbacService.listRolePermissions({}, {take: 2000}).catch(() => ([]))
-	const filteredRolePermissions = (Array.isArray(rolePermissions)
-		? rolePermissions
-		: [])
-		.filter(rp => roleIds.includes(rp.role_id ?? rp.role?.id))
-
-	const permissionIds = filteredRolePermissions
-		.map(rp => rp.permission_id ?? rp.permission?.id)
-		.filter((v: unknown) => typeof v === 'string')
-	if (!permissionIds.length) {
-		return []
-	}
-
-	const permissions = await rbacService.listPermissions({}, {take: 2000}).catch(() => ([]))
-	const keys = (Array.isArray(permissions)
-		? permissions
-		: [])
-		.filter(p => permissionIds.includes(p.id))
-		.map(p => p.key)
-		.filter((v: unknown) => typeof v === 'string')
-	return keys
 }
 
 const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
@@ -132,18 +104,14 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		return
 	}
 
-	const permissions = await getStaffPermissions(req, user.id).catch(() => [])
-
 	const secret = process.env.STAFF_JWT_SECRET ?? process.env.JWT_SECRET ?? 'supersecret'
 
 	const token = jwt.sign({
 		actor_type: 'staff',
 		actor_id: user.id,
-		permissions,
 	}, secret, {expiresIn: '8h'})
 
 	res.json({token})
 }
 
 export {POST}
-

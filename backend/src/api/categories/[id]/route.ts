@@ -44,7 +44,7 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'catalog:manage')
+	const actor = await requirePermission(req, res, 'catalog:manage')
 	if (!actor) {
 		return
 	}
@@ -82,7 +82,7 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'catalog:manage')
+	const actor = await requirePermission(req, res, 'catalog:manage')
 	if (!actor) {
 		return
 	}

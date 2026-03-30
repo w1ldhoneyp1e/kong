@@ -2,6 +2,7 @@ import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import bcrypt from 'bcryptjs'
 import {RBAC_MODULE} from '../../../modules/rbac'
 import {STAFF_MODULE} from '../../../modules/staff'
+import {getStaffPermissions} from '../../_shared/staffPermissions'
 import {requirePermission} from '../../_shared/staffAuth'
 
 type CreateStaffBody = {
@@ -28,7 +29,7 @@ async function getRoleIdByCode(
 }
 
 const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'staff:manage')
+	const actor = await requirePermission(req, res, 'staff:manage')
 	if (!actor) {
 		return
 	}
@@ -54,7 +55,8 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	}
 
 	if (roleCode !== 'manager') {
-		const canManageRoles = actor.permissions?.includes('roles:manage')
+		const perms = await getStaffPermissions(req, actor.actor_id).catch(() => [])
+		const canManageRoles = perms.includes('roles:manage')
 		if (!canManageRoles) {
 			res.status(403).json({error: 'Недостаточно прав'})
 			return
@@ -96,7 +98,7 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'staff:manage')
+	const actor = await requirePermission(req, res, 'staff:manage')
 	if (!actor) {
 		return
 	}

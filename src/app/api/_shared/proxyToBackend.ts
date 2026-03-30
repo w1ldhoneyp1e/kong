@@ -1,5 +1,9 @@
+import {cookies} from 'next/headers'
 import {NextResponse} from 'next/server'
 import {getBackendUrl} from '../../../shared'
+
+const STAFF_TOKEN_COOKIE = 'kong_staff_token'
+const CUSTOMER_TOKEN_COOKIE = 'kong_customer_token'
 
 function errorMessage(e: unknown): string {
 	if (e instanceof Error) {
@@ -17,13 +21,25 @@ async function proxyToBackend(
 ): Promise<NextResponse> {
 	try {
 		const base = getBackendUrl()
+		const staffToken = (await cookies()).get(STAFF_TOKEN_COOKIE)?.value
+		const customerToken = (await cookies()).get(CUSTOMER_TOKEN_COOKIE)?.value
+
+		const headers = new Headers(init?.headers)
+		const hasAuth = headers.has('Authorization') || headers.has('authorization')
+		if (!hasAuth && staffToken) {
+			headers.set('Authorization', `Bearer ${staffToken}`)
+		}
+		else if (!hasAuth && customerToken) {
+			headers.set('Authorization', `Bearer ${customerToken}`)
+		}
+		if (!headers.has('Connection')) {
+			headers.set('Connection', 'close')
+		}
+
 		const res = await fetch(`${base}${path}`, {
-			cache: 'no-store',
-			headers: {
-				Connection: 'close',
-				...init?.headers,
-			},
 			...init,
+			cache: 'no-store',
+			headers,
 		})
 
 		if (res.status === 204 || (res.ok && res.headers.get('content-length') === '0')) {

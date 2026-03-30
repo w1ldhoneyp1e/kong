@@ -3,7 +3,7 @@ import {Modules} from '@medusajs/framework/utils'
 import {requirePermission} from '../../_shared/staffAuth'
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'geo:manage')
+	const actor = await requirePermission(req, res, 'geo:manage')
 	if (!actor) {
 		return
 	}

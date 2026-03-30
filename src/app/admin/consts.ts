@@ -45,4 +45,9 @@ export const adminNavItems: AdminNavItem[] = [
 		href: '/admin/stock-locations',
 		label: 'Склады',
 	},
+	{
+		id: 'staff',
+		href: '/admin/staff',
+		label: 'Пользователи (staff)',
+	},
 ]

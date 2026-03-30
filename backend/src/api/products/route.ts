@@ -3,7 +3,7 @@ import {Modules} from '@medusajs/framework/utils'
 import {requirePermission} from '../_shared/staffAuth'
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'catalog:manage')
+	const actor = await requirePermission(req, res, 'catalog:manage')
 	if (!actor) {
 		return
 	}
@@ -14,7 +14,7 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'catalog:manage')
+	const actor = await requirePermission(req, res, 'catalog:manage')
 	if (!actor) {
 		return
 	}

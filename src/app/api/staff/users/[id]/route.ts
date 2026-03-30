@@ -1,0 +1,47 @@
+import {type NextRequest} from 'next/server'
+import {errorMessage, proxyToBackend} from '../../../_shared/proxyToBackend'
+
+async function GET(
+	_request: NextRequest,
+	{params}: {params: Promise<{id: string}>},
+) {
+	try {
+		const {id} = await params
+		if (!id) {
+			return Response.json({error: 'Некорректный id'}, {status: 400})
+		}
+
+		return proxyToBackend(`/staff/users/${id}`)
+	}
+	catch (e) {
+		return Response.json(
+			{error: errorMessage(e)},
+			{status: 500},
+		)
+	}
+}
+
+async function DELETE(
+	request: NextRequest,
+	{params}: {params: Promise<{id: string}>},
+) {
+	try {
+		const {id} = await params
+		if (!id) {
+			return Response.json({error: 'Некорректный id'}, {status: 400})
+		}
+
+		return proxyToBackend(`/staff/users/${id}`, {
+			method: 'DELETE',
+		})
+	}
+	catch (e) {
+		return Response.json(
+			{error: errorMessage(e)},
+			{status: 500},
+		)
+	}
+}
+
+export {GET, DELETE}
+

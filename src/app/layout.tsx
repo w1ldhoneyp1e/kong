@@ -3,7 +3,10 @@ import {Inter} from 'next/font/google'
 import {ServiceWorkerRegistration} from '../features/pwa'
 import {SearchProvider} from '../features/search'
 import {Footer} from '../widgets/footer'
-import {ScrollOnNavigate} from '../widgets/header'
+import {
+	AccountSessionProvider,
+	ScrollOnNavigate,
+} from '../widgets/header'
 import './globals.css'
 import {QueryProvider} from './QueryProvider'
 
@@ -31,14 +34,16 @@ export default function RootLayout({
 		<html lang="ru">
 			<body className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}>
 				<QueryProvider>
-					<ServiceWorkerRegistration />
-					<SearchProvider>
-						<ScrollOnNavigate />
-						<div className="flex-1 min-h-0">
-							{children}
-						</div>
-						<Footer />
-					</SearchProvider>
+					<AccountSessionProvider>
+						<ServiceWorkerRegistration />
+						<SearchProvider>
+							<ScrollOnNavigate />
+							<div className="flex-1 min-h-0">
+								{children}
+							</div>
+							<Footer />
+						</SearchProvider>
+					</AccountSessionProvider>
 				</QueryProvider>
 			</body>
 		</html>

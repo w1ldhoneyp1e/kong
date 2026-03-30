@@ -3,7 +3,7 @@ import {Modules} from '@medusajs/framework/utils'
 import {requirePermission} from '../../_shared/staffAuth'
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'pricing:manage')
+	const actor = await requirePermission(req, res, 'pricing:manage')
 	if (!actor) {
 		return
 	}
@@ -19,7 +19,7 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'pricing:manage')
+	const actor = await requirePermission(req, res, 'pricing:manage')
 	if (!actor) {
 		return
 	}
@@ -35,7 +35,7 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 }
 
 const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const actor = requirePermission(req, res, 'pricing:manage')
+	const actor = await requirePermission(req, res, 'pricing:manage')
 	if (!actor) {
 		return
 	}
