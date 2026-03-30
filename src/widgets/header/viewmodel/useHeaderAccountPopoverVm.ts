@@ -9,6 +9,7 @@ import {
 	useState,
 } from 'react'
 import {create} from 'zustand'
+import {useShallow} from 'zustand/react/shallow'
 
 type HeaderAccountPopoverStoreState = {
 	isOpen: boolean,
@@ -58,13 +59,13 @@ type HeaderAccountPopoverVm = {
 function useHeaderAccountPopoverVm(): HeaderAccountPopoverVm {
 	const {
 		isOpen, top, left, setOpen, setPosition,
-	} = useHeaderAccountPopoverStore(state => ({
+	} = useHeaderAccountPopoverStore(useShallow(state => ({
 		isOpen: state.isOpen,
 		top: state.top,
 		left: state.left,
 		setOpen: state.setOpen,
 		setPosition: state.setPosition,
-	}))
+	})))
 
 	const triggerRef = useRef<HTMLDivElement | null>(null)
 	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)

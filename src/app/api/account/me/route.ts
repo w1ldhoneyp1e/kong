@@ -1,7 +1,10 @@
+/* eslint-disable import/exports-last, import/group-exports */
 import {cookies} from 'next/headers'
 import {NextResponse} from 'next/server'
 import {getBackendUrl} from '../../../../shared'
 import {type AccountMe} from '../_lib/accountMeTypes'
+
+export const dynamic = 'force-dynamic'
 
 const STAFF_TOKEN_COOKIE = 'kong_staff_token'
 const CUSTOMER_TOKEN_COOKIE = 'kong_customer_token'
@@ -198,9 +201,4 @@ async function GET() {
 	return meSuccessResponse(account)
 }
 
-const dynamic = 'force-dynamic'
-
-export {
-	GET,
-	dynamic,
-}
+export {GET}
