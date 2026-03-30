@@ -49,12 +49,6 @@ export const adminNavItems: AdminNavItem[] = [
 		requiredPermission: 'inventory:manage',
 	},
 	{
-		id: 'stock-locations',
-		href: '/admin/stock-locations',
-		label: 'Склады',
-		requiredPermission: 'inventory:manage',
-	},
-	{
 		id: 'staff',
 		href: '/admin/staff',
 		label: 'Пользователи (staff)',
