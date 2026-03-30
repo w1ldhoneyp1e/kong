@@ -1,9 +1,6 @@
 import {type NextRequest, NextResponse} from 'next/server'
 import {getBackendUrl} from '../../../../shared'
-import {
-	buildCustomerAccountPreview,
-	buildStaffAccountPreview,
-} from '../_lib/buildAccountPreview'
+import {buildCustomerAccountPreview, buildStaffAccountPreview} from '../_lib/buildAccountPreview'
 
 const CUSTOMER_TOKEN_COOKIE = 'kong_customer_token'
 const STAFF_TOKEN_COOKIE = 'kong_staff_token'

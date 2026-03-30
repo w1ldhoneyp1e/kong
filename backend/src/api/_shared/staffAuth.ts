@@ -1,5 +1,6 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import jwt from 'jsonwebtoken'
+import {getAuthHeader} from './getAuthHeader'
 import {getStaffPermissions} from './staffPermissions'
 
 type StaffJwtPayload = {
@@ -11,11 +12,6 @@ function getJwtSecret(): string {
 	return process.env.STAFF_JWT_SECRET
 		?? process.env.JWT_SECRET
 		?? 'supersecret'
-}
-
-function getAuthHeader(req: MedusaRequest): string | undefined {
-	const headers = req.headers as unknown as Record<string, string>
-	return headers.authorization ?? headers.Authorization
 }
 
 function getTokenFromAuthHeader(authHeader: string | undefined): string | null {

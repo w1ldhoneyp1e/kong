@@ -1,8 +1,8 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {RBAC_MODULE} from '../../../modules/rbac'
 import {STAFF_MODULE} from '../../../modules/staff'
-import {getStaffPermissions} from '../../_shared/staffPermissions'
 import {verifyStaffJwt} from '../../_shared/staffAuth'
+import {getStaffPermissions} from '../../_shared/staffPermissions'
 
 function asString(value: unknown): string | null {
 	if (typeof value === 'string' && value.length > 0) {

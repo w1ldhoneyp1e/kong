@@ -2,8 +2,8 @@ import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import bcrypt from 'bcryptjs'
 import {RBAC_MODULE} from '../../../modules/rbac'
 import {STAFF_MODULE} from '../../../modules/staff'
-import {getStaffPermissions} from '../../_shared/staffPermissions'
 import {requirePermission} from '../../_shared/staffAuth'
+import {getStaffPermissions} from '../../_shared/staffPermissions'
 
 type CreateStaffBody = {
 	email?: string,

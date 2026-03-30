@@ -3,10 +3,7 @@ import {Inter} from 'next/font/google'
 import {ServiceWorkerRegistration} from '../features/pwa'
 import {SearchProvider} from '../features/search'
 import {Footer} from '../widgets/footer'
-import {
-	AccountSessionProvider,
-	ScrollOnNavigate,
-} from '../widgets/header'
+import {AccountSessionProvider, ScrollOnNavigate} from '../widgets/header'
 import './globals.css'
 import {QueryProvider} from './QueryProvider'
 

@@ -1,15 +1,16 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {getAuthContextFromJwtToken} from '@medusajs/framework/http'
 import {ContainerRegistrationKeys, Modules} from '@medusajs/framework/utils'
-import {getAuthHeader} from '../../_shared/staffAuth'
+import {type VerifyOptions} from 'jsonwebtoken'
+import {getAuthHeader} from '../../_shared/getAuthHeader'
 
 type ConfigModule = {
 	projectConfig: {
 		http: {
 			jwtSecret: string,
 			jwtPublicKey?: string,
-			jwtVerifyOptions?: import('jsonwebtoken').VerifyOptions,
-			jwtOptions?: import('jsonwebtoken').VerifyOptions,
+			jwtVerifyOptions?: VerifyOptions,
+			jwtOptions?: VerifyOptions,
 		},
 	},
 }
@@ -34,7 +35,10 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	}
 
 	const customerService = req.scope.resolve(Modules.CUSTOMER) as {
-		retrieveCustomer: (id: string) => Promise<{id: string, email?: string | null} | null>,
+		retrieveCustomer: (id: string) => Promise<{
+			id: string,
+			email?: string | null,
+		} | null>,
 	}
 	const customer = await customerService.retrieveCustomer(authContext.actor_id).catch(() => null)
 	if (!customer) {

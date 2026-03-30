@@ -100,6 +100,7 @@ export async function POST(request: NextRequest) {
 		const account = await buildCustomerAccountPreview(token)
 		const response = NextResponse.json({
 			ok: true,
+			actorType: 'customer',
 			account,
 		})
 		response.cookies.set(CUSTOMER_TOKEN_COOKIE, token, {

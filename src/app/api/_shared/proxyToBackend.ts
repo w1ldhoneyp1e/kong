@@ -15,6 +15,28 @@ function errorMessage(e: unknown): string {
 	return 'Ошибка при запросе API'
 }
 
+function buildProxyHeaders(
+	initHeaders: HeadersInit | undefined,
+	staffToken: string | undefined,
+	customerToken: string | undefined,
+) {
+	const headers = new Headers(initHeaders)
+	const hasAuth = headers.has('Authorization') || headers.has('authorization')
+
+	if (!hasAuth && staffToken) {
+		headers.set('Authorization', `Bearer ${staffToken}`)
+	}
+	else if (!hasAuth && customerToken) {
+		headers.set('Authorization', `Bearer ${customerToken}`)
+	}
+
+	if (!headers.has('Connection')) {
+		headers.set('Connection', 'close')
+	}
+
+	return headers
+}
+
 async function proxyToBackend(
 	path: string,
 	init?: RequestInit,
@@ -24,17 +46,7 @@ async function proxyToBackend(
 		const staffToken = (await cookies()).get(STAFF_TOKEN_COOKIE)?.value
 		const customerToken = (await cookies()).get(CUSTOMER_TOKEN_COOKIE)?.value
 
-		const headers = new Headers(init?.headers)
-		const hasAuth = headers.has('Authorization') || headers.has('authorization')
-		if (!hasAuth && staffToken) {
-			headers.set('Authorization', `Bearer ${staffToken}`)
-		}
-		else if (!hasAuth && customerToken) {
-			headers.set('Authorization', `Bearer ${customerToken}`)
-		}
-		if (!headers.has('Connection')) {
-			headers.set('Connection', 'close')
-		}
+		const headers = buildProxyHeaders(init?.headers, staffToken, customerToken)
 
 		const res = await fetch(`${base}${path}`, {
 			...init,

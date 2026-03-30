@@ -1,8 +1,7 @@
 import {cookies} from 'next/headers'
 import {NextResponse} from 'next/server'
 import {getBackendUrl} from '../../../../shared'
-
-export const dynamic = 'force-dynamic'
+import {type AccountMe} from '../_lib/accountMeTypes'
 
 const STAFF_TOKEN_COOKIE = 'kong_staff_token'
 const CUSTOMER_TOKEN_COOKIE = 'kong_customer_token'
@@ -46,7 +45,10 @@ function extractCustomerEmail(data: unknown): string | null {
 			: null
 	}
 
-	const root = data as {customer?: unknown, data?: unknown}
+	const root = data as {
+		customer?: unknown,
+		data?: unknown,
+	}
 	let email = fromCustomer(root.customer)
 	if (email) {
 		return email
@@ -80,9 +82,9 @@ async function fetchStoreCustomerMe(
 	backendUrl: string,
 	token: string,
 ): Promise<{
-	ok: boolean,
-	email: string | null,
-}> {
+		ok: boolean,
+		email: string | null,
+	}> {
 	const key = publishableApiKey()
 	const headers: Record<string, string> = {
 		Authorization: `Bearer ${token}`,
@@ -111,6 +113,61 @@ async function fetchStoreCustomerMe(
 	}
 }
 
+function meSuccessResponse(account: AccountMe) {
+	return NextResponse.json({
+		ok: true,
+		actorType: account.actorType,
+		account,
+	})
+}
+
+async function resolveStaff(
+	backendUrl: string,
+	staffToken: string,
+): Promise<AccountMe | null> {
+	const {ok, data} = await fetchJson(`${backendUrl}/staff/me`, staffToken)
+	if (!ok) {
+		return null
+	}
+
+	const parsed = data as StaffMeResponse
+	return {
+		authenticated: true,
+		actorType: 'staff',
+		email: parsed.staff?.email ?? null,
+		roleCode: parsed.staff?.roleCode ?? null,
+		permissions: parsed.permissions ?? [],
+	}
+}
+
+async function resolveCustomer(
+	backendUrl: string,
+	customerToken: string,
+): Promise<AccountMe | null> {
+	const customMe = await fetchJson(`${backendUrl}/customer/me`, customerToken)
+	if (customMe.ok) {
+		const parsed = customMe.data as {customer?: {email?: string | null}}
+		return {
+			authenticated: true,
+			actorType: 'customer',
+			email: parsed.customer?.email ?? null,
+			roleCode: 'customer',
+		}
+	}
+
+	const {ok, email} = await fetchStoreCustomerMe(backendUrl, customerToken)
+	if (!ok) {
+		return null
+	}
+
+	return {
+		authenticated: true,
+		actorType: 'customer',
+		email,
+		roleCode: 'customer',
+	}
+}
+
 async function GET() {
 	const backendUrl = getBackendUrl()
 	const cookieStore = await cookies()
@@ -118,49 +175,32 @@ async function GET() {
 	const customerToken = cookieStore.get(CUSTOMER_TOKEN_COOKIE)?.value
 
 	if (staffToken) {
-		const {ok, data} = await fetchJson(`${backendUrl}/staff/me`, staffToken)
-		if (ok) {
-			const parsed = data as StaffMeResponse
-
-			return NextResponse.json({
-				authenticated: true,
-				actorType: 'staff',
-				email: parsed.staff?.email ?? null,
-				roleCode: parsed.staff?.roleCode ?? null,
-				permissions: parsed.permissions ?? [],
-			})
+		const account = await resolveStaff(backendUrl, staffToken)
+		if (account) {
+			return meSuccessResponse(account)
 		}
 	}
 
 	if (customerToken) {
-		const customMe = await fetchJson(`${backendUrl}/customer/me`, customerToken)
-		if (customMe.ok) {
-			const parsed = customMe.data as {customer?: {email?: string | null}}
-			return NextResponse.json({
-				authenticated: true,
-				actorType: 'customer',
-				email: parsed.customer?.email ?? null,
-				roleCode: 'customer',
-			})
-		}
-
-		const {ok, email} = await fetchStoreCustomerMe(backendUrl, customerToken)
-		if (ok) {
-			return NextResponse.json({
-				authenticated: true,
-				actorType: 'customer',
-				email,
-				roleCode: 'customer',
-			})
+		const account = await resolveCustomer(backendUrl, customerToken)
+		if (account) {
+			return meSuccessResponse(account)
 		}
 	}
 
-	return NextResponse.json({
+	const account: AccountMe = {
 		authenticated: false,
 		actorType: 'guest',
 		roleCode: 'guest',
 		email: null,
-	})
+	}
+
+	return meSuccessResponse(account)
 }
 
-export {GET}
+const dynamic = 'force-dynamic'
+
+export {
+	GET,
+	dynamic,
+}

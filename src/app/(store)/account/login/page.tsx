@@ -3,10 +3,6 @@
 import {useRouter} from 'next/navigation'
 import {useState} from 'react'
 import {
-	type AccountMe,
-	useAccountSession,
-} from '../../../../widgets/header'
-import {
 	Button,
 	Card,
 	CardContent,
@@ -16,6 +12,7 @@ import {
 	Input,
 	Label,
 } from '../../../../shared'
+import {type AccountMe, useAccountSession} from '../../../../widgets/header'
 
 export default function AccountLoginPage() {
 	const router = useRouter()

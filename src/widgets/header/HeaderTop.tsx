@@ -1,21 +1,16 @@
 'use client'
 
-import {
-	Heart,
-	LogIn,
-	ShoppingCart,
-	User,
-} from 'lucide-react'
 import {usePathname, useRouter} from 'next/navigation'
-import {
-	useEffect,
-	useRef,
-	useState,
-} from 'react'
-import {createPortal} from 'react-dom'
-import {Button, Link} from '../../shared'
 import {useAccountSession} from './AccountSessionContext'
 import {Logo} from './Logo'
+import {getHeaderAccountSlot} from './types'
+import {HeaderAccountPopoverAuth} from './ui/HeaderAccountPopoverAuth'
+import {HeaderAccountPopoverGuest} from './ui/HeaderAccountPopoverGuest'
+import {HeaderAccountPopoverPortal} from './ui/HeaderAccountPopoverPortal'
+import {HeaderAccountTriggerAuth} from './ui/HeaderAccountTriggerAuth'
+import {HeaderAccountTriggerGuest} from './ui/HeaderAccountTriggerGuest'
+import {HeaderTopActions} from './ui/HeaderTopActions'
+import {useHeaderAccountPopoverVm} from './viewmodel/useHeaderAccountPopoverVm'
 
 function HeaderTop() {
 	const router = useRouter()
@@ -24,92 +19,27 @@ function HeaderTop() {
 		account, isReady, clearSession,
 	} = useAccountSession()
 
-	const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-	const [isMounted, setIsMounted] = useState(false)
-	const [popoverTop, setPopoverTop] = useState(0)
-	const [popoverLeft, setPopoverLeft] = useState(0)
-	const accountTriggerRef = useRef<HTMLDivElement | null>(null)
-	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+	const {
+		isMounted,
+		isOpen,
+		top,
+		left,
+		triggerRef,
+		open,
+		closeNow,
+		closeDelayed,
+		toggle,
+	} = useHeaderAccountPopoverVm()
 
-	useEffect(() => {
-		setIsMounted(true)
-
-		return () => {
-			setIsMounted(false)
-		}
-	}, [])
-
-	useEffect(() => {
-		if (!isPopoverOpen) {
-			return
-		}
-
-		const updatePosition = () => {
-			const el = accountTriggerRef.current
-			if (!el) {
-				return
-			}
-
-			const rect = el.getBoundingClientRect()
-			setPopoverTop(rect.bottom + 8)
-			setPopoverLeft(rect.right - 224)
-		}
-
-		updatePosition()
-		window.addEventListener('scroll', updatePosition, true)
-		window.addEventListener('resize', updatePosition)
-
-		return () => {
-			window.removeEventListener('scroll', updatePosition, true)
-			window.removeEventListener('resize', updatePosition)
-		}
-	}, [isPopoverOpen])
-
-	useEffect(() => () => {
-		if (closeTimerRef.current) {
-			clearTimeout(closeTimerRef.current)
-		}
-	}, [])
-
-	const openPopover = () => {
-		if (closeTimerRef.current) {
-			clearTimeout(closeTimerRef.current)
-			closeTimerRef.current = null
-		}
-
-		setIsPopoverOpen(true)
-	}
-
-	const closePopoverWithDelay = () => {
-		if (closeTimerRef.current) {
-			clearTimeout(closeTimerRef.current)
-		}
-
-		closeTimerRef.current = setTimeout(() => {
-			setIsPopoverOpen(false)
-			closeTimerRef.current = null
-		}, 120)
-	}
-
-	const isAuthenticated = account.authenticated === true
-	const roleCode = account.roleCode ?? null
-	const isAdminPortal = roleCode === 'admin' || roleCode === 'owner'
-	const isManagerPortal = roleCode === 'manager'
-	const isStaff = isAdminPortal || isManagerPortal
-	const isInAdmin = pathname.startsWith('/admin')
-	const accountLabel = account.email ?? 'Пользователь'
-	const portalHref = isInAdmin
-		? '/'
-		: '/admin'
-	const portalLabel = isInAdmin
-		? 'В магазин'
-		: (isAdminPortal
-			? 'В портал администратора'
-			: 'В портал менеджера')
+	const slot = getHeaderAccountSlot({
+		account,
+		isReady,
+		pathname,
+	})
 
 	const handleLogout = async () => {
 		await fetch('/api/account/logout', {method: 'POST'}).catch(() => {})
-		setIsPopoverOpen(false)
+		closeNow()
 		clearSession()
 		router.push('/')
 		router.refresh()
@@ -122,153 +52,67 @@ function HeaderTop() {
 		/>
 	)
 
-	const accountIconSlot = isAuthenticated
+	const accountIconSlot = slot.kind === 'authenticated'
 		? (
-			<div
-				className="relative shrink-0"
-				ref={accountTriggerRef}
-				onMouseEnter={openPopover}
-				onMouseLeave={closePopoverWithDelay}
-			>
-				<Button
-					variant="ghost"
-					size="icon"
-					title="Аккаунт"
-					type="button"
-					onClick={() => setIsPopoverOpen(v => !v)}
-				>
-					<User className="h-5 w-5" />
-				</Button>
-			</div>
+			<HeaderAccountTriggerAuth
+				triggerRef={triggerRef}
+				onMouseEnter={open}
+				onMouseLeave={closeDelayed}
+				onToggle={toggle}
+			/>
 		)
 		: (
-			<div
-				className="relative shrink-0"
-				ref={accountTriggerRef}
-				onMouseEnter={openPopover}
-				onMouseLeave={closePopoverWithDelay}
-			>
-				<Button
-					variant="ghost"
-					size="icon"
-					title="Вход"
-					type="button"
-					onClick={() => setIsPopoverOpen(v => !v)}
-				>
-					<LogIn className="h-5 w-5" />
-				</Button>
-			</div>
+			<HeaderAccountTriggerGuest
+				triggerRef={triggerRef}
+				onMouseEnter={open}
+				onMouseLeave={closeDelayed}
+				onToggle={toggle}
+			/>
 		)
 
-	const authSlot = !isReady
+	const authSlot = slot.kind === 'loading'
 		? loadingSlot
 		: accountIconSlot
 
-	const showAccountPortal = isMounted && isPopoverOpen && isReady && isAuthenticated
-	const showGuestPortal = isMounted && isPopoverOpen && isReady && !isAuthenticated
+	const showAccountPortal = isMounted && isOpen && slot.kind === 'authenticated'
+	const showGuestPortal = isMounted && isOpen && slot.kind === 'guest'
 
 	return (
 		<div className="border-b">
 			<div className="container mx-auto px-4 py-4">
 				<div className="flex items-center justify-between">
 					<Logo />
-					<div className="flex items-center gap-4">
-						<Button
-							variant="ghost"
-							size="icon"
-							title="Избранное"
-						>
-							<Heart className="h-5 w-5" />
-						</Button>
-						<Link href="/cart">
-							<Button
-								variant="ghost"
-								size="icon"
-								title="Корзина"
-							>
-								<ShoppingCart className="h-5 w-5" />
-							</Button>
-						</Link>
-						{authSlot}
-					</div>
+					<HeaderTopActions accountSlot={authSlot} />
 				</div>
 			</div>
-			{showAccountPortal && createPortal(
-				<div
-					className="fixed z-[120] w-56"
-					style={{
-						top: popoverTop,
-						left: popoverLeft,
-					}}
-					onMouseEnter={openPopover}
-					onMouseLeave={closePopoverWithDelay}
-				>
-					<div className="rounded-md border bg-white shadow-lg p-2 space-y-1">
-						<div className="px-3 py-2">
-							<p className="text-xs text-muted-foreground">
-								{'Вы вошли как'}
-							</p>
-							<p className="text-sm font-medium break-all">
-								{accountLabel}
-							</p>
-							<p className="text-xs text-muted-foreground mt-1">
-								{roleCode ?? 'user'}
-							</p>
-						</div>
-						{isStaff && (
-							<div className="pt-2 border-t mt-2">
-								<Link
-									href={portalHref}
-									className="block px-3 py-2 rounded-md text-sm hover:bg-muted"
-									onClick={() => setIsPopoverOpen(false)}
-								>
-									{portalLabel}
-								</Link>
-							</div>
-						)}
-						<div className="pt-2 border-t mt-2">
-							<Button
-								type="button"
-								variant="ghost"
-								className="w-full justify-start"
-								onClick={handleLogout}
-							>
-								{'Выйти'}
-							</Button>
-						</div>
-					</div>
-				</div>,
-				document.body,
-			)}
-			{showGuestPortal && createPortal(
-				<div
-					className="fixed z-[120] w-56"
-					style={{
-						top: popoverTop,
-						left: popoverLeft,
-					}}
-					onMouseEnter={openPopover}
-					onMouseLeave={closePopoverWithDelay}
-				>
-					<div className="rounded-md border bg-white shadow-lg p-1">
-						<Link
-							href="/account/login"
-							className="block px-3 py-2 rounded-md text-sm hover:bg-muted"
-							onClick={() => setIsPopoverOpen(false)}
-						>
-							{'Войти'}
-						</Link>
-						<Link
-							href="/account/register"
-							className="block px-3 py-2 rounded-md text-sm hover:bg-muted"
-							onClick={() => setIsPopoverOpen(false)}
-						>
-							{'Зарегистрироваться'}
-						</Link>
-					</div>
-				</div>,
-				document.body,
-			)}
+			<HeaderAccountPopoverPortal
+				shouldRender={showAccountPortal}
+				top={top}
+				left={left}
+				onMouseEnter={open}
+				onMouseLeave={closeDelayed}
+			>
+				{slot.kind === 'authenticated' && (
+					<HeaderAccountPopoverAuth
+						accountLabel={slot.accountLabel}
+						roleCode={slot.roleCode}
+						isStaff={slot.isStaff}
+						portalHref={slot.portalHref}
+						portalLabel={slot.portalLabel}
+						onClosePortal={closeNow}
+						onLogout={handleLogout}
+					/>
+				)}
+			</HeaderAccountPopoverPortal>
+			<HeaderAccountPopoverPortal
+				shouldRender={showGuestPortal}
+				top={top}
+				left={left}
+				onMouseEnter={open}
+				onMouseLeave={closeDelayed}
+			>
+				<HeaderAccountPopoverGuest onClose={closeNow} />
+			</HeaderAccountPopoverPortal>
 		</div>
 	)
 }

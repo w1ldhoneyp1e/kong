@@ -1,12 +1,5 @@
 import {getBackendUrl} from '../../../../shared'
-
-type AccountMePayload = {
-	authenticated: boolean,
-	actorType: 'guest' | 'customer' | 'staff',
-	email?: string | null,
-	roleCode?: string | null,
-	permissions?: string[],
-}
+import {type AccountMe} from './accountMeTypes'
 
 type StaffMeJson = {
 	staff?: {
@@ -16,7 +9,7 @@ type StaffMeJson = {
 	permissions?: string[],
 }
 
-async function buildCustomerAccountPreview(token: string): Promise<AccountMePayload> {
+async function buildCustomerAccountPreview(token: string): Promise<AccountMe> {
 	const baseUrl = getBackendUrl()
 	const res = await fetch(`${baseUrl}/customer/me`, {
 		headers: {Authorization: `Bearer ${token}`},
@@ -41,7 +34,7 @@ async function buildCustomerAccountPreview(token: string): Promise<AccountMePayl
 	}
 }
 
-async function buildStaffAccountPreview(token: string): Promise<AccountMePayload> {
+async function buildStaffAccountPreview(token: string): Promise<AccountMe> {
 	const baseUrl = getBackendUrl()
 	const res = await fetch(`${baseUrl}/staff/me`, {
 		headers: {Authorization: `Bearer ${token}`},
@@ -68,7 +61,6 @@ async function buildStaffAccountPreview(token: string): Promise<AccountMePayload
 	}
 }
 
-export type {AccountMePayload}
 export {
 	buildCustomerAccountPreview,
 	buildStaffAccountPreview,
