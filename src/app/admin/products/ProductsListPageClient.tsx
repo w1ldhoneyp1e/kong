@@ -44,18 +44,14 @@ function ProductsListPageClient({
 		? formatMutationError(vm.createMutation.error)
 		: ''
 
-	const handleCreateSubmit = (payload: {
-		title: string,
-		handle: string,
-		status: string,
-	}) => {
+	type ProductFormSubmitPayload =
+		Parameters<typeof ProductFormModal>[0]['onSubmit'] extends (payload: infer T) => void
+			? T
+			: never
+
+	const handleCreateSubmit = (payload: ProductFormSubmitPayload) => {
 		vm.createMutation.mutate(
-			{
-				title: payload.title,
-				handle: payload.handle
-					|| undefined,
-				status: payload.status,
-			},
+			payload,
 			{
 				onSuccess: product => {
 					vm.setCreateOpen(false)

@@ -69,20 +69,22 @@ function ProductDetailPageClient({
 
 	const p = vm.product
 
-	const handleUpdate = (payload: {
-		title: string,
-		handle: string,
-		status: string,
-	}) => {
+	const initialTagIds = (p.tags ?? [])
+		.map(tag => tag.id)
+		.filter((value): value is string => Boolean(value && value.trim()))
+
+	const initialDocuments = p.metadata?.documents ?? []
+
+	type ProductFormSubmitPayload =
+		Parameters<typeof ProductFormModal>[0]['onSubmit'] extends (payload: infer T) => void
+			? T
+			: never
+
+	const handleUpdate = (payload: ProductFormSubmitPayload) => {
 		vm.updateMutation.mutate(
 			{
 				id,
-				payload: {
-					title: payload.title,
-					handle: payload.handle
-						|| undefined,
-					status: payload.status,
-				},
+				payload,
 			},
 			{
 				onSuccess: () => {
@@ -154,6 +156,15 @@ function ProductDetailPageClient({
 				initialTitle={p.title ?? ''}
 				initialHandle={p.handle ?? ''}
 				initialStatus={p.status ?? 'draft'}
+				initialMaterial={p.material ?? null}
+				initialWeight={p.weight ?? null}
+				initialLength={p.length ?? null}
+				initialWidth={p.width ?? null}
+				initialHeight={p.height ?? null}
+				initialTagIds={initialTagIds}
+				initialDocuments={initialDocuments}
+				initialMetadata={p.metadata ?? null}
+				initialVariants={p.variants ?? []}
 			/>
 			<ConfirmDialog
 				open={vm.deleteConfirmOpen}

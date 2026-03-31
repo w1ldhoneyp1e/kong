@@ -73,10 +73,27 @@ type CreateProductPayload = {
 	description?: string | null,
 	subtitle?: string | null,
 	status?: string,
+	material?: string | null,
+	weight?: number | null,
+	length?: number | null,
+	width?: number | null,
+	height?: number | null,
+	tag_ids?: string[],
+	metadata?: {
+		documents?: {
+			id: string,
+			title: string,
+			kind: AdminProductDocumentKind,
+			sourceType: 'url' | 'file',
+			url: string,
+		}[],
+	} & Record<string, unknown>,
 	discountable?: boolean,
 } & Record<string, unknown>
 
-type UpdateProductPayload = Record<string, unknown>
+type UpdateProductPayload = Partial<Omit<CreateProductPayload, 'title'>> & {
+	title?: string,
+}
 
 export type {
 	AdminMoneyAmount,
