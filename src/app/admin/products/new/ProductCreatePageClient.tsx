@@ -16,6 +16,7 @@ import {
 import {type ProductDocumentKind, type ProductDocumentSourceType} from './types'
 import {ProductCreateDocumentsSection} from './ui/ProductCreateDocumentsSection'
 import {ProductCreateMainSection} from './ui/ProductCreateMainSection'
+import {ProductCreateMediaModal} from './ui/ProductCreateMediaModal'
 import {ProductCreateSpecsSection} from './ui/ProductCreateSpecsSection'
 import {ProductCreateTagsSection} from './ui/ProductCreateTagsSection'
 
@@ -53,6 +54,10 @@ function ProductCreatePageClient() {
 	const [width, setWidth] = useState('')
 	const [height, setHeight] = useState('')
 	const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+	const [isMediaModalOpen, setMediaModalOpen] = useState(false)
+	const [thumbnailUrl, setThumbnailUrl] = useState('')
+	const [imageDraft, setImageDraft] = useState('')
+	const [galleryImages, setGalleryImages] = useState<string[]>([])
 	const [documents, setDocuments] = useState<{
 		id: string,
 		title: string,
@@ -86,6 +91,8 @@ function ProductCreatePageClient() {
 				title: title.trim(),
 				handle: handle.trim() || undefined,
 				status,
+				thumbnail: thumbnailUrl.trim() || null,
+				images: galleryImages.map(url => ({url})),
 				material: material.trim() || null,
 				weight: parseNumberOrNull(weight),
 				length: parseNumberOrNull(length),
@@ -132,6 +139,20 @@ function ProductCreatePageClient() {
 			current.includes(id)
 				? current.filter(item => item !== id)
 				: [...current, id])
+	}
+
+	const handleAddGalleryImage = () => {
+		const value = imageDraft.trim()
+		if (!value) {
+			return
+		}
+
+		setGalleryImages(current => [...current, value])
+		setImageDraft('')
+	}
+
+	const handleRemoveGalleryImage = (index: number) => {
+		setGalleryImages(current => current.filter((_, i) => i !== index))
 	}
 
 	return (
@@ -181,6 +202,31 @@ function ProductCreatePageClient() {
 						tagOptions={tagOptions}
 						onToggleTag={handleToggleTag}
 					/>
+					<section className="space-y-3">
+						<h3 className="text-sm font-medium text-muted-foreground">
+							{'Фото'}
+						</h3>
+						<div className="rounded-md border p-3">
+							<p className="mb-2 text-sm text-muted-foreground">
+								{thumbnailUrl.trim().length > 0
+									? 'Thumbnail добавлен'
+									: 'Thumbnail не задан'}
+							</p>
+							<p className="mb-3 text-sm text-muted-foreground">
+								{`Изображений в галерее: ${galleryImages.length}`}
+							</p>
+							<Button
+								type="button"
+								variant="outline"
+								disabled={createMutation.isPending}
+								onClick={() => {
+									setMediaModalOpen(true)
+								}}
+							>
+								{'Открыть модалку фото'}
+							</Button>
+						</div>
+					</section>
 					<ProductCreateDocumentsSection
 						disabled={createMutation.isPending}
 						documents={documents}
@@ -225,6 +271,18 @@ function ProductCreatePageClient() {
 					</div>
 				</form>
 			</div>
+			<ProductCreateMediaModal
+				open={isMediaModalOpen}
+				disabled={createMutation.isPending}
+				thumbnail={thumbnailUrl}
+				imageDraft={imageDraft}
+				images={galleryImages}
+				onOpenChange={setMediaModalOpen}
+				onThumbnailChange={setThumbnailUrl}
+				onImageDraftChange={setImageDraft}
+				onAddImage={handleAddGalleryImage}
+				onRemoveImage={handleRemoveGalleryImage}
+			/>
 		</div>
 	)
 }

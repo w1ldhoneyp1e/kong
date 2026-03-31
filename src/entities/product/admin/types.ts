@@ -78,6 +78,11 @@ type CreateProductPayload = {
 	description?: string | null,
 	subtitle?: string | null,
 	status?: string,
+	thumbnail?: string | null,
+	images?: {
+		id?: string,
+		url: string,
+	}[],
 	material?: string | null,
 	weight?: number | null,
 	length?: number | null,
