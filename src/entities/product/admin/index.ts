@@ -5,6 +5,7 @@ export {
 	useCreateProductMutation,
 	useDeleteProductMutation,
 	useProductQuery,
+	useProductTagsQuery,
 	useProductsQuery,
 	useUpdateProductMutation,
 } from './queries'
@@ -17,6 +18,7 @@ export type {
 	AdminProductMetadata,
 	AdminProductOption,
 	AdminProductTag,
+	AdminTagOption,
 	AdminProductVariant,
 	CreateProductPayload,
 	UpdateProductPayload,

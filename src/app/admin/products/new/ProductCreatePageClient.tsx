@@ -2,7 +2,7 @@
 
 import {useRouter} from 'next/navigation'
 import {useState} from 'react'
-import {useCreateProductMutation} from '../../../../entities/product'
+import {useCreateProductMutation, useProductTagsQuery} from '../../../../entities/product'
 import {
 	Button,
 	EntityPageHeader,
@@ -52,7 +52,7 @@ function ProductCreatePageClient() {
 	const [length, setLength] = useState('')
 	const [width, setWidth] = useState('')
 	const [height, setHeight] = useState('')
-	const [tagIdsText, setTagIdsText] = useState('')
+	const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
 	const [documents, setDocuments] = useState<{
 		id: string,
 		title: string,
@@ -64,6 +64,7 @@ function ProductCreatePageClient() {
 	const [newDocKind, setNewDocKind] = useState<ProductDocumentKind>('instruction')
 	const [newDocSourceType, setNewDocSourceType] = useState<ProductDocumentSourceType>('url')
 	const [newDocUrl, setNewDocUrl] = useState('')
+	const {data: tagOptions = []} = useProductTagsQuery()
 
 	const createError = createMutation.error
 		? formatMutationError(createMutation.error)
@@ -71,10 +72,7 @@ function ProductCreatePageClient() {
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault()
-		const tag_ids = tagIdsText
-			.split(',')
-			.map(item => item.trim())
-			.filter(Boolean)
+		const tag_ids = selectedTagIds
 		const metadataDocuments = documents.map(document => ({
 			id: document.id,
 			title: document.title.trim(),
@@ -129,6 +127,13 @@ function ProductCreatePageClient() {
 		setDocuments(items => items.filter(item => item.id !== id))
 	}
 
+	const handleToggleTag = (id: string) => {
+		setSelectedTagIds(current =>
+			current.includes(id)
+				? current.filter(item => item !== id)
+				: [...current, id])
+	}
+
 	return (
 		<div className="space-y-6">
 			<EntityPageHeader
@@ -172,8 +177,9 @@ function ProductCreatePageClient() {
 					/>
 					<ProductCreateTagsSection
 						disabled={createMutation.isPending}
-						tagIdsText={tagIdsText}
-						onTagIdsTextChange={setTagIdsText}
+						selectedTagIds={selectedTagIds}
+						tagOptions={tagOptions}
+						onToggleTag={handleToggleTag}
 					/>
 					<ProductCreateDocumentsSection
 						disabled={createMutation.isPending}

@@ -1,13 +1,18 @@
-import {FormField, Input} from '../../../../../shared'
+import {FormField} from '../../../../../shared'
 
 function ProductCreateTagsSection({
 	disabled,
-	tagIdsText,
-	onTagIdsTextChange,
+	selectedTagIds,
+	tagOptions,
+	onToggleTag,
 }: Readonly<{
 	disabled: boolean,
-	tagIdsText: string,
-	onTagIdsTextChange: (value: string) => void,
+	selectedTagIds: string[],
+	tagOptions: {
+		id: string,
+		value?: string | null,
+	}[],
+	onToggleTag: (id: string) => void,
 }>) {
 	return (
 		<section className="space-y-4">
@@ -15,17 +20,38 @@ function ProductCreateTagsSection({
 				{'Теги'}
 			</h3>
 			<FormField
-				label="ID тегов (через запятую)"
-				htmlFor="create-product-tag-ids"
+				label="Выберите теги"
+				htmlFor="create-product-tags"
 			>
-				<Input
-					id="create-product-tag-ids"
-					value={tagIdsText}
-					onChange={event => {
-						onTagIdsTextChange(event.target.value)
-					}}
-					disabled={disabled}
-				/>
+				<div
+					id="create-product-tags"
+					className="space-y-2 rounded-md border p-3"
+				>
+					{tagOptions.length > 0
+						? tagOptions.map(tag => (
+							<label
+								key={tag.id}
+								className="flex items-center gap-2 text-sm"
+							>
+								<input
+									type="checkbox"
+									checked={selectedTagIds.includes(tag.id)}
+									onChange={() => {
+										onToggleTag(tag.id)
+									}}
+									disabled={disabled}
+								/>
+								<span>
+									{tag.value ?? tag.id}
+								</span>
+							</label>
+						))
+						: (
+							<p className="text-sm text-muted-foreground">
+								{'Теги не найдены'}
+							</p>
+						)}
+				</div>
 			</FormField>
 		</section>
 	)

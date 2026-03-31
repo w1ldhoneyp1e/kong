@@ -1,6 +1,7 @@
 import {getApiBase} from '../../../shared'
 import {
 	type AdminProduct,
+	type AdminTagOption,
 	type CreateProductPayload,
 	type UpdateProductPayload,
 } from './types'
@@ -58,6 +59,21 @@ const adminProductApi = {
 		}
 
 		return data.products ?? []
+	},
+
+	listTags: async (): Promise<AdminTagOption[]> => {
+		const res = await fetch(`${getApiBase()}/product-tags`, {
+			credentials: 'same-origin',
+		})
+		const data = (await parseRes(res)) as {
+			tags?: AdminTagOption[],
+		}
+
+		if (!res.ok) {
+			throw new Error(messageFromErrorData(data))
+		}
+
+		return data.tags ?? []
 	},
 
 	getProduct: async (id: string): Promise<AdminProduct> => {

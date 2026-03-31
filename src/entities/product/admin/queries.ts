@@ -8,11 +8,13 @@ import {
 import {adminProductApi} from './api'
 import {
 	type AdminProduct,
+	type AdminTagOption,
 	type CreateProductPayload,
 	type UpdateProductPayload,
 } from './types'
 
 const adminProductsQueryKey = ['admin', 'products'] as const
+const adminProductTagsQueryKey = ['admin', 'product-tags'] as const
 const adminProductDetailIdleKey = ['admin', 'products', 'detail', 'none'] as const
 
 type UseProductsQueryOptions = {
@@ -32,6 +34,13 @@ function useProductsQuery(options?: UseProductsQueryOptions) {
 		queryKey: adminProductsQueryKey,
 		queryFn: () => adminProductApi.listProducts(),
 		initialData: options?.initialData,
+	})
+}
+
+function useProductTagsQuery() {
+	return useQuery<AdminTagOption[]>({
+		queryKey: adminProductTagsQueryKey,
+		queryFn: () => adminProductApi.listTags(),
 	})
 }
 
@@ -98,9 +107,11 @@ export {
 	adminProductQueryKey,
 	adminProductsQueryKey,
 	adminProductDetailIdleKey,
+	adminProductTagsQueryKey,
 	useCreateProductMutation,
 	useDeleteProductMutation,
 	useProductQuery,
+	useProductTagsQuery,
 	useProductsQuery,
 	useUpdateProductMutation,
 }

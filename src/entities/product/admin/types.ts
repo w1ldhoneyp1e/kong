@@ -31,6 +31,11 @@ type AdminProductTag = {
 	value?: string | null,
 }
 
+type AdminTagOption = {
+	id: string,
+	value?: string | null,
+}
+
 type AdminProductDocumentKind = 'instruction' | 'reference' | 'certificate' | 'other'
 
 type AdminProductDocument = {
@@ -104,6 +109,7 @@ export type {
 	AdminProductMetadata,
 	AdminProductOption,
 	AdminProductTag,
+	AdminTagOption,
 	AdminProductVariant,
 	CreateProductPayload,
 	UpdateProductPayload,
