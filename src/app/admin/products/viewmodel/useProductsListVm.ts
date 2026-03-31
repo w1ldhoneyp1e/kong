@@ -1,19 +1,22 @@
 'use client'
 
 import {
+	type AdminProduct,
 	useCreateProductMutation,
 	useDeleteProductMutation,
 	useProductsQuery,
 } from '../../../../entities/product'
 import {useProductsListStore} from './productsListStore'
 
-function useProductsListVm() {
+function useProductsListVm(initialProducts?: AdminProduct[]) {
 	const {
 		data: products = [],
 		isLoading,
 		isFetching,
 		error: queryError,
-	} = useProductsQuery()
+	} = useProductsQuery({
+		initialData: initialProducts,
+	})
 
 	const createMutation = useCreateProductMutation()
 	const deleteMutation = useDeleteProductMutation()

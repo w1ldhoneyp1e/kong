@@ -1,18 +1,19 @@
 'use client'
 
 import {useRouter} from 'next/navigation'
+import {type AdminProduct} from '../../../../entities/product'
 import {
 	Button,
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
 	ConfirmDialog,
 	EntityPageHeader,
 	StatusBadge,
 } from '../../../../shared'
 import {ProductFormModal} from '../ProductFormModal'
 import {useProductDetailVm} from '../viewmodel/useProductDetailVm'
+import {ProductMainInfoCard} from './ProductMainInfoCard'
+import {ProductMediaCard} from './ProductMediaCard'
+import {ProductOptionsCard} from './ProductOptionsCard'
+import {ProductVariantsCard} from './ProductVariantsCard'
 
 function formatCreatedAt(value: string | null | undefined): string {
 	if (!value) {
@@ -36,9 +37,15 @@ function formatMutationError(err: unknown): string {
 	return String(err)
 }
 
-function ProductDetailPageClient({id}: Readonly<{id: string}>) {
+function ProductDetailPageClient({
+	id,
+	initialProduct,
+}: Readonly<{
+	id: string,
+	initialProduct?: AdminProduct,
+}>) {
 	const router = useRouter()
-	const vm = useProductDetailVm(id)
+	const vm = useProductDetailVm(id, initialProduct)
 
 	const updateError = vm.updateMutation.error
 		? formatMutationError(vm.updateMutation.error)
@@ -130,169 +137,10 @@ function ProductDetailPageClient({id}: Readonly<{id: string}>) {
 				</span>
 			</div>
 			<div className="grid gap-6 lg:grid-cols-2">
-				<Card>
-					<CardHeader>
-						<CardTitle>
-							{'Основная информация'}
-						</CardTitle>
-					</CardHeader>
-					<CardContent className="space-y-2 text-sm">
-						<p>
-							<span className="font-medium text-muted-foreground">
-								{'Handle: '}
-							</span>
-							{p.handle ?? '—'}
-						</p>
-						{p.subtitle
-							? (
-								<p>
-									<span className="font-medium text-muted-foreground">
-										{'Подзаголовок: '}
-									</span>
-									{p.subtitle}
-								</p>
-							)
-							: null}
-						{p.description
-							? (
-								<p className="whitespace-pre-wrap">
-									<span className="font-medium text-muted-foreground">
-										{'Описание: '}
-									</span>
-									{p.description}
-								</p>
-							)
-							: null}
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle>
-							{'Медиа'}
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{p.thumbnail
-							? (
-								<div className="mb-4">
-									<p className="mb-2 text-xs font-medium text-muted-foreground">
-										{'Thumbnail'}
-									</p>
-									<img
-										src={p.thumbnail}
-										alt=""
-										className="max-h-48 rounded-md border object-contain"
-									/>
-								</div>
-							)
-							: null}
-						{p.images && p.images.length > 0
-							? (
-								<div className="flex flex-wrap gap-2">
-									{p.images.map(img => (
-										img.url
-											? (
-												<img
-													key={img.id}
-													src={img.url}
-													alt=""
-													className="h-20 w-20 rounded object-cover"
-												/>
-											)
-											: null
-									))}
-								</div>
-							)
-							: (
-								<p className="text-sm text-muted-foreground">
-									{'Нет изображений'}
-								</p>
-							)}
-					</CardContent>
-				</Card>
-				<Card className="lg:col-span-2">
-					<CardHeader>
-						<CardTitle>
-							{'Варианты'}
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{p.variants && p.variants.length > 0
-							? (
-								<div className="overflow-x-auto rounded-md border">
-									<table className="w-full text-sm">
-										<thead className="bg-muted/50">
-											<tr>
-												<th className="px-3 py-2 text-left font-medium">
-													{'Название'}
-												</th>
-												<th className="px-3 py-2 text-left font-medium">
-													{'SKU'}
-												</th>
-												<th className="px-3 py-2 text-left font-medium">
-													{'ID'}
-												</th>
-											</tr>
-										</thead>
-										<tbody>
-											{p.variants.map(v => (
-												<tr
-													key={v.id}
-													className="border-t"
-												>
-													<td className="px-3 py-2">
-														{v.title ?? '—'}
-													</td>
-													<td className="px-3 py-2">
-														{v.sku ?? '—'}
-													</td>
-													<td className="px-3 py-2 font-mono text-xs text-muted-foreground">
-														{v.id}
-													</td>
-												</tr>
-											))}
-										</tbody>
-									</table>
-								</div>
-							)
-							: (
-								<p className="text-sm text-muted-foreground">
-									{'Нет вариантов'}
-								</p>
-							)}
-					</CardContent>
-				</Card>
-				<Card className="lg:col-span-2">
-					<CardHeader>
-						<CardTitle>
-							{'Опции'}
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{p.options && p.options.length > 0
-							? (
-								<ul className="space-y-2 text-sm">
-									{p.options.map(opt => (
-										<li key={opt.id}>
-											<span className="font-medium">
-												{opt.title ?? opt.id}
-												{': '}
-											</span>
-											{(opt.values ?? [])
-												.map(val => val.value)
-												.filter(Boolean)
-												.join(', ') || '—'}
-										</li>
-									))}
-								</ul>
-							)
-							: (
-								<p className="text-sm text-muted-foreground">
-									{'Нет опций'}
-								</p>
-							)}
-					</CardContent>
-				</Card>
+				<ProductMainInfoCard product={p} />
+				<ProductMediaCard product={p} />
+				<ProductVariantsCard product={p} />
+				<ProductOptionsCard product={p} />
 			</div>
 			<ProductFormModal
 				open={vm.isEditOpen}

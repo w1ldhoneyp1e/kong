@@ -35,9 +35,11 @@ function formatMutationError(err: unknown): string {
 	return String(err)
 }
 
-function ProductsListPageClient() {
+function ProductsListPageClient({
+	initialProducts,
+}: Readonly<{initialProducts?: AdminProduct[]}>) {
 	const router = useRouter()
-	const vm = useProductsListVm()
+	const vm = useProductsListVm(initialProducts)
 	const createError = vm.createMutation.error
 		? formatMutationError(vm.createMutation.error)
 		: ''

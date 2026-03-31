@@ -1,19 +1,25 @@
 'use client'
 
 import {
+	type AdminProduct,
 	useDeleteProductMutation,
 	useProductQuery,
 	useUpdateProductMutation,
 } from '../../../../entities/product'
 import {useProductDetailStore} from './productDetailStore'
 
-function useProductDetailVm(id: string) {
+function useProductDetailVm(
+	id: string,
+	initialProduct?: AdminProduct,
+) {
 	const {
 		data: product,
 		isLoading,
 		isFetching,
 		error: queryError,
-	} = useProductQuery(id)
+	} = useProductQuery(id, {
+		initialData: initialProduct,
+	})
 
 	const updateMutation = useUpdateProductMutation()
 	const deleteMutation = useDeleteProductMutation()

@@ -6,30 +6,46 @@ import {
 	useQueryClient,
 } from '@tanstack/react-query'
 import {adminProductApi} from './api'
-import {type CreateProductPayload, type UpdateProductPayload} from './types'
+import {
+	type AdminProduct,
+	type CreateProductPayload,
+	type UpdateProductPayload,
+} from './types'
 
 const adminProductsQueryKey = ['admin', 'products'] as const
+const adminProductDetailIdleKey = ['admin', 'products', 'detail', 'none'] as const
+
+type UseProductsQueryOptions = {
+	initialData?: AdminProduct[],
+}
+
+type UseProductQueryOptions = {
+	initialData?: AdminProduct,
+}
 
 function adminProductQueryKey(id: string) {
 	return ['admin', 'products', id] as const
 }
 
-function useProductsQuery() {
+function useProductsQuery(options?: UseProductsQueryOptions) {
 	return useQuery({
 		queryKey: adminProductsQueryKey,
 		queryFn: () => adminProductApi.listProducts(),
+		initialData: options?.initialData,
 	})
 }
 
-const adminProductDetailIdleKey = ['admin', 'products', 'detail', 'none'] as const
-
-function useProductQuery(id: string | undefined) {
+function useProductQuery(
+	id: string | undefined,
+	options?: UseProductQueryOptions,
+) {
 	return useQuery({
 		queryKey: id
 			? adminProductQueryKey(id)
 			: adminProductDetailIdleKey,
 		queryFn: () => adminProductApi.getProduct(id as string),
 		enabled: Boolean(id),
+		initialData: options?.initialData,
 	})
 }
 
@@ -81,9 +97,14 @@ function useDeleteProductMutation() {
 export {
 	adminProductQueryKey,
 	adminProductsQueryKey,
+	adminProductDetailIdleKey,
 	useCreateProductMutation,
 	useDeleteProductMutation,
 	useProductQuery,
 	useProductsQuery,
 	useUpdateProductMutation,
+}
+export type {
+	UseProductQueryOptions,
+	UseProductsQueryOptions,
 }
