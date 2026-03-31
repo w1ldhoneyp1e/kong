@@ -11,7 +11,7 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const productService = req.scope.resolve(Modules.PRODUCT)
 	const data = await productService.listProducts({}, {
 		take: 50,
-		relations: ['variants', 'images'],
+		relations: ['variants', 'options', 'images', 'tags'],
 	})
 	res.json({products: data})
 }

@@ -10,9 +10,13 @@ export {
 } from './admin'
 export type {
 	AdminMoneyAmount,
+	AdminProductDocument,
+	AdminProductDocumentKind,
 	AdminProduct,
 	AdminProductImage,
+	AdminProductMetadata,
 	AdminProductOption,
+	AdminProductTag,
 	AdminProductVariant,
 	CreateProductPayload,
 	UpdateProductPayload,

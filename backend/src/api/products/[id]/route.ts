@@ -11,7 +11,7 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const productService = req.scope.resolve(Modules.PRODUCT)
 	const product = await productService.retrieveProduct(id, {
-		relations: ['variants', 'options', 'images'],
+		relations: ['variants', 'options', 'images', 'tags'],
 	}).catch(() => null)
 	if (!product) {
 		res.status(404).json({error: 'Product not found'})

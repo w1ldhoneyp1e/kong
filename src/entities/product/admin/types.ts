@@ -26,6 +26,25 @@ type AdminProductOption = {
 	}[],
 }
 
+type AdminProductTag = {
+	id: string,
+	value?: string | null,
+}
+
+type AdminProductDocumentKind = 'instruction' | 'reference' | 'certificate' | 'other'
+
+type AdminProductDocument = {
+	id: string,
+	title: string,
+	kind: AdminProductDocumentKind,
+	sourceType: 'url' | 'file',
+	url: string,
+}
+
+type AdminProductMetadata = {
+	documents?: AdminProductDocument[],
+} & Record<string, unknown>
+
 type AdminProduct = {
 	id: string,
 	title?: string | null,
@@ -36,9 +55,16 @@ type AdminProduct = {
 	thumbnail?: string | null,
 	created_at?: string | null,
 	updated_at?: string | null,
+	material?: string | null,
+	weight?: number | null,
+	length?: number | null,
+	width?: number | null,
+	height?: number | null,
+	metadata?: AdminProductMetadata | null,
 	variants?: AdminProductVariant[],
 	images?: AdminProductImage[],
 	options?: AdminProductOption[],
+	tags?: AdminProductTag[],
 }
 
 type CreateProductPayload = {
@@ -54,9 +80,13 @@ type UpdateProductPayload = Record<string, unknown>
 
 export type {
 	AdminMoneyAmount,
+	AdminProductDocument,
+	AdminProductDocumentKind,
 	AdminProduct,
 	AdminProductImage,
+	AdminProductMetadata,
 	AdminProductOption,
+	AdminProductTag,
 	AdminProductVariant,
 	CreateProductPayload,
 	UpdateProductPayload,

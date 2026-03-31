@@ -10,9 +10,13 @@ export {
 } from './queries'
 export type {
 	AdminMoneyAmount,
+	AdminProductDocument,
+	AdminProductDocumentKind,
 	AdminProduct,
 	AdminProductImage,
+	AdminProductMetadata,
 	AdminProductOption,
+	AdminProductTag,
 	AdminProductVariant,
 	CreateProductPayload,
 	UpdateProductPayload,
