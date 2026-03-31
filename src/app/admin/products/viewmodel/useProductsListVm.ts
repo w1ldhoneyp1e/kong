@@ -2,7 +2,6 @@
 
 import {
 	type AdminProduct,
-	useCreateProductMutation,
 	useDeleteProductMutation,
 	useProductsQuery,
 } from '../../../../entities/product'
@@ -18,12 +17,9 @@ function useProductsListVm(initialProducts?: AdminProduct[]) {
 		initialData: initialProducts,
 	})
 
-	const createMutation = useCreateProductMutation()
 	const deleteMutation = useDeleteProductMutation()
 
-	const isCreateOpen = useProductsListStore(s => s.isCreateOpen)
 	const deleteConfirmId = useProductsListStore(s => s.deleteConfirmId)
-	const setCreateOpen = useProductsListStore(s => s.setCreateOpen)
 	const setDeleteConfirmId = useProductsListStore(s => s.setDeleteConfirmId)
 
 	const loading = isLoading || isFetching
@@ -34,7 +30,6 @@ function useProductsListVm(initialProducts?: AdminProduct[]) {
 
 	const error
 		= (queryError && errorMessage(queryError))
-		?? (createMutation.error && errorMessage(createMutation.error))
 		?? (deleteMutation.error && errorMessage(deleteMutation.error))
 		?? ''
 
@@ -42,11 +37,8 @@ function useProductsListVm(initialProducts?: AdminProduct[]) {
 		products,
 		loading,
 		error,
-		isCreateOpen,
 		deleteConfirmId,
-		setCreateOpen,
 		setDeleteConfirmId,
-		createMutation,
 		deleteMutation,
 	}
 }

@@ -10,7 +10,6 @@ import {
 	Link,
 	StatusBadge,
 } from '../../../shared'
-import {ProductFormModal} from './ProductFormModal'
 import {useProductsListVm} from './viewmodel/useProductsListVm'
 
 function formatCreatedAt(value: string | null | undefined): string {
@@ -27,40 +26,11 @@ function formatCreatedAt(value: string | null | undefined): string {
 	return d.toLocaleString('ru-RU')
 }
 
-function formatMutationError(err: unknown): string {
-	if (err instanceof Error) {
-		return err.message
-	}
-
-	return String(err)
-}
-
 function ProductsListPageClient({
 	initialProducts,
 }: Readonly<{initialProducts?: AdminProduct[]}>) {
 	const router = useRouter()
 	const vm = useProductsListVm(initialProducts)
-	const createError = vm.createMutation.error
-		? formatMutationError(vm.createMutation.error)
-		: ''
-
-	type ProductFormSubmitPayload =
-		Parameters<typeof ProductFormModal>[0]['onSubmit'] extends (payload: infer T) => void
-			? T
-			: never
-
-	const handleCreateSubmit = (payload: ProductFormSubmitPayload) => {
-		vm.createMutation.mutate(
-			payload,
-			{
-				onSuccess: product => {
-					vm.setCreateOpen(false)
-					router.push(`/admin/products/${product.id}`)
-				},
-			},
-		)
-	}
-
 	const confirmDeleteId = vm.deleteConfirmId
 
 	return (
@@ -71,7 +41,7 @@ function ProductsListPageClient({
 					<Button
 						type="button"
 						onClick={() => {
-							vm.setCreateOpen(true)
+							router.push('/admin/products/new')
 						}}
 					>
 						{'Создать товар'}
@@ -168,17 +138,6 @@ function ProductsListPageClient({
 						</Button>
 					</div>
 				)}
-			/>
-			<ProductFormModal
-				open={vm.isCreateOpen}
-				title="Новый товар"
-				submitLabel="Создать"
-				onOpenChange={vm.setCreateOpen}
-				onSubmit={handleCreateSubmit}
-				submitting={vm.createMutation.isPending}
-				errorText={vm.createMutation.isError
-					? createError
-					: ''}
 			/>
 			<ConfirmDialog
 				open={confirmDeleteId !== null}
