@@ -19,6 +19,7 @@ import {ProductCreateMainSection} from './ui/ProductCreateMainSection'
 import {ProductCreateMediaModal} from './ui/ProductCreateMediaModal'
 import {ProductCreateSpecsSection} from './ui/ProductCreateSpecsSection'
 import {ProductCreateTagsSection} from './ui/ProductCreateTagsSection'
+import {UploadPhotoSection} from './ui/UploadPhotoSection'
 
 function parseNumberOrNull(value: string): number | null | undefined {
 	const trimmed = value.trim()
@@ -202,31 +203,15 @@ function ProductCreatePageClient() {
 						tagOptions={tagOptions}
 						onToggleTag={handleToggleTag}
 					/>
-					<section className="space-y-3">
-						<h3 className="text-sm font-medium text-muted-foreground">
-							{'Фото'}
-						</h3>
-						<div className="rounded-md border p-3">
-							<p className="mb-2 text-sm text-muted-foreground">
-								{thumbnailUrl.trim().length > 0
-									? 'Thumbnail добавлен'
-									: 'Thumbnail не задан'}
-							</p>
-							<p className="mb-3 text-sm text-muted-foreground">
-								{`Изображений в галерее: ${galleryImages.length}`}
-							</p>
-							<Button
-								type="button"
-								variant="outline"
-								disabled={createMutation.isPending}
-								onClick={() => {
-									setMediaModalOpen(true)
-								}}
-							>
-								{'Открыть модалку фото'}
-							</Button>
-						</div>
-					</section>
+					<UploadPhotoSection
+						imagesCount={galleryImages.length}
+						thumbnailUrl={thumbnailUrl}
+						galleryImages={galleryImages}
+						disabled={createMutation.isPending}
+						onOpenMediaModal={() => {
+							setMediaModalOpen(true)
+						}}
+					/>
 					<ProductCreateDocumentsSection
 						disabled={createMutation.isPending}
 						documents={documents}
