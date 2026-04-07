@@ -30,23 +30,20 @@ function ProductCreateSpecsSection({
 			<h3 className="text-sm font-medium text-muted-foreground">
 				{'Характеристики'}
 			</h3>
-			<p className="text-xs text-muted-foreground">
-				{'Материал, вес и габариты не обязательны на этапе создания.'}
-			</p>
-			<FormField
-				label="Материал"
-				htmlFor="create-product-material"
-			>
-				<Input
-					id="create-product-material"
-					value={material}
-					onChange={event => {
-						onMaterialChange(event.target.value)
-					}}
-					disabled={disabled}
-				/>
-			</FormField>
 			<div className="grid gap-4 sm:grid-cols-2">
+				<FormField
+					label="Материал"
+					htmlFor="create-product-material"
+				>
+					<Input
+						id="create-product-material"
+						value={material}
+						onChange={event => {
+							onMaterialChange(event.target.value)
+						}}
+						disabled={disabled}
+					/>
+				</FormField>
 				<FormField
 					label="Вес"
 					htmlFor="create-product-weight"
@@ -62,9 +59,8 @@ function ProductCreateSpecsSection({
 						disabled={disabled}
 					/>
 				</FormField>
-				<div />
 			</div>
-			<div className="grid gap-4 sm:grid-cols-3">
+			<div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-4">
 				<FormField
 					label="Длина"
 					htmlFor="create-product-length"
@@ -110,6 +106,7 @@ function ProductCreateSpecsSection({
 						disabled={disabled}
 					/>
 				</FormField>
+				<div className="hidden xl:block" />
 			</div>
 		</section>
 	)

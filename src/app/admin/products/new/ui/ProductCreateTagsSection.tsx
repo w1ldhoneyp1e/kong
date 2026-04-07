@@ -25,7 +25,7 @@ function ProductCreateTagsSection({
 			>
 				<div
 					id="create-product-tags"
-					className="space-y-2 rounded-md border p-3"
+					className="grid gap-2 rounded-md border p-2 sm:grid-cols-2"
 				>
 					{tagOptions.length > 0
 						? tagOptions.map(tag => (

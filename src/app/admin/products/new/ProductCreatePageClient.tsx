@@ -168,9 +168,9 @@ function ProductCreatePageClient() {
 					</Link>
 				)}
 			/>
-			<div className="max-w-2xl rounded-md border p-4">
+			<div className="max-w-7xl">
 				<form
-					className="space-y-6"
+					className="grid gap-6 xl:grid-cols-3"
 					onSubmit={handleSubmit}
 				>
 					<ProductCreateMainSection
@@ -246,20 +246,14 @@ function ProductCreatePageClient() {
 					{createError
 						? (
 							<p
-								className="text-sm text-destructive"
+								className="text-sm text-destructive xl:col-span-2"
 								role="alert"
 							>
 								{createError}
 							</p>
 						)
 						: null}
-					<div className="flex gap-2">
-						<Link
-							href="/admin/products"
-							className="inline-flex h-9 items-center text-sm text-muted-foreground underline-offset-4 hover:underline"
-						>
-							{'Отмена'}
-						</Link>
+					<div className="flex gap-2 xl:col-span-2">
 						<Button
 							type="submit"
 							state={createMutation.isPending
@@ -267,6 +261,15 @@ function ProductCreatePageClient() {
 								: 'default'}
 						>
 							{'Создать'}
+						</Button>
+						<Button
+							type="button"
+							variant="secondary"
+							onClick={() => {
+								router.push('/admin/products')
+							}}
+						>
+							{'Отмена'}
 						</Button>
 					</div>
 				</form>
