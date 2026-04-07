@@ -29,6 +29,7 @@ function ProductCreateMainSection({
 			</h3>
 			<div className="grid gap-4 sm:grid-cols-2">
 				<FormField
+					className="sm:col-span-2"
 					label="Название"
 					htmlFor="create-product-title"
 				>
