@@ -56,6 +56,7 @@ export {
 	SelectValue,
 } from './ui/select'
 export {Link} from './ui/link'
+export {Modal} from './ui/modal'
 export type {LinkProps} from './ui/link'
 export {
 	Carousel,

@@ -1,18 +1,14 @@
-import {
-	Button,
-	FormField,
-	Input,
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '../../../../../shared'
+'use client'
+
+import {Plus} from 'lucide-react'
+import {useState} from 'react'
 import {
 	type ProductDocument,
 	type ProductDocumentKind,
 	type ProductDocumentSourceType,
 } from '../types'
+import {ProductDocumentAttachmentCard} from './documentAttachmentPresentation'
+import {ProductCreateDocumentModal} from './ProductCreateDocumentModal'
 
 function ProductCreateDocumentsSection({
 	disabled,
@@ -51,141 +47,79 @@ function ProductCreateDocumentsSection({
 	onAddDocument: () => void,
 	onRemoveDocument: (id: string) => void,
 }>) {
+	const [addModalOpen, setAddModalOpen] = useState(false)
+
+	const kindLabel = (kind: ProductDocumentKind) =>
+		documentKindOptions.find(option => option.value === kind)?.label ?? kind
+
+	const sourceLabel = (source: ProductDocumentSourceType) =>
+		documentSourceTypeOptions.find(option => option.value === source)?.label ?? source
+
+	const canSubmitNew
+		= newDocTitle.trim().length > 0 && newDocUrl.trim().length > 0
+
+	const handleConfirmAdd = () => {
+		if (!canSubmitNew) {
+			return
+		}
+
+		onAddDocument()
+		setAddModalOpen(false)
+	}
+
 	return (
 		<section className="space-y-3">
 			<h3 className="text-sm font-medium text-muted-foreground">
 				{'Документы'}
 			</h3>
-			<div className="rounded-md border p-3">
-				{documents.length > 0
-					? (
-						<ul className="mb-3 space-y-2 text-sm">
-							{documents.map(document => (
-								<li
-									key={document.id}
-									className="flex items-start justify-between gap-3"
-								>
-									<div className="min-w-0">
-										<div className="font-medium">
-											{document.title}
-										</div>
-										<div className="text-xs text-muted-foreground">
-											{`${document.kind} / ${document.sourceType}: ${document.url}`}
-										</div>
-									</div>
-									<Button
-										type="button"
-										variant="outline"
-										size="sm"
-										disabled={disabled}
-										onClick={() => {
-											onRemoveDocument(document.id)
-										}}
-									>
-										{'Удалить'}
-									</Button>
-								</li>
-							))}
-						</ul>
-					)
-					: (
-						<p className="text-sm text-muted-foreground">
-							{'Пока нет документов'}
-						</p>
-					)}
-				<div className="grid gap-4 sm:grid-cols-2">
-					<FormField
-						label="Название"
-						htmlFor="create-doc-title"
+			<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+				{documents.map(document => (
+					<ProductDocumentAttachmentCard
+						key={document.id}
+						document={document}
+						kindLabel={kindLabel(document.kind)}
+						sourceLabel={sourceLabel(document.sourceType)}
+						disabled={disabled}
+						onRemove={() => {
+							onRemoveDocument(document.id)
+						}}
+					/>
+				))}
+				<button
+					type="button"
+					disabled={disabled}
+					onClick={() => {
+						setAddModalOpen(true)
+					}}
+					className="flex min-h-[7.5rem] flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/15 p-3 text-muted-foreground transition-colors hover:border-muted-foreground/45 hover:bg-muted/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+				>
+					<span
+						className="flex size-10 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/40 bg-background"
+						aria-hidden={true}
 					>
-						<Input
-							id="create-doc-title"
-							value={newDocTitle}
-							onChange={event => {
-								onNewDocTitleChange(event.target.value)
-							}}
-							disabled={disabled}
-						/>
-					</FormField>
-					<FormField
-						label="Тип"
-						htmlFor="create-doc-kind"
-					>
-						<Select
-							value={newDocKind}
-							onValueChange={value => {
-								onNewDocKindChange(value as ProductDocumentKind)
-							}}
-							disabled={disabled}
-						>
-							<SelectTrigger id="create-doc-kind">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{documentKindOptions.map(option => (
-									<SelectItem
-										key={option.value}
-										value={option.value}
-									>
-										{option.label}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</FormField>
-					<FormField
-						label="Источник"
-						htmlFor="create-doc-source-type"
-					>
-						<Select
-							value={newDocSourceType}
-							onValueChange={value => {
-								onNewDocSourceTypeChange(value as ProductDocumentSourceType)
-							}}
-							disabled={disabled}
-						>
-							<SelectTrigger id="create-doc-source-type">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{documentSourceTypeOptions.map(option => (
-									<SelectItem
-										key={option.value}
-										value={option.value}
-									>
-										{option.label}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</FormField>
-					<FormField
-						label="URL"
-						htmlFor="create-doc-url"
-					>
-						<Input
-							id="create-doc-url"
-							value={newDocUrl}
-							onChange={event => {
-								onNewDocUrlChange(event.target.value)
-							}}
-							disabled={disabled}
-						/>
-					</FormField>
-				</div>
-				<div className="mt-3 flex justify-end">
-					<Button
-						type="button"
-						variant="outline"
-						disabled={disabled
-							|| newDocTitle.trim().length === 0
-							|| newDocUrl.trim().length === 0}
-						onClick={onAddDocument}
-					>
-						{'Добавить документ'}
-					</Button>
-				</div>
+						<Plus className="size-5 stroke-[1.75]" />
+					</span>
+					<span className="text-center text-xs font-medium leading-tight">
+						{'Добавить'}
+					</span>
+				</button>
 			</div>
+			<ProductCreateDocumentModal
+				open={addModalOpen}
+				disabled={disabled}
+				newDocTitle={newDocTitle}
+				newDocKind={newDocKind}
+				newDocSourceType={newDocSourceType}
+				newDocUrl={newDocUrl}
+				documentKindOptions={documentKindOptions}
+				documentSourceTypeOptions={documentSourceTypeOptions}
+				onOpenChange={setAddModalOpen}
+				onNewDocTitleChange={onNewDocTitleChange}
+				onNewDocKindChange={onNewDocKindChange}
+				onNewDocSourceTypeChange={onNewDocSourceTypeChange}
+				onNewDocUrlChange={onNewDocUrlChange}
+				onConfirm={handleConfirmAdd}
+			/>
 		</section>
 	)
 }

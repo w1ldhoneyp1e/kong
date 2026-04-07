@@ -41,8 +41,6 @@ function UploadPhotoSection({
 
 	const canPrev = hasSlides && currentSlide > 0
 	const canNext = hasSlides && currentSlide < slides.length - 1
-	console.log('canPrev', canPrev)
-	console.log('canNext', canNext)
 
 	const shownUrl = hasSlides
 		? slides[currentSlide]

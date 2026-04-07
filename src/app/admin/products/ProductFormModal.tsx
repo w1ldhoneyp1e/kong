@@ -5,6 +5,7 @@ import {
 	Button,
 	FormField,
 	Input,
+	Modal,
 	Select,
 	SelectContent,
 	SelectItem,
@@ -227,16 +228,6 @@ function ProductFormModal({
 		initialVariants,
 	])
 
-	if (!open) {
-		return null
-	}
-
-	const handleBackdropClick = () => {
-		if (!submitting) {
-			onOpenChange(false)
-		}
-	}
-
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 		const tag_ids = formTagIdsText
@@ -282,409 +273,402 @@ function ProductFormModal({
 	const variantsForSku = initialVariants ?? []
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-			<button
-				type="button"
-				className="absolute inset-0 bg-black/50"
-				aria-label="Закрыть"
-				onClick={handleBackdropClick}
-			/>
-			<div
-				className="relative z-10 w-full max-w-md rounded-lg border border-border bg-background p-6 shadow-lg"
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby="product-form-title"
+		<Modal
+			open={open}
+			onOpenChange={onOpenChange}
+			disabled={submitting}
+			className="max-w-md"
+			ariaLabelledBy="product-form-title"
+		>
+			<h2
+				id="product-form-title"
+				className="mb-4 text-lg font-semibold"
 			>
-				<h2
-					id="product-form-title"
-					className="mb-4 text-lg font-semibold"
-				>
-					{title}
-				</h2>
-				<form
-					className="space-y-6"
-					onSubmit={handleSubmit}
-				>
-					<section className="space-y-4">
-						<h3 className="text-sm font-medium text-muted-foreground">
-							{'Основное'}
-						</h3>
+				{title}
+			</h2>
+			<form
+				className="space-y-6"
+				onSubmit={handleSubmit}
+			>
+				<section className="space-y-4">
+					<h3 className="text-sm font-medium text-muted-foreground">
+						{'Основное'}
+					</h3>
+					<FormField
+						label="Название"
+						htmlFor="product-title"
+					>
+						<Input
+							id="product-title"
+							value={formTitle}
+							onChange={e => {
+								setFormTitle(e.target.value)
+							}}
+							required={true}
+							disabled={submitting}
+						/>
+					</FormField>
+					<FormField
+						label="Handle (URL)"
+						htmlFor="product-handle"
+					>
+						<Input
+							id="product-handle"
+							value={formHandle}
+							onChange={e => {
+								setFormHandle(e.target.value)
+							}}
+							disabled={submitting}
+						/>
+					</FormField>
+					<FormField
+						label="Статус"
+						htmlFor="product-status"
+					>
+						<Select
+							value={formStatus}
+							onValueChange={setFormStatus}
+							disabled={submitting}
+						>
+							<SelectTrigger id="product-status">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								{STATUS_OPTIONS.map(opt => (
+									<SelectItem
+										key={opt.value}
+										value={opt.value}
+									>
+										{opt.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</FormField>
+				</section>
+				{errorText
+					? (
+						<p
+							className="text-sm text-destructive"
+							role="alert"
+						>
+							{errorText}
+						</p>
+					)
+					: null}
+				<section className="space-y-4">
+					<h3 className="text-sm font-medium text-muted-foreground">
+						{'Характеристики'}
+					</h3>
+					<FormField
+						label="Материал"
+						htmlFor="product-material"
+					>
+						<Input
+							id="product-material"
+							value={formMaterial}
+							onChange={e => {
+								setFormMaterial(e.target.value)
+							}}
+							disabled={submitting}
+						/>
+					</FormField>
+					<div className="grid gap-4 sm:grid-cols-2">
 						<FormField
-							label="Название"
-							htmlFor="product-title"
+							label="Вес"
+							htmlFor="product-weight"
 						>
 							<Input
-								id="product-title"
-								value={formTitle}
+								id="product-weight"
+								type="number"
+								step="any"
+								value={formWeight}
 								onChange={e => {
-									setFormTitle(e.target.value)
+									setFormWeight(e.target.value)
 								}}
-								required={true}
+								disabled={submitting}
+							/>
+						</FormField>
+						<div />
+					</div>
+					<div className="grid gap-4 sm:grid-cols-3">
+						<FormField
+							label="Длина"
+							htmlFor="product-length"
+						>
+							<Input
+								id="product-length"
+								type="number"
+								step="any"
+								value={formLength}
+								onChange={e => {
+									setFormLength(e.target.value)
+								}}
 								disabled={submitting}
 							/>
 						</FormField>
 						<FormField
-							label="Handle (URL)"
-							htmlFor="product-handle"
+							label="Ширина"
+							htmlFor="product-width"
 						>
 							<Input
-								id="product-handle"
-								value={formHandle}
+								id="product-width"
+								type="number"
+								step="any"
+								value={formWidth}
 								onChange={e => {
-									setFormHandle(e.target.value)
+									setFormWidth(e.target.value)
 								}}
 								disabled={submitting}
 							/>
 						</FormField>
 						<FormField
-							label="Статус"
-							htmlFor="product-status"
+							label="Высота"
+							htmlFor="product-height"
 						>
-							<Select
-								value={formStatus}
-								onValueChange={setFormStatus}
+							<Input
+								id="product-height"
+								type="number"
+								step="any"
+								value={formHeight}
+								onChange={e => {
+									setFormHeight(e.target.value)
+								}}
 								disabled={submitting}
-							>
-								<SelectTrigger id="product-status">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									{STATUS_OPTIONS.map(opt => (
-										<SelectItem
-											key={opt.value}
-											value={opt.value}
+							/>
+						</FormField>
+					</div>
+				</section>
+				<section className="space-y-4">
+					<h3 className="text-sm font-medium text-muted-foreground">
+						{'Теги'}
+					</h3>
+					<FormField
+						label="ID тегов (через запятую)"
+						htmlFor="product-tags"
+					>
+						<Input
+							id="product-tags"
+							value={formTagIdsText}
+							onChange={e => {
+								setFormTagIdsText(e.target.value)
+							}}
+							disabled={submitting}
+						/>
+					</FormField>
+				</section>
+				<section className="space-y-3">
+					<h3 className="text-sm font-medium text-muted-foreground">
+						{'Документы'}
+					</h3>
+					<div className="rounded-md border p-3">
+						{formDocuments.length > 0
+							? (
+								<ul className="mb-3 space-y-2 text-sm">
+									{formDocuments.map(doc => (
+										<li
+											key={doc.id}
+											className="flex items-start justify-between gap-3"
 										>
-											{opt.label}
-										</SelectItem>
+											<div className="min-w-0">
+												<div className="font-medium">
+													{doc.title}
+												</div>
+												<div className="text-xs text-muted-foreground">
+													{`${doc.kind} / ${doc.sourceType}: ${doc.url}`}
+												</div>
+											</div>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												disabled={submitting}
+												onClick={() => {
+													setFormDocuments(d => d.filter(x => x.id !== doc.id))
+												}}
+											>
+												{'Удалить'}
+											</Button>
+										</li>
 									))}
-								</SelectContent>
-							</Select>
-						</FormField>
-					</section>
-					{errorText
-						? (
-							<p
-								className="text-sm text-destructive"
-								role="alert"
-							>
-								{errorText}
-							</p>
-						)
-						: null}
-					<section className="space-y-4">
-						<h3 className="text-sm font-medium text-muted-foreground">
-							{'Характеристики'}
-						</h3>
-						<FormField
-							label="Материал"
-							htmlFor="product-material"
-						>
-							<Input
-								id="product-material"
-								value={formMaterial}
-								onChange={e => {
-									setFormMaterial(e.target.value)
-								}}
-								disabled={submitting}
-							/>
-						</FormField>
+								</ul>
+							)
+							: (
+								<p className="text-sm text-muted-foreground">
+									{'Пока нет документов'}
+								</p>
+							)}
 						<div className="grid gap-4 sm:grid-cols-2">
 							<FormField
-								label="Вес"
-								htmlFor="product-weight"
+								label="Название"
+								htmlFor="doc-title"
 							>
 								<Input
-									id="product-weight"
-									type="number"
-									step="any"
-									value={formWeight}
-									onChange={e => {
-										setFormWeight(e.target.value)
-									}}
-									disabled={submitting}
-								/>
-							</FormField>
-							<div />
-						</div>
-						<div className="grid gap-4 sm:grid-cols-3">
-							<FormField
-								label="Длина"
-								htmlFor="product-length"
-							>
-								<Input
-									id="product-length"
-									type="number"
-									step="any"
-									value={formLength}
-									onChange={e => {
-										setFormLength(e.target.value)
-									}}
+									id="doc-title"
+									value={newDocTitle}
+									onChange={e => setNewDocTitle(e.target.value)}
 									disabled={submitting}
 								/>
 							</FormField>
 							<FormField
-								label="Ширина"
-								htmlFor="product-width"
+								label="Тип"
+								htmlFor="doc-kind"
 							>
-								<Input
-									id="product-width"
-									type="number"
-									step="any"
-									value={formWidth}
-									onChange={e => {
-										setFormWidth(e.target.value)
+								<Select
+									value={newDocKind}
+									onValueChange={value => {
+										setNewDocKind(value as ProductDocumentKind)
 									}}
 									disabled={submitting}
-								/>
-							</FormField>
-							<FormField
-								label="Высота"
-								htmlFor="product-height"
-							>
-								<Input
-									id="product-height"
-									type="number"
-									step="any"
-									value={formHeight}
-									onChange={e => {
-										setFormHeight(e.target.value)
-									}}
-									disabled={submitting}
-								/>
-							</FormField>
-						</div>
-					</section>
-					<section className="space-y-4">
-						<h3 className="text-sm font-medium text-muted-foreground">
-							{'Теги'}
-						</h3>
-						<FormField
-							label="ID тегов (через запятую)"
-							htmlFor="product-tags"
-						>
-							<Input
-								id="product-tags"
-								value={formTagIdsText}
-								onChange={e => {
-									setFormTagIdsText(e.target.value)
-								}}
-								disabled={submitting}
-							/>
-						</FormField>
-					</section>
-					<section className="space-y-3">
-						<h3 className="text-sm font-medium text-muted-foreground">
-							{'Документы'}
-						</h3>
-						<div className="rounded-md border p-3">
-							{formDocuments.length > 0
-								? (
-									<ul className="mb-3 space-y-2 text-sm">
-										{formDocuments.map(doc => (
-											<li
-												key={doc.id}
-												className="flex items-start justify-between gap-3"
+								>
+									<SelectTrigger id="doc-kind">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										{DOCUMENT_KIND_OPTIONS.map(opt => (
+											<SelectItem
+												key={opt.value}
+												value={opt.value}
 											>
-												<div className="min-w-0">
-													<div className="font-medium">
-														{doc.title}
-													</div>
-													<div className="text-xs text-muted-foreground">
-														{`${doc.kind} / ${doc.sourceType}: ${doc.url}`}
-													</div>
-												</div>
-												<Button
-													type="button"
-													variant="outline"
-													size="sm"
-													disabled={submitting}
-													onClick={() => {
-														setFormDocuments(d => d.filter(x => x.id !== doc.id))
-													}}
-												>
-													{'Удалить'}
-												</Button>
-											</li>
+												{opt.label}
+											</SelectItem>
 										))}
-									</ul>
-								)
-								: (
-									<p className="text-sm text-muted-foreground">
-										{'Пока нет документов'}
-									</p>
-								)}
-							<div className="grid gap-4 sm:grid-cols-2">
-								<FormField
-									label="Название"
-									htmlFor="doc-title"
+									</SelectContent>
+								</Select>
+							</FormField>
+							<FormField
+								label="Источник"
+								htmlFor="doc-source-type"
+							>
+								<Select
+									value={newDocSourceType}
+									onValueChange={value => {
+										setNewDocSourceType(value as ProductDocumentSourceType)
+									}}
+									disabled={submitting}
 								>
-									<Input
-										id="doc-title"
-										value={newDocTitle}
-										onChange={e => setNewDocTitle(e.target.value)}
-										disabled={submitting}
-									/>
-								</FormField>
-								<FormField
-									label="Тип"
-									htmlFor="doc-kind"
-								>
-									<Select
-										value={newDocKind}
-										onValueChange={value => {
-											setNewDocKind(value as ProductDocumentKind)
-										}}
-										disabled={submitting}
-									>
-										<SelectTrigger id="doc-kind">
-											<SelectValue />
-										</SelectTrigger>
-										<SelectContent>
-											{DOCUMENT_KIND_OPTIONS.map(opt => (
-												<SelectItem
-													key={opt.value}
-													value={opt.value}
-												>
-													{opt.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</FormField>
-								<FormField
-									label="Источник"
-									htmlFor="doc-source-type"
-								>
-									<Select
-										value={newDocSourceType}
-										onValueChange={value => {
-											setNewDocSourceType(value as ProductDocumentSourceType)
-										}}
-										disabled={submitting}
-									>
-										<SelectTrigger id="doc-source-type">
-											<SelectValue />
-										</SelectTrigger>
-										<SelectContent>
-											{DOCUMENT_SOURCE_TYPE_OPTIONS.map(opt => (
-												<SelectItem
-													key={opt.value}
-													value={opt.value}
-												>
-													{opt.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</FormField>
-								<FormField
-									label="URL"
-									htmlFor="doc-url"
-								>
-									<Input
-										id="doc-url"
-										value={newDocUrl}
-										onChange={e => setNewDocUrl(e.target.value)}
-										disabled={submitting}
-									/>
-								</FormField>
-							</div>
-							<div className="mt-3 flex justify-end">
-								<Button
-									type="button"
-									variant="outline"
-									disabled={submitting
+									<SelectTrigger id="doc-source-type">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										{DOCUMENT_SOURCE_TYPE_OPTIONS.map(opt => (
+											<SelectItem
+												key={opt.value}
+												value={opt.value}
+											>
+												{opt.label}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</FormField>
+							<FormField
+								label="URL"
+								htmlFor="doc-url"
+							>
+								<Input
+									id="doc-url"
+									value={newDocUrl}
+									onChange={e => setNewDocUrl(e.target.value)}
+									disabled={submitting}
+								/>
+							</FormField>
+						</div>
+						<div className="mt-3 flex justify-end">
+							<Button
+								type="button"
+								variant="outline"
+								disabled={submitting
 										|| newDocTitle.trim().length === 0
 										|| newDocUrl.trim().length === 0}
-									onClick={() => {
-										const id = (globalThis.crypto as {randomUUID?: () => string} | undefined)
-											?.randomUUID?.()
+								onClick={() => {
+									const id = (globalThis.crypto as {randomUUID?: () => string} | undefined)
+										?.randomUUID?.()
 											?? `${Date.now()}_${Math.random()}`
 
-										setFormDocuments(d => [
-											...d,
-											{
-												id,
-												title: newDocTitle.trim(),
-												kind: newDocKind,
-												sourceType: newDocSourceType,
-												url: newDocUrl.trim(),
-											},
-										])
+									setFormDocuments(d => [
+										...d,
+										{
+											id,
+											title: newDocTitle.trim(),
+											kind: newDocKind,
+											sourceType: newDocSourceType,
+											url: newDocUrl.trim(),
+										},
+									])
 
-										setNewDocTitle('')
-										setNewDocUrl('')
-									}}
-								>
-									{'Добавить документ'}
-								</Button>
-							</div>
+									setNewDocTitle('')
+									setNewDocUrl('')
+								}}
+							>
+								{'Добавить документ'}
+							</Button>
 						</div>
-					</section>
-					{variantsForSku.length > 0
-						? (
-							<section className="space-y-3">
-								<h3 className="text-sm font-medium text-muted-foreground">
-									{'Варианты (SKU)'}
-								</h3>
-								<div className="rounded-md border p-3">
-									<ul className="space-y-2 text-sm">
-										{variantsForSku.map(variant => (
-											<li
-												key={variant.id}
-												className="flex items-center justify-between gap-3"
-											>
-												<div className="min-w-0">
-													<div className="truncate font-medium">
-														{variant.title ?? 'Вариант'}
-													</div>
-													<div className="font-mono text-xs text-muted-foreground">
-														{variant.id}
-													</div>
-												</div>
-												<div className="w-44">
-													<Input
-														value={variantSkuById[variant.id] ?? ''}
-														onChange={e => {
-															const nextValue = e.target.value
-															setVariantSkuById(s => ({
-																...s,
-																[variant.id]: nextValue,
-															}))
-														}}
-														disabled={submitting}
-													/>
-												</div>
-											</li>
-										))}
-									</ul>
-								</div>
-							</section>
-						)
-						: null}
-					<div className="flex justify-end gap-2 pt-2">
-						<Button
-							type="button"
-							variant="outline"
-							disabled={submitting}
-							onClick={() => {
-								onOpenChange(false)
-							}}
-						>
-							{'Отмена'}
-						</Button>
-						<Button
-							type="submit"
-							state={submitting
-								? 'loading'
-								: 'default'}
-						>
-							{submitLabel}
-						</Button>
 					</div>
-				</form>
-			</div>
-		</div>
+				</section>
+				{variantsForSku.length > 0
+					? (
+						<section className="space-y-3">
+							<h3 className="text-sm font-medium text-muted-foreground">
+								{'Варианты (SKU)'}
+							</h3>
+							<div className="rounded-md border p-3">
+								<ul className="space-y-2 text-sm">
+									{variantsForSku.map(variant => (
+										<li
+											key={variant.id}
+											className="flex items-center justify-between gap-3"
+										>
+											<div className="min-w-0">
+												<div className="truncate font-medium">
+													{variant.title ?? 'Вариант'}
+												</div>
+												<div className="font-mono text-xs text-muted-foreground">
+													{variant.id}
+												</div>
+											</div>
+											<div className="w-44">
+												<Input
+													value={variantSkuById[variant.id] ?? ''}
+													onChange={e => {
+														const nextValue = e.target.value
+														setVariantSkuById(s => ({
+															...s,
+															[variant.id]: nextValue,
+														}))
+													}}
+													disabled={submitting}
+												/>
+											</div>
+										</li>
+									))}
+								</ul>
+							</div>
+						</section>
+					)
+					: null}
+				<div className="flex justify-end gap-2 pt-2">
+					<Button
+						type="button"
+						variant="outline"
+						disabled={submitting}
+						onClick={() => {
+							onOpenChange(false)
+						}}
+					>
+						{'Отмена'}
+					</Button>
+					<Button
+						type="submit"
+						state={submitting
+							? 'loading'
+							: 'default'}
+					>
+						{submitLabel}
+					</Button>
+				</div>
+			</form>
+		</Modal>
 	)
 }
 
