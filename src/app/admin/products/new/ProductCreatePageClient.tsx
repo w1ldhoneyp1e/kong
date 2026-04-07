@@ -249,7 +249,7 @@ function ProductCreatePageClient() {
 						</Button>
 						<Button
 							type="button"
-							variant="secondary"
+							variant="outline"
 							onClick={() => {
 								router.push('/admin/products')
 							}}

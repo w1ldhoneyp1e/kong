@@ -1,3 +1,4 @@
+import {ChevronLeft, ChevronRight} from 'lucide-react'
 import {
 	useEffect,
 	useMemo,
@@ -40,6 +41,9 @@ function UploadPhotoSection({
 
 	const canPrev = hasSlides && currentSlide > 0
 	const canNext = hasSlides && currentSlide < slides.length - 1
+	console.log('canPrev', canPrev)
+	console.log('canNext', canNext)
+
 	const shownUrl = hasSlides
 		? slides[currentSlide]
 		: ''
@@ -72,24 +76,28 @@ function UploadPhotoSection({
 						<Button
 							type="button"
 							variant="outline"
-							size="sm"
+							size="icon"
+							className="size-8"
+							aria-label="Предыдущее фото"
 							disabled={disabled || !canPrev}
 							onClick={() => {
 								setCurrentSlide(value => Math.max(0, value - 1))
 							}}
 						>
-							{'Назад'}
+							<ChevronLeft className="size-4" />
 						</Button>
 						<Button
 							type="button"
 							variant="outline"
-							size="sm"
+							size="icon"
+							className="size-8"
+							aria-label="Следующее фото"
 							disabled={disabled || !canNext}
 							onClick={() => {
 								setCurrentSlide(value => Math.min(slides.length - 1, value + 1))
 							}}
 						>
-							{'Вперед'}
+							<ChevronRight className="size-4" />
 						</Button>
 						<span className="text-xs text-muted-foreground">
 							{hasSlides
