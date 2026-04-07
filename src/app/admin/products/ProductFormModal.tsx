@@ -5,6 +5,11 @@ import {
 	Button,
 	FormField,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '../../../shared'
 
 type ProductDocumentKind = 'instruction' | 'reference' | 'certificate' | 'other'
@@ -335,24 +340,25 @@ function ProductFormModal({
 							label="Статус"
 							htmlFor="product-status"
 						>
-							<select
-								id="product-status"
-								className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+							<Select
 								value={formStatus}
-								onChange={e => {
-									setFormStatus(e.target.value)
-								}}
+								onValueChange={setFormStatus}
 								disabled={submitting}
 							>
-								{STATUS_OPTIONS.map(opt => (
-									<option
-										key={opt.value}
-										value={opt.value}
-									>
-										{opt.label}
-									</option>
-								))}
-							</select>
+								<SelectTrigger id="product-status">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{STATUS_OPTIONS.map(opt => (
+										<SelectItem
+											key={opt.value}
+											value={opt.value}
+										>
+											{opt.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
 						</FormField>
 					</section>
 					{errorText
@@ -523,47 +529,53 @@ function ProductFormModal({
 									label="Тип"
 									htmlFor="doc-kind"
 								>
-									<select
-										id="doc-kind"
-										className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+									<Select
 										value={newDocKind}
-										onChange={e => {
-											setNewDocKind(e.target.value as ProductDocumentKind)
+										onValueChange={value => {
+											setNewDocKind(value as ProductDocumentKind)
 										}}
 										disabled={submitting}
 									>
-										{DOCUMENT_KIND_OPTIONS.map(opt => (
-											<option
-												key={opt.value}
-												value={opt.value}
-											>
-												{opt.label}
-											</option>
-										))}
-									</select>
+										<SelectTrigger id="doc-kind">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											{DOCUMENT_KIND_OPTIONS.map(opt => (
+												<SelectItem
+													key={opt.value}
+													value={opt.value}
+												>
+													{opt.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 								</FormField>
 								<FormField
 									label="Источник"
 									htmlFor="doc-source-type"
 								>
-									<select
-										id="doc-source-type"
-										className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+									<Select
 										value={newDocSourceType}
-										onChange={e => {
-											setNewDocSourceType(e.target.value as ProductDocumentSourceType)
+										onValueChange={value => {
+											setNewDocSourceType(value as ProductDocumentSourceType)
 										}}
 										disabled={submitting}
 									>
-										{DOCUMENT_SOURCE_TYPE_OPTIONS.map(opt => (
-											<option
-												key={opt.value}
-												value={opt.value}
-											>
-												{opt.label}
-											</option>
-										))}
-									</select>
+										<SelectTrigger id="doc-source-type">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											{DOCUMENT_SOURCE_TYPE_OPTIONS.map(opt => (
+												<SelectItem
+													key={opt.value}
+													value={opt.value}
+												>
+													{opt.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 								</FormField>
 								<FormField
 									label="URL"

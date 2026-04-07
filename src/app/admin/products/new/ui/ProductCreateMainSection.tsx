@@ -1,4 +1,12 @@
-import {FormField, Input} from '../../../../../shared'
+import {
+	FormField,
+	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '../../../../../shared'
 
 function ProductCreateMainSection({
 	title,
@@ -60,24 +68,25 @@ function ProductCreateMainSection({
 					label="Статус"
 					htmlFor="create-product-status"
 				>
-					<select
-						id="create-product-status"
-						className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+					<Select
 						value={status}
-						onChange={event => {
-							onStatusChange(event.target.value)
-						}}
+						onValueChange={onStatusChange}
 						disabled={disabled}
 					>
-						{statusOptions.map(option => (
-							<option
-								key={option.value}
-								value={option.value}
-							>
-								{option.label}
-							</option>
-						))}
-					</select>
+						<SelectTrigger id="create-product-status">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{statusOptions.map(option => (
+								<SelectItem
+									key={option.value}
+									value={option.value}
+								>
+									{option.label}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 				</FormField>
 			</div>
 		</section>

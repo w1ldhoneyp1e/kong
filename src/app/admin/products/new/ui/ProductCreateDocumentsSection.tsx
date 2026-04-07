@@ -2,6 +2,11 @@ import {
 	Button,
 	FormField,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '../../../../../shared'
 import {
 	type ProductDocument,
@@ -106,47 +111,53 @@ function ProductCreateDocumentsSection({
 						label="Тип"
 						htmlFor="create-doc-kind"
 					>
-						<select
-							id="create-doc-kind"
-							className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+						<Select
 							value={newDocKind}
-							onChange={event => {
-								onNewDocKindChange(event.target.value as ProductDocumentKind)
+							onValueChange={value => {
+								onNewDocKindChange(value as ProductDocumentKind)
 							}}
 							disabled={disabled}
 						>
-							{documentKindOptions.map(option => (
-								<option
-									key={option.value}
-									value={option.value}
-								>
-									{option.label}
-								</option>
-							))}
-						</select>
+							<SelectTrigger id="create-doc-kind">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								{documentKindOptions.map(option => (
+									<SelectItem
+										key={option.value}
+										value={option.value}
+									>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</FormField>
 					<FormField
 						label="Источник"
 						htmlFor="create-doc-source-type"
 					>
-						<select
-							id="create-doc-source-type"
-							className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+						<Select
 							value={newDocSourceType}
-							onChange={event => {
-								onNewDocSourceTypeChange(event.target.value as ProductDocumentSourceType)
+							onValueChange={value => {
+								onNewDocSourceTypeChange(value as ProductDocumentSourceType)
 							}}
 							disabled={disabled}
 						>
-							{documentSourceTypeOptions.map(option => (
-								<option
-									key={option.value}
-									value={option.value}
-								>
-									{option.label}
-								</option>
-							))}
-						</select>
+							<SelectTrigger id="create-doc-source-type">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								{documentSourceTypeOptions.map(option => (
+									<SelectItem
+										key={option.value}
+										value={option.value}
+									>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</FormField>
 					<FormField
 						label="URL"
