@@ -1,19 +1,9 @@
 import {FormField} from '../../../../../shared'
+import {useProductCreateVm} from '../viewmodel'
 
-function ProductCreateTagsSection({
-	disabled,
-	selectedTagIds,
-	tagOptions,
-	onToggleTag,
-}: Readonly<{
-	disabled: boolean,
-	selectedTagIds: string[],
-	tagOptions: {
-		id: string,
-		value?: string | null,
-	}[],
-	onToggleTag: (id: string) => void,
-}>) {
+function ProductCreateTagsSection() {
+	const {tags} = useProductCreateVm()
+
 	return (
 		<section className="space-y-4">
 			<h3 className="text-sm font-medium text-muted-foreground">
@@ -27,19 +17,19 @@ function ProductCreateTagsSection({
 					id="create-product-tags"
 					className="grid gap-2 rounded-md border p-2 sm:grid-cols-2"
 				>
-					{tagOptions.length > 0
-						? tagOptions.map(tag => (
+					{tags.tagOptions.length > 0
+						? tags.tagOptions.map(tag => (
 							<label
 								key={tag.id}
 								className="flex items-center gap-2 text-sm"
 							>
 								<input
 									type="checkbox"
-									checked={selectedTagIds.includes(tag.id)}
+									checked={tags.selectedTagIds.includes(tag.id)}
 									onChange={() => {
-										onToggleTag(tag.id)
+										tags.onToggleTag(tag.id)
 									}}
-									disabled={disabled}
+									disabled={tags.disabled}
 								/>
 								<span>
 									{tag.value ?? tag.id}

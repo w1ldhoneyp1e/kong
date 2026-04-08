@@ -1,71 +1,19 @@
 'use client'
 
 import {Plus} from 'lucide-react'
-import {useState} from 'react'
-import {
-	type ProductDocument,
-	type ProductDocumentKind,
-	type ProductDocumentSourceType,
-} from '../types'
+import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
+import {useProductCreateVm} from '../viewmodel'
 import {ProductDocumentAttachmentCard} from './documentAttachmentPresentation'
 import {ProductCreateDocumentModal} from './ProductCreateDocumentModal'
 
-function ProductCreateDocumentsSection({
-	disabled,
-	documents,
-	newDocTitle,
-	newDocKind,
-	newDocSourceType,
-	newDocUrl,
-	documentKindOptions,
-	documentSourceTypeOptions,
-	onNewDocTitleChange,
-	onNewDocKindChange,
-	onNewDocSourceTypeChange,
-	onNewDocUrlChange,
-	onAddDocument,
-	onRemoveDocument,
-}: Readonly<{
-	disabled: boolean,
-	documents: ProductDocument[],
-	newDocTitle: string,
-	newDocKind: ProductDocumentKind,
-	newDocSourceType: ProductDocumentSourceType,
-	newDocUrl: string,
-	documentKindOptions: {
-		value: ProductDocumentKind,
-		label: string,
-	}[],
-	documentSourceTypeOptions: {
-		value: ProductDocumentSourceType,
-		label: string,
-	}[],
-	onNewDocTitleChange: (value: string) => void,
-	onNewDocKindChange: (value: ProductDocumentKind) => void,
-	onNewDocSourceTypeChange: (value: ProductDocumentSourceType) => void,
-	onNewDocUrlChange: (value: string) => void,
-	onAddDocument: () => void,
-	onRemoveDocument: (id: string) => void,
-}>) {
-	const [addModalOpen, setAddModalOpen] = useState(false)
+function ProductCreateDocumentsSection() {
+	const {documents} = useProductCreateVm()
 
 	const kindLabel = (kind: ProductDocumentKind) =>
-		documentKindOptions.find(option => option.value === kind)?.label ?? kind
+		documents.kindOptions.find(option => option.value === kind)?.label ?? kind
 
 	const sourceLabel = (source: ProductDocumentSourceType) =>
-		documentSourceTypeOptions.find(option => option.value === source)?.label ?? source
-
-	const canSubmitNew
-		= newDocTitle.trim().length > 0 && newDocUrl.trim().length > 0
-
-	const handleConfirmAdd = () => {
-		if (!canSubmitNew) {
-			return
-		}
-
-		onAddDocument()
-		setAddModalOpen(false)
-	}
+		documents.sourceTypeOptions.find(option => option.value === source)?.label ?? source
 
 	return (
 		<section className="space-y-3">
@@ -73,24 +21,22 @@ function ProductCreateDocumentsSection({
 				{'Документы'}
 			</h3>
 			<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-				{documents.map(document => (
+				{documents.items.map(document => (
 					<ProductDocumentAttachmentCard
 						key={document.id}
 						document={document}
 						kindLabel={kindLabel(document.kind)}
 						sourceLabel={sourceLabel(document.sourceType)}
-						disabled={disabled}
+						disabled={documents.disabled}
 						onRemove={() => {
-							onRemoveDocument(document.id)
+							documents.onRemove(document.id)
 						}}
 					/>
 				))}
 				<button
 					type="button"
-					disabled={disabled}
-					onClick={() => {
-						setAddModalOpen(true)
-					}}
+					disabled={documents.disabled}
+					onClick={documents.onOpenModal}
 					className="flex min-h-[7.5rem] flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/15 p-3 text-muted-foreground transition-colors hover:border-muted-foreground/45 hover:bg-muted/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
 				>
 					<span
@@ -104,22 +50,7 @@ function ProductCreateDocumentsSection({
 					</span>
 				</button>
 			</div>
-			<ProductCreateDocumentModal
-				open={addModalOpen}
-				disabled={disabled}
-				newDocTitle={newDocTitle}
-				newDocKind={newDocKind}
-				newDocSourceType={newDocSourceType}
-				newDocUrl={newDocUrl}
-				documentKindOptions={documentKindOptions}
-				documentSourceTypeOptions={documentSourceTypeOptions}
-				onOpenChange={setAddModalOpen}
-				onNewDocTitleChange={onNewDocTitleChange}
-				onNewDocKindChange={onNewDocKindChange}
-				onNewDocSourceTypeChange={onNewDocSourceTypeChange}
-				onNewDocUrlChange={onNewDocUrlChange}
-				onConfirm={handleConfirmAdd}
-			/>
+			<ProductCreateDocumentModal />
 		</section>
 	)
 }

@@ -5,31 +5,21 @@ import {
 	useState,
 } from 'react'
 import {Button} from '../../../../../shared'
+import {useProductCreateVm} from '../viewmodel'
 
-function UploadPhotoSection({
-	imagesCount,
-	thumbnailUrl,
-	galleryImages,
-	disabled,
-	onOpenMediaModal,
-}: Readonly<{
-	imagesCount: number,
-	thumbnailUrl: string,
-	galleryImages: string[],
-	disabled: boolean,
-	onOpenMediaModal: () => void,
-}>) {
-	const additionalText = imagesCount > 0
-		? ` (${imagesCount} выбрано)`
+function UploadPhotoSection() {
+	const {media} = useProductCreateVm()
+	const additionalText = media.galleryImages.length > 0
+		? ` (${media.galleryImages.length} выбрано)`
 		: ''
 	const slides = useMemo(() => {
 		const base = [
-			thumbnailUrl.trim(),
-			...galleryImages.map(item => item.trim()),
+			media.thumbnailUrl.trim(),
+			...media.galleryImages.map(item => item.trim()),
 		].filter(Boolean)
 
 		return Array.from(new Set(base))
-	}, [galleryImages, thumbnailUrl])
+	}, [media.galleryImages, media.thumbnailUrl])
 	const hasSlides = slides.length > 0
 	const [currentSlide, setCurrentSlide] = useState(0)
 
@@ -77,7 +67,7 @@ function UploadPhotoSection({
 							size="icon"
 							className="size-8"
 							aria-label="Предыдущее фото"
-							disabled={disabled || !canPrev}
+							disabled={media.disabled || !canPrev}
 							onClick={() => {
 								setCurrentSlide(value => Math.max(0, value - 1))
 							}}
@@ -90,7 +80,7 @@ function UploadPhotoSection({
 							size="icon"
 							className="size-8"
 							aria-label="Следующее фото"
-							disabled={disabled || !canNext}
+							disabled={media.disabled || !canNext}
 							onClick={() => {
 								setCurrentSlide(value => Math.min(slides.length - 1, value + 1))
 							}}
@@ -106,8 +96,8 @@ function UploadPhotoSection({
 					<Button
 						type="button"
 						variant="outline"
-						disabled={disabled}
-						onClick={onOpenMediaModal}
+						disabled={media.disabled}
+						onClick={media.onOpen}
 					>
 						{'Загрузить'}
 					</Button>

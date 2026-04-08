@@ -4,35 +4,16 @@ import {
 	Input,
 	Modal,
 } from '../../../../../shared'
+import {useProductCreateVm} from '../viewmodel'
 
-function ProductCreateMediaModal({
-	open,
-	disabled,
-	thumbnail,
-	imageDraft,
-	images,
-	onOpenChange,
-	onThumbnailChange,
-	onImageDraftChange,
-	onAddImage,
-	onRemoveImage,
-}: Readonly<{
-	open: boolean,
-	disabled: boolean,
-	thumbnail: string,
-	imageDraft: string,
-	images: string[],
-	onOpenChange: (open: boolean) => void,
-	onThumbnailChange: (value: string) => void,
-	onImageDraftChange: (value: string) => void,
-	onAddImage: () => void,
-	onRemoveImage: (index: number) => void,
-}>) {
+function ProductCreateMediaModal() {
+	const {media} = useProductCreateVm()
+
 	return (
 		<Modal
-			open={open}
-			onOpenChange={onOpenChange}
-			disabled={disabled}
+			open={media.isOpen}
+			onOpenChange={media.onOpenChange}
+			disabled={media.disabled}
 			className="max-w-2xl"
 			ariaLabelledBy="create-product-media-modal-title"
 		>
@@ -47,9 +28,9 @@ function ProductCreateMediaModal({
 					type="button"
 					variant="outline"
 					size="sm"
-					disabled={disabled}
+					disabled={media.disabled}
 					onClick={() => {
-						onOpenChange(false)
+						media.onOpenChange(false)
 					}}
 				>
 					{'Закрыть'}
@@ -62,11 +43,11 @@ function ProductCreateMediaModal({
 				>
 					<Input
 						id="create-product-thumbnail-url"
-						value={thumbnail}
+						value={media.thumbnailUrl}
 						onChange={event => {
-							onThumbnailChange(event.target.value)
+							media.onThumbnailChange(event.target.value)
 						}}
-						disabled={disabled}
+						disabled={media.disabled}
 					/>
 				</FormField>
 				<div className="grid gap-2 sm:grid-cols-[1fr_auto]">
@@ -76,19 +57,19 @@ function ProductCreateMediaModal({
 					>
 						<Input
 							id="create-product-image-draft"
-							value={imageDraft}
+							value={media.imageDraft}
 							onChange={event => {
-								onImageDraftChange(event.target.value)
+								media.onImageDraftChange(event.target.value)
 							}}
-							disabled={disabled}
+							disabled={media.disabled}
 						/>
 					</FormField>
 					<div className="flex items-end">
 						<Button
 							type="button"
 							variant="outline"
-							disabled={disabled || imageDraft.trim().length === 0}
-							onClick={onAddImage}
+							disabled={media.disabled || media.imageDraft.trim().length === 0}
+							onClick={media.onAddImage}
 						>
 							{'Добавить'}
 						</Button>
@@ -98,10 +79,10 @@ function ProductCreateMediaModal({
 					<p className="text-sm font-medium text-muted-foreground">
 						{'Галерея'}
 					</p>
-					{images.length > 0
+					{media.galleryImages.length > 0
 						? (
 							<ul className="space-y-2">
-								{images.map((url, index) => (
+								{media.galleryImages.map((url, index) => (
 									<li
 										key={url}
 										className="flex items-center justify-between gap-2 rounded border p-2"
@@ -113,9 +94,9 @@ function ProductCreateMediaModal({
 											type="button"
 											variant="outline"
 											size="sm"
-											disabled={disabled}
+											disabled={media.disabled}
 											onClick={() => {
-												onRemoveImage(index)
+												media.onRemoveImage(index)
 											}}
 										>
 											{'Удалить'}

@@ -12,52 +12,18 @@ import {
 	SelectValue,
 } from '../../../../../shared'
 import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
+import {useProductCreateVm} from '../viewmodel'
 
-function ProductCreateDocumentModal({
-	open,
-	disabled,
-	newDocTitle,
-	newDocKind,
-	newDocSourceType,
-	newDocUrl,
-	documentKindOptions,
-	documentSourceTypeOptions,
-	onOpenChange,
-	onNewDocTitleChange,
-	onNewDocKindChange,
-	onNewDocSourceTypeChange,
-	onNewDocUrlChange,
-	onConfirm,
-}: Readonly<{
-	open: boolean,
-	disabled: boolean,
-	newDocTitle: string,
-	newDocKind: ProductDocumentKind,
-	newDocSourceType: ProductDocumentSourceType,
-	newDocUrl: string,
-	documentKindOptions: {
-		value: ProductDocumentKind,
-		label: string,
-	}[],
-	documentSourceTypeOptions: {
-		value: ProductDocumentSourceType,
-		label: string,
-	}[],
-	onOpenChange: (open: boolean) => void,
-	onNewDocTitleChange: (value: string) => void,
-	onNewDocKindChange: (value: ProductDocumentKind) => void,
-	onNewDocSourceTypeChange: (value: ProductDocumentSourceType) => void,
-	onNewDocUrlChange: (value: string) => void,
-	onConfirm: () => void,
-}>) {
+function ProductCreateDocumentModal() {
+	const {documents} = useProductCreateVm()
 	const canSubmit
-		= newDocTitle.trim().length > 0 && newDocUrl.trim().length > 0
+		= documents.newItem.title.trim().length > 0 && documents.newItem.url.trim().length > 0
 
 	return (
 		<Modal
-			open={open}
-			onOpenChange={onOpenChange}
-			disabled={disabled}
+			open={documents.isModalOpen}
+			onOpenChange={documents.onOpenChange}
+			disabled={documents.disabled}
 			className="max-h-[min(90vh,36rem)] max-w-lg overflow-y-auto"
 			ariaLabelledBy="create-document-modal-title"
 		>
@@ -72,10 +38,8 @@ function ProductCreateDocumentModal({
 					type="button"
 					variant="outline"
 					size="sm"
-					disabled={disabled}
-					onClick={() => {
-						onOpenChange(false)
-					}}
+					disabled={documents.disabled}
+					onClick={documents.onCloseModal}
 				>
 					{'Закрыть'}
 				</Button>
@@ -88,11 +52,11 @@ function ProductCreateDocumentModal({
 				>
 					<Input
 						id="create-doc-title"
-						value={newDocTitle}
+						value={documents.newItem.title}
 						onChange={event => {
-							onNewDocTitleChange(event.target.value)
+							documents.onNewTitleChange(event.target.value)
 						}}
-						disabled={disabled}
+						disabled={documents.disabled}
 					/>
 				</FormField>
 				<FormField
@@ -100,17 +64,17 @@ function ProductCreateDocumentModal({
 					htmlFor="create-doc-kind"
 				>
 					<Select
-						value={newDocKind}
+						value={documents.newItem.kind}
 						onValueChange={value => {
-							onNewDocKindChange(value as ProductDocumentKind)
+							documents.onNewKindChange(value as ProductDocumentKind)
 						}}
-						disabled={disabled}
+						disabled={documents.disabled}
 					>
 						<SelectTrigger id="create-doc-kind">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
-							{documentKindOptions.map(option => (
+							{documents.kindOptions.map(option => (
 								<SelectItem
 									key={option.value}
 									value={option.value}
@@ -126,17 +90,17 @@ function ProductCreateDocumentModal({
 					htmlFor="create-doc-source-type"
 				>
 					<Select
-						value={newDocSourceType}
+						value={documents.newItem.sourceType}
 						onValueChange={value => {
-							onNewDocSourceTypeChange(value as ProductDocumentSourceType)
+							documents.onNewSourceTypeChange(value as ProductDocumentSourceType)
 						}}
-						disabled={disabled}
+						disabled={documents.disabled}
 					>
 						<SelectTrigger id="create-doc-source-type">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
-							{documentSourceTypeOptions.map(option => (
+							{documents.sourceTypeOptions.map(option => (
 								<SelectItem
 									key={option.value}
 									value={option.value}
@@ -154,11 +118,11 @@ function ProductCreateDocumentModal({
 				>
 					<Input
 						id="create-doc-url"
-						value={newDocUrl}
+						value={documents.newItem.url}
 						onChange={event => {
-							onNewDocUrlChange(event.target.value)
+							documents.onNewUrlChange(event.target.value)
 						}}
-						disabled={disabled}
+						disabled={documents.disabled}
 					/>
 				</FormField>
 			</div>
@@ -166,17 +130,15 @@ function ProductCreateDocumentModal({
 				<Button
 					type="button"
 					variant="outline"
-					disabled={disabled}
-					onClick={() => {
-						onOpenChange(false)
-					}}
+					disabled={documents.disabled}
+					onClick={documents.onCloseModal}
 				>
 					{'Отмена'}
 				</Button>
 				<Button
 					type="button"
-					disabled={disabled || !canSubmit}
-					onClick={onConfirm}
+					disabled={documents.disabled || !canSubmit}
+					onClick={documents.onAdd}
 				>
 					{'Добавить'}
 				</Button>

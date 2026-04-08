@@ -1,30 +1,9 @@
 import {FormField, Input} from '../../../../../shared'
+import {useProductCreateVm} from '../viewmodel'
 
-function ProductCreateSpecsSection({
-	disabled,
-	material,
-	weight,
-	length,
-	width,
-	height,
-	onMaterialChange,
-	onWeightChange,
-	onLengthChange,
-	onWidthChange,
-	onHeightChange,
-}: Readonly<{
-	disabled: boolean,
-	material: string,
-	weight: string,
-	length: string,
-	width: string,
-	height: string,
-	onMaterialChange: (value: string) => void,
-	onWeightChange: (value: string) => void,
-	onLengthChange: (value: string) => void,
-	onWidthChange: (value: string) => void,
-	onHeightChange: (value: string) => void,
-}>) {
+function ProductCreateSpecsSection() {
+	const {specs} = useProductCreateVm()
+
 	return (
 		<section className="space-y-4">
 			<h3 className="text-sm font-medium text-muted-foreground">
@@ -37,11 +16,11 @@ function ProductCreateSpecsSection({
 				>
 					<Input
 						id="create-product-material"
-						value={material}
+						value={specs.material}
 						onChange={event => {
-							onMaterialChange(event.target.value)
+							specs.onMaterialChange(event.target.value)
 						}}
-						disabled={disabled}
+						disabled={specs.disabled}
 					/>
 				</FormField>
 				<FormField
@@ -52,11 +31,11 @@ function ProductCreateSpecsSection({
 						id="create-product-weight"
 						type="number"
 						step="any"
-						value={weight}
+						value={specs.weight}
 						onChange={event => {
-							onWeightChange(event.target.value)
+							specs.onWeightChange(event.target.value)
 						}}
-						disabled={disabled}
+						disabled={specs.disabled}
 					/>
 				</FormField>
 			</div>
@@ -69,11 +48,11 @@ function ProductCreateSpecsSection({
 						id="create-product-length"
 						type="number"
 						step="any"
-						value={length}
+						value={specs.length}
 						onChange={event => {
-							onLengthChange(event.target.value)
+							specs.onLengthChange(event.target.value)
 						}}
-						disabled={disabled}
+						disabled={specs.disabled}
 					/>
 				</FormField>
 				<FormField
@@ -84,11 +63,11 @@ function ProductCreateSpecsSection({
 						id="create-product-width"
 						type="number"
 						step="any"
-						value={width}
+						value={specs.width}
 						onChange={event => {
-							onWidthChange(event.target.value)
+							specs.onWidthChange(event.target.value)
 						}}
-						disabled={disabled}
+						disabled={specs.disabled}
 					/>
 				</FormField>
 				<FormField
@@ -99,11 +78,11 @@ function ProductCreateSpecsSection({
 						id="create-product-height"
 						type="number"
 						step="any"
-						value={height}
+						value={specs.height}
 						onChange={event => {
-							onHeightChange(event.target.value)
+							specs.onHeightChange(event.target.value)
 						}}
-						disabled={disabled}
+						disabled={specs.disabled}
 					/>
 				</FormField>
 				<div className="hidden xl:block" />
