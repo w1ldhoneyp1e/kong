@@ -1,5 +1,6 @@
 'use client'
 
+import {Pencil, Trash2} from 'lucide-react'
 import {useRouter} from 'next/navigation'
 import {type AdminProduct} from '../../../entities/product'
 import {
@@ -7,7 +8,6 @@ import {
 	ConfirmDialog,
 	DataTable,
 	EntityPageHeader,
-	Link,
 	StatusBadge,
 } from '../../../shared'
 import {useProductsListVm} from './viewmodel/useProductsListVm'
@@ -112,29 +112,32 @@ function ProductsListPageClient({
 					router.push(`/admin/products/${row.id}`)
 				}}
 				actions={row => (
-					<div className="flex justify-end gap-2">
+					<div className="relative z-10 flex justify-end gap-1">
 						<Button
-							size="sm"
-							variant="outline"
-							asChild={true}
+							type="button"
+							size="icon"
+							variant="ghost"
+							className="size-9 rounded-md hover:bg-background focus-visible:bg-background"
+							aria-label="Редактировать товар"
+							onClick={event => {
+								event.stopPropagation()
+								router.push(`/admin/products/${row.id}/edit`)
+							}}
 						>
-							<Link
-								href={`/admin/products/${row.id}`}
-								onClick={e => e.stopPropagation()}
-							>
-								{'Открыть'}
-							</Link>
+							<Pencil className="size-5" />
 						</Button>
 						<Button
-							size="sm"
-							variant="destructive"
 							type="button"
-							onClick={e => {
-								e.stopPropagation()
+							size="icon"
+							variant="ghost"
+							className="size-9 rounded-md hover:bg-background focus-visible:bg-background"
+							aria-label="Удалить товар"
+							onClick={event => {
+								event.stopPropagation()
 								vm.setDeleteConfirmId(row.id)
 							}}
 						>
-							{'Удалить'}
+							<Trash2 className="size-5 text-destructive" />
 						</Button>
 					</div>
 				)}
