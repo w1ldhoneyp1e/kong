@@ -28,14 +28,6 @@ function formatCreatedAt(value: string | null | undefined): string {
 	return d.toLocaleString('ru-RU')
 }
 
-function formatMutationError(err: unknown): string {
-	if (err instanceof Error) {
-		return err.message
-	}
-
-	return String(err)
-}
-
 function ProductDetailPageClient({
 	id,
 	initialProduct,
@@ -45,10 +37,6 @@ function ProductDetailPageClient({
 }>) {
 	const router = useRouter()
 	const vm = useProductDetailVm(id, initialProduct)
-
-	const updateError = vm.updateMutation.error
-		? formatMutationError(vm.updateMutation.error)
-		: ''
 
 	if (vm.loading && !vm.product) {
 		return (
@@ -67,31 +55,6 @@ function ProductDetailPageClient({
 	}
 
 	const p = vm.product
-
-	const initialTagIds = (p.tags ?? [])
-		.map(tag => tag.id)
-		.filter((value): value is string => Boolean(value && value.trim()))
-
-	const initialDocuments = p.metadata?.documents ?? []
-
-	type ProductFormSubmitPayload =
-		Parameters<typeof ProductFormModal>[0]['onSubmit'] extends (payload: infer T) => void
-			? T
-			: never
-
-	const handleUpdate = (payload: ProductFormSubmitPayload) => {
-		vm.updateMutation.mutate(
-			{
-				id,
-				payload,
-			},
-			{
-				onSuccess: () => {
-					vm.setEditOpen(false)
-				},
-			},
-		)
-	}
 
 	return (
 		<div>
