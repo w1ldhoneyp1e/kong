@@ -1,5 +1,6 @@
 'use client'
 
+import {type AdminProduct} from '../../../../entities/product'
 import {
 	Button,
 	EntityPageHeader,
@@ -11,7 +12,11 @@ import {SpecsSection} from './ui/SpecsSection'
 import {TagsSection} from './ui/TagsSection'
 import {UploadPhotoPopup} from './ui/UploadPhotoPopup'
 import {UploadPhotoSection} from './ui/UploadPhotoSection'
-import {ProductCreateVmModelProvider, useProductCreateVm} from './viewmodel'
+import {
+	type ProductFormMode,
+	ProductCreateVmModelProvider,
+	useProductCreateVm,
+} from './viewmodel'
 
 function ProductCreatePageContent() {
 	const {page} = useProductCreateVm()
@@ -19,7 +24,7 @@ function ProductCreatePageContent() {
 	return (
 		<div className="space-y-6">
 			<EntityPageHeader
-				title="Создание товара"
+				title={page.title}
 				breadcrumbs={(
 					<Link
 						href="/admin/products"
@@ -39,13 +44,13 @@ function ProductCreatePageContent() {
 					<TagsSection />
 					<UploadPhotoSection />
 					<DocumentsSection />
-					{page.createError
+					{page.errorText
 						? (
 							<p
 								className="text-sm text-destructive xl:col-span-2"
 								role="alert"
 							>
-								{page.createError}
+								{page.errorText}
 							</p>
 						)
 						: null}
@@ -56,7 +61,7 @@ function ProductCreatePageContent() {
 								? 'loading'
 								: 'default'}
 						>
-							{'Создать'}
+							{page.submitLabel}
 						</Button>
 						<Button
 							type="button"
@@ -73,9 +78,21 @@ function ProductCreatePageContent() {
 	)
 }
 
-function ProductCreatePageClient() {
+function ProductCreatePageClient({
+	mode = 'create',
+	productId,
+	initialProduct,
+}: Readonly<{
+	mode?: ProductFormMode,
+	productId?: string,
+	initialProduct?: AdminProduct,
+}>) {
 	return (
-		<ProductCreateVmModelProvider>
+		<ProductCreateVmModelProvider
+			mode={mode}
+			productId={productId}
+			initialProduct={initialProduct}
+		>
 			<ProductCreatePageContent />
 		</ProductCreateVmModelProvider>
 	)

@@ -2,8 +2,14 @@
 
 import {useRouter} from 'next/navigation'
 import {type ReactNode, useLayoutEffect} from 'react'
-import {useCreateProductMutation, useProductTagsQuery} from '../../../../../entities/product'
-import {type ProductCreateVm} from './interface'
+import {
+	type AdminProduct,
+	useCreateProductMutation,
+	useProductTagsQuery,
+	useUpdateProductMutation,
+} from '../../../../../entities/product'
+import {randomId} from '../../../../../shared'
+import {type ProductCreateVm, type ProductFormMode} from './interface'
 import {ProductCreateVmProvider} from './provider'
 import {useProductCreateStore} from './store'
 import {
@@ -18,27 +24,116 @@ import {createPageVm} from './vm/pageVm'
 import {createSpecsVm} from './vm/specsVm'
 import {createTagsVm} from './vm/tagsVm'
 
-function useProductCreateVmModel(): ProductCreateVm {
+type ProductCreateVmModelProviderProps = Readonly<{
+	mode: ProductFormMode,
+	productId?: string,
+	initialProduct?: AdminProduct,
+	children: ReactNode,
+}>
+
+function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
+	if (!initialProduct) {
+		return
+	}
+
+	const handle = initialProduct.handle ?? ''
+	const status = initialProduct.status ?? 'draft'
+	const material = initialProduct.material ?? ''
+	const weight = typeof initialProduct.weight === 'number'
+		? String(initialProduct.weight)
+		: ''
+	const length = typeof initialProduct.length === 'number'
+		? String(initialProduct.length)
+		: ''
+	const width = typeof initialProduct.width === 'number'
+		? String(initialProduct.width)
+		: ''
+	const height = typeof initialProduct.height === 'number'
+		? String(initialProduct.height)
+		: ''
+	const selectedTagIds = (initialProduct.tags ?? [])
+		.map(tag => tag.id)
+		.filter(id => id.trim().length > 0)
+	const galleryImages = [
+		...(initialProduct.images ?? []),
+	].sort((a, b) => {
+		const rankA = a.rank ?? 0
+		const rankB = b.rank ?? 0
+
+		return rankA - rankB
+	}).map(image => image.url?.trim() ?? '')
+		.filter(Boolean)
+		.map(url => ({
+			id: randomId(),
+			url,
+		}))
+	const docs = (initialProduct.metadata?.documents ?? [])
+		.map(item => ({
+			id: item.id?.trim() || randomId(),
+			title: item.title?.trim() ?? '',
+			kind: item.kind,
+			sourceType: item.sourceType,
+			url: item.url?.trim() ?? '',
+		}))
+		.filter(item => item.title.length > 0 || item.url.length > 0)
+
+	useProductCreateStore.setState({
+		title: initialProduct.title?.trim() ?? '',
+		handle,
+		status,
+		material,
+		weight,
+		length,
+		width,
+		height,
+		selectedTagIds,
+		galleryImages,
+		documents: docs,
+		specsSectionExpanded: productSpecsHaveAnyValue({
+			material,
+			weight,
+			length,
+			width,
+			height,
+		}),
+	})
+}
+
+function useProductCreateVmModel(params: {
+	mode: ProductFormMode,
+	productId?: string,
+	initialProduct?: AdminProduct,
+}): ProductCreateVm {
 	const router = useRouter()
 	const createMutation = useCreateProductMutation()
+	const updateMutation = useUpdateProductMutation()
 	const {data: tagOptions = []} = useProductTagsQuery()
 	const store = useProductCreateStore()
+
 	useLayoutEffect(() => {
-		const snapshot = useProductCreateStore.getState()
-		if (productSpecsHaveAnyValue({
-			material: snapshot.material,
-			weight: snapshot.weight,
-			length: snapshot.length,
-			width: snapshot.width,
-			height: snapshot.height,
-		})) {
-			snapshot.setSpecsSectionExpanded(true)
+		if (params.mode === 'edit') {
+			syncStoreWithProduct(params.initialProduct)
 		}
-	}, [])
-	const disabled = createMutation.isPending
-	const createError = createMutation.error
+
+		if (params.mode === 'create') {
+			const snapshot = useProductCreateStore.getState()
+			if (productSpecsHaveAnyValue({
+				material: snapshot.material,
+				weight: snapshot.weight,
+				length: snapshot.length,
+				width: snapshot.width,
+				height: snapshot.height,
+			})) {
+				snapshot.setSpecsSectionExpanded(true)
+			}
+		}
+	}, [params.initialProduct, params.mode, params.productId])
+	const disabled = createMutation.isPending || updateMutation.isPending
+	const errorText = (params.mode === 'create' && createMutation.error)
 		? formatMutationError(createMutation.error)
-		: ''
+		: ((params.mode === 'edit' && updateMutation.error)
+			? formatMutationError(updateMutation.error)
+			: '')
 
 	const onSubmit = (event: React.FormEvent) => {
 		event.preventDefault()
@@ -50,31 +145,51 @@ function useProductCreateVmModel(): ProductCreateVm {
 			url: document.url.trim(),
 		})).filter(document => document.title.length > 0 && document.url.length > 0)
 
-		createMutation.mutate(
-			{
-				title: store.title.trim(),
-				handle: store.handle.trim() || undefined,
-				status: store.status,
-				thumbnail: store.galleryImages[0]?.url.trim() || null,
-				images: store.galleryImages.map(item => ({url: item.url})),
-				material: store.material.trim() || null,
-				weight: parseNumberOrNull(store.weight),
-				length: parseNumberOrNull(store.length),
-				width: parseNumberOrNull(store.width),
-				height: parseNumberOrNull(store.height),
-				tag_ids: store.selectedTagIds,
-				metadata: {
-					documents: metadataDocuments,
-				},
+		const payload = {
+			title: store.title.trim(),
+			handle: store.handle.trim() || undefined,
+			status: store.status,
+			thumbnail: store.galleryImages[0]?.url.trim() || null,
+			images: store.galleryImages.map(item => ({url: item.url})),
+			material: store.material.trim() || null,
+			weight: parseNumberOrNull(store.weight),
+			length: parseNumberOrNull(store.length),
+			width: parseNumberOrNull(store.width),
+			height: parseNumberOrNull(store.height),
+			tag_ids: store.selectedTagIds,
+			metadata: {
+				documents: metadataDocuments,
 			},
-			{
+		}
+
+		if (params.mode === 'create') {
+			createMutation.mutate(payload, {
 				onSuccess: product => {
 					store.reset()
 					router.push(`/admin/products/${product.id}`)
 				},
-			},
-		)
+			})
+		}
+
+		if (params.mode === 'edit' && params.productId) {
+			updateMutation.mutate({
+				id: params.productId,
+				payload,
+			}, {
+				onSuccess: product => {
+					store.reset()
+					router.push(`/admin/products/${product.id}`)
+				},
+			})
+		}
 	}
+
+	const pageTitle = params.mode === 'create'
+		? 'Создание товара'
+		: 'Редактирование товара'
+	const submitLabel = params.mode === 'create'
+		? 'Создать'
+		: 'Сохранить'
 
 	return {
 		main: createMainVm(store, disabled),
@@ -83,18 +198,35 @@ function useProductCreateVmModel(): ProductCreateVm {
 		media: createMediaVm(store, disabled),
 		documents: createDocumentsVm(store, disabled),
 		page: createPageVm({
+			mode: params.mode,
+			title: pageTitle,
+			submitLabel,
 			disabled,
-			createError,
+			errorText,
 			onCancel: () => {
-				router.push('/admin/products')
+				if (params.mode === 'edit' && params.productId) {
+					router.push(`/admin/products/${params.productId}`)
+				}
+				else {
+					router.push('/admin/products')
+				}
 			},
 			onSubmit,
 		}),
 	}
 }
 
-function ProductCreateVmModelProvider({children}: Readonly<{children: ReactNode}>) {
-	const vm = useProductCreateVmModel()
+function ProductCreateVmModelProvider({
+	mode,
+	productId,
+	initialProduct,
+	children,
+}: ProductCreateVmModelProviderProps) {
+	const vm = useProductCreateVmModel({
+		mode,
+		productId,
+		initialProduct,
+	})
 
 	return (
 		<ProductCreateVmProvider vm={vm}>

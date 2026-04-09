@@ -1,3 +1,3 @@
 export {ProductCreateVmModelProvider} from './viewmodel'
 export {useProductCreateVm} from './provider'
-export type {ProductCreateVm} from './interface'
+export type {ProductCreateVm, ProductFormMode} from './interface'

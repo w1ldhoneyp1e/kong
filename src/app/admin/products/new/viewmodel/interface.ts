@@ -10,6 +10,8 @@ import {
 	type ProductGalleryImageItem,
 } from '../types'
 
+type ProductFormMode = 'create' | 'edit'
+
 type ProductCreateVm = {
 	main: {
 		title: string,
@@ -101,13 +103,17 @@ type ProductCreateVm = {
 		onRemove: (id: string) => void,
 	},
 	page: {
+		mode: ProductFormMode,
+		title: string,
+		submitLabel: string,
 		disabled: boolean,
-		createError: string,
+		errorText: string,
 		onCancel: () => void,
 		onSubmit: (event: React.FormEvent) => void,
 	},
 }
 
 export type {
+	ProductFormMode,
 	ProductCreateVm,
 }

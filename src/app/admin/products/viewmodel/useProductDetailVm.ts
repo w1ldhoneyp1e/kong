@@ -24,9 +24,7 @@ function useProductDetailVm(
 	const updateMutation = useUpdateProductMutation()
 	const deleteMutation = useDeleteProductMutation()
 
-	const isEditOpen = useProductDetailStore(s => s.isEditOpen)
 	const deleteConfirmOpen = useProductDetailStore(s => s.deleteConfirmOpen)
-	const setEditOpen = useProductDetailStore(s => s.setEditOpen)
 	const setDeleteConfirmOpen = useProductDetailStore(s => s.setDeleteConfirmOpen)
 
 	const loading = isLoading || isFetching
@@ -45,9 +43,7 @@ function useProductDetailVm(
 		product,
 		loading,
 		error,
-		isEditOpen,
 		deleteConfirmOpen,
-		setEditOpen,
 		setDeleteConfirmOpen,
 		updateMutation,
 		deleteMutation,

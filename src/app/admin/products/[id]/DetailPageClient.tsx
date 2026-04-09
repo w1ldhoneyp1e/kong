@@ -67,7 +67,7 @@ function ProductDetailPageClient({
 							type="button"
 							variant="outline"
 							onClick={() => {
-								vm.setEditOpen(true)
+								router.push(`/admin/products/${id}/edit`)
 							}}
 						>
 							{'Редактировать'}
