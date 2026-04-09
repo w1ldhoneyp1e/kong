@@ -89,7 +89,7 @@ function ProductsListPageClient({
 					},
 					{
 						id: 'handle',
-						header: 'Handle',
+						header: 'Ссылка',
 						cell: row => row.handle ?? '—',
 					},
 					{
