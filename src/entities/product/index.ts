@@ -1,7 +1,6 @@
 export {
 	adminProductApi,
 	getProductStatusLabel,
-	normalizeProductStatus,
 	PRODUCT_STATUS_OPTIONS,
 	adminProductQueryKey,
 	adminProductsQueryKey,

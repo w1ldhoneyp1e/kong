@@ -1,11 +1,7 @@
 'use client'
 
 import {useRouter} from 'next/navigation'
-import {
-	type AdminProduct,
-	getProductStatusLabel,
-	normalizeProductStatus,
-} from '../../../../entities/product'
+import {type AdminProduct, getProductStatusLabel} from '../../../../entities/product'
 import {
 	Button,
 	ConfirmDialog,
@@ -100,7 +96,7 @@ function ProductDetailPageClient({
 				: null}
 			<div className="mb-6 flex flex-wrap items-center gap-3">
 				<StatusBadge
-					status={normalizeProductStatus(p.status)}
+					status={p.status}
 					label={getProductStatusLabel(p.status)}
 				/>
 				<span className="text-sm text-muted-foreground">
