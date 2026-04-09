@@ -7,11 +7,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '../../../../../shared'
-import {useProductCreateVm} from '../viewmodel/provider'
+import {type ProductCreateVm} from '../viewmodel'
 
-function MainSection() {
-	const {main} = useProductCreateVm()
+type MainSectionProps = {
+	main: ProductCreateVm['main'],
+}
 
+function MainSection({
+	main,
+}: MainSectionProps) {
 	return (
 		<section className="space-y-4">
 			<h3 className="text-sm font-medium text-muted-foreground">

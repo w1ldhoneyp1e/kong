@@ -5,12 +5,17 @@ import {
 	useState,
 } from 'react'
 import {Button} from '../../../../../shared'
-import {useProductCreateVm} from '../viewmodel'
+import {type ProductCreateVm} from '../viewmodel'
 import {GalleryMainPreview} from './media/GalleryMainPreview'
 import {GalleryThumbsStrip} from './media/GalleryThumbsStrip'
 
-function UploadPhotoSection() {
-	const {media} = useProductCreateVm()
+type UploadPhotoSectionProps = {
+	media: ProductCreateVm['media'],
+}
+
+function UploadPhotoSection({
+	media,
+}: UploadPhotoSectionProps) {
 	const slides = useMemo(
 		() => media.galleryImages.map(item => item.url.trim()).filter(Boolean),
 		[media.galleryImages],

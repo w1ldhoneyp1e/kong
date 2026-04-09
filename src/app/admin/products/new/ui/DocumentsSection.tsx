@@ -2,13 +2,17 @@
 
 import {Plus} from 'lucide-react'
 import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
-import {useProductCreateVm} from '../viewmodel'
+import {type ProductCreateVm} from '../viewmodel'
 import {DocumentAttachmentCard} from './DocumentAttachmentCard'
 import {UploadDocumentPopup} from './UploadDocumentPopup'
 
-function DocumentsSection() {
-	const {documents} = useProductCreateVm()
+type DocumentsSectionProps = {
+	documents: ProductCreateVm['documents'],
+}
 
+function DocumentsSection({
+	documents,
+}: DocumentsSectionProps) {
 	const kindLabel = (kind: ProductDocumentKind) =>
 		documents.kindOptions.find(option => option.value === kind)?.label ?? kind
 

@@ -19,7 +19,14 @@ import {
 } from './viewmodel'
 
 function ProductCreatePageContent() {
-	const {page} = useProductCreateVm()
+	const {
+		page,
+		main,
+		specs,
+		tags,
+		media,
+		documents,
+	} = useProductCreateVm()
 
 	return (
 		<div className="space-y-6">
@@ -39,11 +46,11 @@ function ProductCreatePageContent() {
 					className="grid gap-6 xl:grid-cols-3"
 					onSubmit={page.onSubmit}
 				>
-					<MainSection />
-					<SpecsSection />
-					<TagsSection />
-					<UploadPhotoSection />
-					<DocumentsSection />
+					<MainSection main={main} />
+					<SpecsSection specs={specs} />
+					<TagsSection tags={tags} />
+					<UploadPhotoSection media={media} />
+					<DocumentsSection documents={documents} />
 					{page.errorText
 						? (
 							<p

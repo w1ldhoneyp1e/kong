@@ -1,9 +1,13 @@
 import {FormField} from '../../../../../shared'
-import {useProductCreateVm} from '../viewmodel'
+import {type ProductCreateVm} from '../viewmodel'
 
-function TagsSection() {
-	const {tags} = useProductCreateVm()
+type TagsSectionProps = {
+	tags: ProductCreateVm['tags'],
+}
 
+function TagsSection({
+	tags,
+}: TagsSectionProps) {
 	return (
 		<section className="space-y-4">
 			<h3 className="text-sm font-medium text-muted-foreground">

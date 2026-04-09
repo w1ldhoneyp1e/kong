@@ -3,11 +3,15 @@
 import {ChevronDown} from 'lucide-react'
 import {cn, Collapse} from '../../../../../shared'
 import {ProductSpecsFields} from '../../ui/ProductSpecsFields'
-import {useProductCreateVm} from '../viewmodel'
+import {type ProductCreateVm} from '../viewmodel'
 
-function SpecsSection() {
-	const {specs} = useProductCreateVm()
+type SpecsSectionProps = {
+	specs: ProductCreateVm['specs'],
+}
 
+function SpecsSection({
+	specs,
+}: SpecsSectionProps) {
 	return (
 		<section className="space-y-3">
 			<button

@@ -1,7 +1,6 @@
 export {adminProductApi} from './api'
 export {
 	getProductStatusLabel,
-	normalizeProductStatus,
 	PRODUCT_STATUS_OPTIONS,
 } from './status'
 export type {ProductStatus, ProductStatusOption} from './status'
