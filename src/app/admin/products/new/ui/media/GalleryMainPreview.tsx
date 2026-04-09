@@ -4,10 +4,12 @@ type GalleryMainPreviewProps = {
 }
 
 function GalleryMainPreview({url, hasSlides}: Readonly<GalleryMainPreviewProps>) {
+	const hasImage = hasSlides && url.trim().length > 0
+
 	return (
 		<div className="overflow-hidden rounded-md border">
 			<div className="relative aspect-video bg-muted/30">
-				{hasSlides
+				{hasImage
 					? (
 						<img
 							src={url}
