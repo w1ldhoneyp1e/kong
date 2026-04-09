@@ -4,9 +4,9 @@ import {Plus} from 'lucide-react'
 import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
 import {useProductCreateVm} from '../viewmodel'
 import {DocumentAttachmentCard} from './DocumentAttachmentCard'
-import {ProductCreateDocumentModal} from './UploadDocumentPopup'
+import {UploadDocumentPopup} from './UploadDocumentPopup'
 
-function ProductCreateDocumentsSection() {
+function DocumentsSection() {
 	const {documents} = useProductCreateVm()
 
 	const kindLabel = (kind: ProductDocumentKind) =>
@@ -50,9 +50,9 @@ function ProductCreateDocumentsSection() {
 					</span>
 				</button>
 			</div>
-			<ProductCreateDocumentModal />
+			<UploadDocumentPopup />
 		</section>
 	)
 }
 
-export {ProductCreateDocumentsSection}
+export {DocumentsSection}

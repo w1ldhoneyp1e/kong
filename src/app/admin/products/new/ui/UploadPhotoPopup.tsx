@@ -6,7 +6,7 @@ import {
 } from '../../../../../shared'
 import {useProductCreateVm} from '../viewmodel'
 
-function ProductCreateMediaModal() {
+function UploadPhotoPopup() {
 	const {media} = useProductCreateVm()
 
 	return (
@@ -116,4 +116,4 @@ function ProductCreateMediaModal() {
 	)
 }
 
-export {ProductCreateMediaModal}
+export {UploadPhotoPopup}

@@ -9,7 +9,7 @@ import {
 } from '../../../../../shared'
 import {useProductCreateVm} from '../viewmodel/provider'
 
-function ProductCreateMainSection() {
+function MainSection() {
 	const {main} = useProductCreateVm()
 
 	return (
@@ -75,4 +75,4 @@ function ProductCreateMainSection() {
 	)
 }
 
-export {ProductCreateMainSection}
+export {MainSection}

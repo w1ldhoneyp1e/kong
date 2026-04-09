@@ -1,7 +1,7 @@
 import {FormField} from '../../../../../shared'
 import {useProductCreateVm} from '../viewmodel'
 
-function ProductCreateTagsSection() {
+function TagsSection() {
 	const {tags} = useProductCreateVm()
 
 	return (
@@ -47,4 +47,4 @@ function ProductCreateTagsSection() {
 	)
 }
 
-export {ProductCreateTagsSection}
+export {TagsSection}

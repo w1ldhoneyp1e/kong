@@ -14,7 +14,7 @@ import {
 import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
 import {useProductCreateVm} from '../viewmodel'
 
-function ProductCreateDocumentModal() {
+function UploadDocumentPopup() {
 	const {documents} = useProductCreateVm()
 	const canSubmit
 		= documents.newItem.title.trim().length > 0 && documents.newItem.url.trim().length > 0
@@ -147,4 +147,4 @@ function ProductCreateDocumentModal() {
 	)
 }
 
-export {ProductCreateDocumentModal}
+export {UploadDocumentPopup}

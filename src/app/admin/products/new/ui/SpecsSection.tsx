@@ -5,7 +5,7 @@ import {cn, Collapse} from '../../../../../shared'
 import {ProductSpecsFields} from '../../ui/ProductSpecsFields'
 import {useProductCreateVm} from '../viewmodel'
 
-function ProductCreateSpecsSection() {
+function SpecsSection() {
 	const {specs} = useProductCreateVm()
 
 	return (
@@ -48,4 +48,4 @@ function ProductCreateSpecsSection() {
 	)
 }
 
-export {ProductCreateSpecsSection}
+export {SpecsSection}

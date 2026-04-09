@@ -5,11 +5,11 @@ import {
 	EntityPageHeader,
 	Link,
 } from '../../../../shared'
-import {ProductCreateDocumentsSection} from './ui/DocumentsSection'
-import {ProductCreateMainSection} from './ui/MainSection'
-import {ProductCreateSpecsSection} from './ui/SpecsSection'
-import {ProductCreateTagsSection} from './ui/TagsSection'
-import {ProductCreateMediaModal} from './ui/UploadPhotoPopup'
+import {DocumentsSection} from './ui/DocumentsSection'
+import {MainSection} from './ui/MainSection'
+import {SpecsSection} from './ui/SpecsSection'
+import {TagsSection} from './ui/TagsSection'
+import {UploadPhotoPopup} from './ui/UploadPhotoPopup'
 import {UploadPhotoSection} from './ui/UploadPhotoSection'
 import {ProductCreateVmModelProvider, useProductCreateVm} from './viewmodel'
 
@@ -34,11 +34,11 @@ function ProductCreatePageContent() {
 					className="grid gap-6 xl:grid-cols-3"
 					onSubmit={page.onSubmit}
 				>
-					<ProductCreateMainSection />
-					<ProductCreateSpecsSection />
-					<ProductCreateTagsSection />
+					<MainSection />
+					<SpecsSection />
+					<TagsSection />
 					<UploadPhotoSection />
-					<ProductCreateDocumentsSection />
+					<DocumentsSection />
 					{page.createError
 						? (
 							<p
@@ -68,7 +68,7 @@ function ProductCreatePageContent() {
 					</div>
 				</form>
 			</div>
-			<ProductCreateMediaModal />
+			<UploadPhotoPopup />
 		</div>
 	)
 }
