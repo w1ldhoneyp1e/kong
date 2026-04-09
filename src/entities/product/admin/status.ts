@@ -30,29 +30,12 @@ const PRODUCT_STATUS_LABEL_BY_VALUE = PRODUCT_STATUS_OPTIONS.reduce<Record<strin
 	return acc
 }, {})
 
-function normalizeProductStatus(value: string | null | undefined): ProductStatus {
-	const normalized = (value ?? '').trim().toLowerCase()
-	if (
-		normalized === 'draft'
-		|| normalized === 'proposed'
-		|| normalized === 'published'
-		|| normalized === 'rejected'
-	) {
-		return normalized
-	}
-
-	return 'draft'
-}
-
-function getProductStatusLabel(value: string | null | undefined): string {
-	const normalized = normalizeProductStatus(value)
-
-	return PRODUCT_STATUS_LABEL_BY_VALUE[normalized] ?? 'Черновик'
+function getProductStatusLabel(value: ProductStatus): string {
+	return PRODUCT_STATUS_LABEL_BY_VALUE[value] ?? 'Черновик'
 }
 
 export {
 	getProductStatusLabel,
-	normalizeProductStatus,
 	PRODUCT_STATUS_OPTIONS,
 }
 export type {

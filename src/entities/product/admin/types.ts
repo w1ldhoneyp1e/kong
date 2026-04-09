@@ -1,3 +1,5 @@
+import {type ProductStatus} from './status'
+
 type AdminMoneyAmount = {
 	amount?: number | null,
 	currency_code?: string | null,
@@ -56,7 +58,7 @@ type AdminProduct = {
 	subtitle?: string | null,
 	description?: string | null,
 	handle?: string | null,
-	status?: string | null,
+	status: ProductStatus,
 	thumbnail?: string | null,
 	created_at?: string | null,
 	updated_at?: string | null,

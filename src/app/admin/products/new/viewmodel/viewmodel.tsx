@@ -37,7 +37,7 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 	}
 
 	const handle = initialProduct.handle ?? ''
-	const status = initialProduct.status ?? 'draft'
+	const status = initialProduct.status
 	const material = initialProduct.material ?? ''
 	const weight = typeof initialProduct.weight === 'number'
 		? String(initialProduct.weight)
