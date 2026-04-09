@@ -4,6 +4,7 @@ import {useRouter} from 'next/navigation'
 import {type ReactNode, useLayoutEffect} from 'react'
 import {create} from 'zustand'
 import {useCreateProductMutation, useProductTagsQuery} from '../../../../../entities/product'
+import {randomId} from '../../../../../shared'
 import {
 	DOCUMENT_KIND_OPTIONS,
 	DOCUMENT_SOURCE_TYPE_OPTIONS,
@@ -13,6 +14,7 @@ import {
 	type ProductDocument,
 	type ProductDocumentKind,
 	type ProductDocumentSourceType,
+	type ProductGalleryImageItem,
 } from '../types'
 import {type ProductCreateVm} from './interface'
 import {ProductCreateVmProvider} from './provider'
@@ -34,9 +36,10 @@ type ProductCreateStore = {
 	selectedTagIds: string[],
 	isMediaModalOpen: boolean,
 	isDocumentModalOpen: boolean,
-	thumbnailUrl: string,
+	mediaUploadError: string | null,
+	mediaDropzoneDepth: number,
 	imageDraft: string,
-	galleryImages: string[],
+	galleryImages: ProductGalleryImageItem[],
 	documents: ProductDocument[],
 	newDocTitle: string,
 	newDocKind: ProductDocumentKind,
@@ -53,15 +56,20 @@ type ProductCreateStore = {
 	setHeight: (value: string) => void,
 	setMediaModalOpen: (open: boolean) => void,
 	setDocumentModalOpen: (open: boolean) => void,
-	setThumbnailUrl: (value: string) => void,
+	setMediaUploadError: (value: string | null) => void,
+	mediaDropzoneEnter: () => void,
+	mediaDropzoneLeave: () => void,
+	resetMediaDropzone: () => void,
 	setImageDraft: (value: string) => void,
 	setNewDocTitle: (value: string) => void,
 	setNewDocKind: (value: ProductDocumentKind) => void,
 	setNewDocSourceType: (value: ProductDocumentSourceType) => void,
 	setNewDocUrl: (value: string) => void,
 	toggleTag: (id: string) => void,
-	addGalleryImage: () => void,
-	removeGalleryImage: (index: number) => void,
+	addGalleryImageFromDraft: () => void,
+	addGalleryUrls: (urls: string[]) => void,
+	reorderGalleryImages: (fromIndex: number, toIndex: number) => void,
+	removeGalleryImageById: (id: string) => void,
 	addDocument: () => void,
 	removeDocument: (id: string) => void,
 	setSpecsSectionExpanded: (value: boolean) => void,
@@ -80,7 +88,8 @@ const useProductCreateStore = create<ProductCreateStore>((set, get) => ({
 	selectedTagIds: [],
 	isMediaModalOpen: false,
 	isDocumentModalOpen: false,
-	thumbnailUrl: '',
+	mediaUploadError: null,
+	mediaDropzoneDepth: 0,
 	imageDraft: '',
 	galleryImages: [],
 	documents: [],
@@ -97,9 +106,20 @@ const useProductCreateStore = create<ProductCreateStore>((set, get) => ({
 	setLength: value => set({length: value}),
 	setWidth: value => set({width: value}),
 	setHeight: value => set({height: value}),
-	setMediaModalOpen: open => set({isMediaModalOpen: open}),
+	setMediaModalOpen: open => set({
+		isMediaModalOpen: open,
+		mediaUploadError: null,
+		mediaDropzoneDepth: 0,
+	}),
 	setDocumentModalOpen: open => set({isDocumentModalOpen: open}),
-	setThumbnailUrl: value => set({thumbnailUrl: value}),
+	setMediaUploadError: value => set({mediaUploadError: value}),
+	mediaDropzoneEnter: () => set(state => ({
+		mediaDropzoneDepth: state.mediaDropzoneDepth + 1,
+	})),
+	mediaDropzoneLeave: () => set(state => ({
+		mediaDropzoneDepth: Math.max(0, state.mediaDropzoneDepth - 1),
+	})),
+	resetMediaDropzone: () => set({mediaDropzoneDepth: 0}),
 	setImageDraft: value => set({imageDraft: value}),
 	setNewDocTitle: value => set({newDocTitle: value}),
 	setNewDocKind: value => set({newDocKind: value}),
@@ -110,19 +130,57 @@ const useProductCreateStore = create<ProductCreateStore>((set, get) => ({
 			? state.selectedTagIds.filter(item => item !== id)
 			: [...state.selectedTagIds, id],
 	})),
-	addGalleryImage: () => {
+	addGalleryImageFromDraft: () => {
 		const value = get().imageDraft.trim()
 		if (!value) {
 			return
 		}
 
 		set(state => ({
-			galleryImages: [...state.galleryImages, value],
+			galleryImages: [
+				...state.galleryImages,
+				{
+					id: randomId(),
+					url: value,
+				},
+			],
 			imageDraft: '',
 		}))
 	},
-	removeGalleryImage: index => set(state => ({
-		galleryImages: state.galleryImages.filter((_, i) => i !== index),
+	addGalleryUrls: urls => set(state => ({
+		galleryImages: [
+			...state.galleryImages,
+			...urls
+				.map(url => url.trim())
+				.filter(Boolean)
+				.map(url => ({
+					id: randomId(),
+					url,
+				})),
+		],
+	})),
+	reorderGalleryImages: (fromIndex, toIndex) => set(state => {
+		const next = [...state.galleryImages]
+		if (
+			fromIndex < 0
+			|| fromIndex >= next.length
+			|| toIndex < 0
+			|| toIndex >= next.length
+		) {
+			return state
+		}
+
+		const moved = next.splice(fromIndex, 1)[0]
+		if (!moved) {
+			return state
+		}
+
+		next.splice(toIndex, 0, moved)
+
+		return {galleryImages: next}
+	}),
+	removeGalleryImageById: id => set(state => ({
+		galleryImages: state.galleryImages.filter(item => item.id !== id),
 	})),
 	addDocument: () => {
 		const {
@@ -202,8 +260,8 @@ function useProductCreateVmModel(): ProductCreateVm {
 				title: store.title.trim(),
 				handle: store.handle.trim() || undefined,
 				status: store.status,
-				thumbnail: store.thumbnailUrl.trim() || null,
-				images: store.galleryImages.map(url => ({url})),
+				thumbnail: store.galleryImages[0]?.url.trim() || null,
+				images: store.galleryImages.map(item => ({url: item.url})),
 				material: store.material.trim() || null,
 				weight: parseNumberOrNull(store.weight),
 				length: parseNumberOrNull(store.length),
@@ -270,16 +328,22 @@ function useProductCreateVmModel(): ProductCreateVm {
 		},
 		media: {
 			isOpen: store.isMediaModalOpen,
-			thumbnailUrl: store.thumbnailUrl,
 			imageDraft: store.imageDraft,
 			galleryImages: store.galleryImages,
 			disabled,
+			uploadError: store.mediaUploadError,
+			dropzoneActive: store.mediaDropzoneDepth > 0,
+			onUploadErrorChange: store.setMediaUploadError,
+			onDropzoneEnter: store.mediaDropzoneEnter,
+			onDropzoneLeave: store.mediaDropzoneLeave,
+			onDropzoneReset: store.resetMediaDropzone,
 			onOpen: () => store.setMediaModalOpen(true),
 			onOpenChange: store.setMediaModalOpen,
-			onThumbnailChange: store.setThumbnailUrl,
 			onImageDraftChange: store.setImageDraft,
-			onAddImage: store.addGalleryImage,
-			onRemoveImage: store.removeGalleryImage,
+			onAddImageFromDraft: store.addGalleryImageFromDraft,
+			onAddGalleryUrls: store.addGalleryUrls,
+			onReorderGallery: store.reorderGalleryImages,
+			onRemoveGalleryImage: store.removeGalleryImageById,
 		},
 		documents: {
 			items: store.documents,

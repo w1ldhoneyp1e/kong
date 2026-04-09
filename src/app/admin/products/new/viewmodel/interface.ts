@@ -7,6 +7,7 @@ import {
 	type ProductDocument,
 	type ProductDocumentKind,
 	type ProductDocumentSourceType,
+	type ProductGalleryImageItem,
 } from '../types'
 
 type ProductCreateVm = {
@@ -60,16 +61,22 @@ type ProductCreateVm = {
 	},
 	media: {
 		isOpen: boolean,
-		thumbnailUrl: string,
 		imageDraft: string,
-		galleryImages: string[],
+		galleryImages: ProductGalleryImageItem[],
 		disabled: boolean,
+		uploadError: string | null,
+		dropzoneActive: boolean,
+		onUploadErrorChange: (value: string | null) => void,
+		onDropzoneEnter: () => void,
+		onDropzoneLeave: () => void,
+		onDropzoneReset: () => void,
 		onOpen: () => void,
 		onOpenChange: (open: boolean) => void,
-		onThumbnailChange: (value: string) => void,
 		onImageDraftChange: (value: string) => void,
-		onAddImage: () => void,
-		onRemoveImage: (index: number) => void,
+		onAddImageFromDraft: () => void,
+		onAddGalleryUrls: (urls: string[]) => void,
+		onReorderGallery: (fromIndex: number, toIndex: number) => void,
+		onRemoveGalleryImage: (id: string) => void,
 	},
 	documents: {
 		items: ProductDocument[],

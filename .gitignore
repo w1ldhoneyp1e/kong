@@ -21,6 +21,9 @@ yarn.lock
 # production
 /build
 
+# dev-only uploads (Next public static)
+public/dev-uploads/
+
 # misc
 .DS_Store
 *.pem

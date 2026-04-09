@@ -1,3 +1,5 @@
+export {randomId} from './lib/randomId'
+export {readFileAsDataUrl} from './lib/readFileAsDataUrl'
 export {cn} from './lib/utils'
 export {match} from './lib/match'
 export {scrollToTop} from './lib/scrollToTop'

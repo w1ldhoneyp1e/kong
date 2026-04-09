@@ -9,8 +9,14 @@ type ProductDocument = {
 	url: string,
 }
 
+type ProductGalleryImageItem = {
+	id: string,
+	url: string,
+}
+
 export type {
 	ProductDocument,
 	ProductDocumentKind,
 	ProductDocumentSourceType,
+	ProductGalleryImageItem,
 }
