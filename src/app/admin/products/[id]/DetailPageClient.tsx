@@ -9,10 +9,10 @@ import {
 	StatusBadge,
 } from '../../../../shared'
 import {useProductDetailVm} from '../viewmodel/useProductDetailVm'
-import {ProductMainInfoCard} from './ProductMainInfoCard'
-import {ProductMediaCard} from './ProductMediaCard'
-import {ProductOptionsCard} from './ProductOptionsCard'
-import {ProductVariantsCard} from './ProductVariantsCard'
+import {ProductMainInfoCard} from './MainInfoCard'
+import {ProductMediaCard} from './MediaCard'
+import {ProductOptionsCard} from './OptionsCard'
+import {ProductVariantsCard} from './VariantsCard'
 
 function formatCreatedAt(value: string | null | undefined): string {
 	if (!value) {

@@ -1,5 +1,5 @@
 import {fetchAdminProductServer} from '../server'
-import {ProductDetailPageClient} from './ProductDetailPageClient'
+import {ProductDetailPageClient} from './DetailPageClient'
 
 type Props = Readonly<{
 	params: Promise<{id: string}>,

@@ -3,8 +3,8 @@
 import {Plus} from 'lucide-react'
 import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
 import {useProductCreateVm} from '../viewmodel'
-import {ProductDocumentAttachmentCard} from './documentAttachmentPresentation'
-import {ProductCreateDocumentModal} from './ProductCreateDocumentModal'
+import {DocumentAttachmentCard} from './DocumentAttachmentCard'
+import {ProductCreateDocumentModal} from './UploadDocumentPopup'
 
 function ProductCreateDocumentsSection() {
 	const {documents} = useProductCreateVm()
@@ -22,7 +22,7 @@ function ProductCreateDocumentsSection() {
 			</h3>
 			<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 				{documents.items.map(document => (
-					<ProductDocumentAttachmentCard
+					<DocumentAttachmentCard
 						key={document.id}
 						document={document}
 						kindLabel={kindLabel(document.kind)}

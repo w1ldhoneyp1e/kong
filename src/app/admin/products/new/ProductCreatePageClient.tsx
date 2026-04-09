@@ -5,11 +5,11 @@ import {
 	EntityPageHeader,
 	Link,
 } from '../../../../shared'
-import {ProductCreateDocumentsSection} from './ui/ProductCreateDocumentsSection'
-import {ProductCreateMainSection} from './ui/ProductCreateMainSection'
-import {ProductCreateMediaModal} from './ui/ProductCreateMediaModal'
-import {ProductCreateSpecsSection} from './ui/ProductCreateSpecsSection'
-import {ProductCreateTagsSection} from './ui/ProductCreateTagsSection'
+import {ProductCreateDocumentsSection} from './ui/DocumentsSection'
+import {ProductCreateMainSection} from './ui/MainSection'
+import {ProductCreateSpecsSection} from './ui/SpecsSection'
+import {ProductCreateTagsSection} from './ui/TagsSection'
+import {ProductCreateMediaModal} from './ui/UploadPhotoPopup'
 import {UploadPhotoSection} from './ui/UploadPhotoSection'
 import {ProductCreateVmModelProvider, useProductCreateVm} from './viewmodel'
 

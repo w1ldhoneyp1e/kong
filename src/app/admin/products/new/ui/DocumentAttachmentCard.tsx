@@ -197,7 +197,7 @@ const FORMAT_VISUAL: Record<
 	},
 }
 
-function ProductDocumentAttachmentCard({
+function DocumentAttachmentCard({
 	document,
 	kindLabel,
 	sourceLabel,
@@ -272,5 +272,5 @@ function ProductDocumentAttachmentCard({
 
 export {
 	inferDocumentFormatFromUrl,
-	ProductDocumentAttachmentCard,
+	DocumentAttachmentCard,
 }
