@@ -21,17 +21,33 @@ type ProductCreateVm = {
 		onStatusChange: (value: string) => void,
 	},
 	specs: {
-		material: string,
-		weight: string,
-		length: string,
-		width: string,
-		height: string,
 		disabled: boolean,
-		onMaterialChange: (value: string) => void,
-		onWeightChange: (value: string) => void,
-		onLengthChange: (value: string) => void,
-		onWidthChange: (value: string) => void,
-		onHeightChange: (value: string) => void,
+		sectionExpanded: boolean,
+		onToggleSection: () => void,
+		materialAndWeight: {
+			material: {
+				value: string,
+				onChange: (value: string) => void,
+			},
+			weight: {
+				value: string,
+				onChange: (value: string) => void,
+			},
+		},
+		dimensions: {
+			length: {
+				value: string,
+				onChange: (value: string) => void,
+			},
+			width: {
+				value: string,
+				onChange: (value: string) => void,
+			},
+			height: {
+				value: string,
+				onChange: (value: string) => void,
+			},
+		},
 	},
 	tags: {
 		selectedTagIds: string[],

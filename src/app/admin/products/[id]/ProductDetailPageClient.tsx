@@ -8,7 +8,6 @@ import {
 	EntityPageHeader,
 	StatusBadge,
 } from '../../../../shared'
-import {ProductFormModal} from '../ProductFormModal'
 import {useProductDetailVm} from '../viewmodel/useProductDetailVm'
 import {ProductMainInfoCard} from './ProductMainInfoCard'
 import {ProductMediaCard} from './ProductMediaCard'
@@ -144,28 +143,6 @@ function ProductDetailPageClient({
 				<ProductVariantsCard product={p} />
 				<ProductOptionsCard product={p} />
 			</div>
-			<ProductFormModal
-				open={vm.isEditOpen}
-				title="Редактирование товара"
-				onOpenChange={vm.setEditOpen}
-				onSubmit={handleUpdate}
-				submitting={vm.updateMutation.isPending}
-				errorText={vm.updateMutation.isError
-					? updateError
-					: ''}
-				initialTitle={p.title ?? ''}
-				initialHandle={p.handle ?? ''}
-				initialStatus={p.status ?? 'draft'}
-				initialMaterial={p.material ?? null}
-				initialWeight={p.weight ?? null}
-				initialLength={p.length ?? null}
-				initialWidth={p.width ?? null}
-				initialHeight={p.height ?? null}
-				initialTagIds={initialTagIds}
-				initialDocuments={initialDocuments}
-				initialMetadata={p.metadata ?? null}
-				initialVariants={p.variants ?? []}
-			/>
 			<ConfirmDialog
 				open={vm.deleteConfirmOpen}
 				onOpenChange={vm.setDeleteConfirmOpen}

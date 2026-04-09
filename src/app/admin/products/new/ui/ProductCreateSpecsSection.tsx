@@ -1,92 +1,49 @@
-import {FormField, Input} from '../../../../../shared'
+'use client'
+
+import {ChevronDown} from 'lucide-react'
+import {cn, Collapse} from '../../../../../shared'
+import {ProductSpecsFields} from '../../ui/ProductSpecsFields'
 import {useProductCreateVm} from '../viewmodel'
 
 function ProductCreateSpecsSection() {
 	const {specs} = useProductCreateVm()
 
 	return (
-		<section className="space-y-4">
-			<h3 className="text-sm font-medium text-muted-foreground">
-				{'Характеристики'}
-			</h3>
-			<div className="grid gap-4 sm:grid-cols-2">
-				<FormField
-					label="Материал"
-					htmlFor="create-product-material"
-				>
-					<Input
-						id="create-product-material"
-						value={specs.material}
-						onChange={event => {
-							specs.onMaterialChange(event.target.value)
-						}}
+		<section className="space-y-3">
+			<button
+				type="button"
+				className="flex w-full items-start gap-2 text-left"
+				aria-expanded={specs.sectionExpanded}
+				onClick={specs.onToggleSection}
+			>
+				<ChevronDown
+					className={cn(
+						'mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform',
+						specs.sectionExpanded
+							? 'rotate-180'
+							: 'rotate-0',
+					)}
+					aria-hidden={true}
+				/>
+				<span className="min-w-0 flex-1 space-y-1">
+					<span className="text-sm font-medium text-muted-foreground block">
+						{'Характеристики'}
+					</span>
+					<span className="text-muted-foreground block text-xs leading-snug">
+						{'Материал, вес, габариты'}
+					</span>
+				</span>
+			</button>
+			<Collapse isCollapsed={!specs.sectionExpanded}>
+				<div className="pt-1">
+					<ProductSpecsFields
+						idPrefix="create-product"
 						disabled={specs.disabled}
+						materialAndWeight={specs.materialAndWeight}
+						dimensions={specs.dimensions}
 					/>
-				</FormField>
-				<FormField
-					label="Вес"
-					htmlFor="create-product-weight"
-				>
-					<Input
-						id="create-product-weight"
-						type="number"
-						step="any"
-						value={specs.weight}
-						onChange={event => {
-							specs.onWeightChange(event.target.value)
-						}}
-						disabled={specs.disabled}
-					/>
-				</FormField>
-			</div>
-			<div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-4">
-				<FormField
-					label="Длина"
-					htmlFor="create-product-length"
-				>
-					<Input
-						id="create-product-length"
-						type="number"
-						step="any"
-						value={specs.length}
-						onChange={event => {
-							specs.onLengthChange(event.target.value)
-						}}
-						disabled={specs.disabled}
-					/>
-				</FormField>
-				<FormField
-					label="Ширина"
-					htmlFor="create-product-width"
-				>
-					<Input
-						id="create-product-width"
-						type="number"
-						step="any"
-						value={specs.width}
-						onChange={event => {
-							specs.onWidthChange(event.target.value)
-						}}
-						disabled={specs.disabled}
-					/>
-				</FormField>
-				<FormField
-					label="Высота"
-					htmlFor="create-product-height"
-				>
-					<Input
-						id="create-product-height"
-						type="number"
-						step="any"
-						value={specs.height}
-						onChange={event => {
-							specs.onHeightChange(event.target.value)
-						}}
-						disabled={specs.disabled}
-					/>
-				</FormField>
-				<div className="hidden xl:block" />
-			</div>
+				</div>
+			</Collapse>
 		</section>
 	)
 }

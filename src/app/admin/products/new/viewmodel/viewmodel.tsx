@@ -1,7 +1,7 @@
 'use client'
 
 import {useRouter} from 'next/navigation'
-import {type ReactNode} from 'react'
+import {type ReactNode, useLayoutEffect} from 'react'
 import {create} from 'zustand'
 import {useCreateProductMutation, useProductTagsQuery} from '../../../../../entities/product'
 import {
@@ -16,7 +16,11 @@ import {
 } from '../types'
 import {type ProductCreateVm} from './interface'
 import {ProductCreateVmProvider} from './provider'
-import {formatMutationError, parseNumberOrNull} from './utils'
+import {
+	formatMutationError,
+	parseNumberOrNull,
+	productSpecsHaveAnyValue,
+} from './utils'
 
 type ProductCreateStore = {
 	title: string,
@@ -38,6 +42,7 @@ type ProductCreateStore = {
 	newDocKind: ProductDocumentKind,
 	newDocSourceType: ProductDocumentSourceType,
 	newDocUrl: string,
+	specsSectionExpanded: boolean,
 	setTitle: (value: string) => void,
 	setHandle: (value: string) => void,
 	setStatus: (value: string) => void,
@@ -59,6 +64,8 @@ type ProductCreateStore = {
 	removeGalleryImage: (index: number) => void,
 	addDocument: () => void,
 	removeDocument: (id: string) => void,
+	setSpecsSectionExpanded: (value: boolean) => void,
+	toggleSpecsSectionExpanded: () => void,
 }
 
 const useProductCreateStore = create<ProductCreateStore>((set, get) => ({
@@ -81,6 +88,7 @@ const useProductCreateStore = create<ProductCreateStore>((set, get) => ({
 	newDocKind: 'instruction',
 	newDocSourceType: 'url',
 	newDocUrl: '',
+	specsSectionExpanded: false,
 	setTitle: value => set({title: value}),
 	setHandle: value => set({handle: value}),
 	setStatus: value => set({status: value}),
@@ -151,6 +159,10 @@ const useProductCreateStore = create<ProductCreateStore>((set, get) => ({
 	removeDocument: id => set(state => ({
 		documents: state.documents.filter(item => item.id !== id),
 	})),
+	setSpecsSectionExpanded: value => set({specsSectionExpanded: value}),
+	toggleSpecsSectionExpanded: () => set(state => ({
+		specsSectionExpanded: !state.specsSectionExpanded,
+	})),
 }))
 
 function useProductCreateVmModel(): ProductCreateVm {
@@ -158,6 +170,18 @@ function useProductCreateVmModel(): ProductCreateVm {
 	const createMutation = useCreateProductMutation()
 	const {data: tagOptions = []} = useProductTagsQuery()
 	const store = useProductCreateStore()
+	useLayoutEffect(() => {
+		const snapshot = useProductCreateStore.getState()
+		if (productSpecsHaveAnyValue({
+			material: snapshot.material,
+			weight: snapshot.weight,
+			length: snapshot.length,
+			width: snapshot.width,
+			height: snapshot.height,
+		})) {
+			snapshot.setSpecsSectionExpanded(true)
+		}
+	}, [])
 	const disabled = createMutation.isPending
 	const createError = createMutation.error
 		? formatMutationError(createMutation.error)
@@ -210,17 +234,33 @@ function useProductCreateVmModel(): ProductCreateVm {
 			onStatusChange: store.setStatus,
 		},
 		specs: {
-			material: store.material,
-			weight: store.weight,
-			length: store.length,
-			width: store.width,
-			height: store.height,
 			disabled,
-			onMaterialChange: store.setMaterial,
-			onWeightChange: store.setWeight,
-			onLengthChange: store.setLength,
-			onWidthChange: store.setWidth,
-			onHeightChange: store.setHeight,
+			sectionExpanded: store.specsSectionExpanded,
+			onToggleSection: store.toggleSpecsSectionExpanded,
+			materialAndWeight: {
+				material: {
+					value: store.material,
+					onChange: store.setMaterial,
+				},
+				weight: {
+					value: store.weight,
+					onChange: store.setWeight,
+				},
+			},
+			dimensions: {
+				length: {
+					value: store.length,
+					onChange: store.setLength,
+				},
+				width: {
+					value: store.width,
+					onChange: store.setWidth,
+				},
+				height: {
+					value: store.height,
+					onChange: store.setHeight,
+				},
+			},
 		},
 		tags: {
 			selectedTagIds: store.selectedTagIds,

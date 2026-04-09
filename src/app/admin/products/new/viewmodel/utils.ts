@@ -1,3 +1,7 @@
+function productSpecsHaveAnyValue(values: Record<string, string>): boolean {
+	return Object.values(values).some(value => value.trim().length > 0)
+}
+
 function parseNumberOrNull(value: string): number | null | undefined {
 	const trimmed = value.trim()
 	if (!trimmed) {
@@ -23,4 +27,5 @@ function formatMutationError(err: unknown): string {
 export {
 	formatMutationError,
 	parseNumberOrNull,
+	productSpecsHaveAnyValue,
 }
