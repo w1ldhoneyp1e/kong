@@ -1,7 +1,11 @@
 'use client'
 
 import {useRouter} from 'next/navigation'
-import {type AdminProduct} from '../../../../entities/product'
+import {
+	type AdminProduct,
+	getProductStatusLabel,
+	normalizeProductStatus,
+} from '../../../../entities/product'
 import {
 	Button,
 	ConfirmDialog,
@@ -95,7 +99,10 @@ function ProductDetailPageClient({
 				)
 				: null}
 			<div className="mb-6 flex flex-wrap items-center gap-3">
-				<StatusBadge status={p.status ?? 'draft'} />
+				<StatusBadge
+					status={normalizeProductStatus(p.status)}
+					label={getProductStatusLabel(p.status)}
+				/>
 				<span className="text-sm text-muted-foreground">
 					{`Создан: ${formatCreatedAt(p.created_at ?? null)}`}
 				</span>

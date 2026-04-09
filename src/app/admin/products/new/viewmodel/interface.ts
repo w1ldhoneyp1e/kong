@@ -1,8 +1,5 @@
-import {
-	type DOCUMENT_KIND_OPTIONS,
-	type DOCUMENT_SOURCE_TYPE_OPTIONS,
-	type STATUS_OPTIONS,
-} from '../constants'
+import {type ProductStatusOption} from '../../../../../entities/product'
+import {type DOCUMENT_KIND_OPTIONS, type DOCUMENT_SOURCE_TYPE_OPTIONS} from '../constants'
 import {
 	type ProductDocument,
 	type ProductDocumentKind,
@@ -17,7 +14,7 @@ type ProductCreateVm = {
 		title: string,
 		handle: string,
 		status: string,
-		statusOptions: typeof STATUS_OPTIONS,
+		statusOptions: ProductStatusOption[],
 		disabled: boolean,
 		onTitleChange: (value: string) => void,
 		onHandleChange: (value: string) => void,

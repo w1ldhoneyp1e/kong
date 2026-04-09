@@ -1,5 +1,5 @@
 import {type ProductCreateVm} from '../interface'
-import {type ProductCreateStore} from '../store'
+import {type ProductCreateStore} from '../store-types'
 
 function createMediaVm(
 	store: ProductCreateStore,

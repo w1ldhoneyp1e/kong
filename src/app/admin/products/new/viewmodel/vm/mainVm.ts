@@ -1,6 +1,6 @@
-import {STATUS_OPTIONS} from '../../constants'
+import {PRODUCT_STATUS_OPTIONS} from '../../../../../../entities/product'
 import {type ProductCreateVm} from '../interface'
-import {type ProductCreateStore} from '../store'
+import {type ProductCreateStore} from '../store-types'
 
 function createMainVm(
 	store: ProductCreateStore,
@@ -10,7 +10,7 @@ function createMainVm(
 		title: store.title,
 		handle: store.handle,
 		status: store.status,
-		statusOptions: STATUS_OPTIONS,
+		statusOptions: PRODUCT_STATUS_OPTIONS,
 		disabled,
 		onTitleChange: store.setTitle,
 		onHandleChange: store.setHandle,

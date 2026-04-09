@@ -1,6 +1,6 @@
 import {DOCUMENT_KIND_OPTIONS, DOCUMENT_SOURCE_TYPE_OPTIONS} from '../../constants'
 import {type ProductCreateVm} from '../interface'
-import {type ProductCreateStore} from '../store'
+import {type ProductCreateStore} from '../store-types'
 
 function createDocumentsVm(
 	store: ProductCreateStore,

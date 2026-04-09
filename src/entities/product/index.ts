@@ -1,5 +1,8 @@
 export {
 	adminProductApi,
+	getProductStatusLabel,
+	normalizeProductStatus,
+	PRODUCT_STATUS_OPTIONS,
 	adminProductQueryKey,
 	adminProductsQueryKey,
 	useCreateProductMutation,
@@ -21,6 +24,8 @@ export type {
 	AdminTagOption,
 	AdminProductVariant,
 	CreateProductPayload,
+	ProductStatus,
+	ProductStatusOption,
 	UpdateProductPayload,
 } from './admin'
 export {listProducts} from './api'

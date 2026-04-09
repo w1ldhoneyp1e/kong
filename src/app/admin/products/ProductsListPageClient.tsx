@@ -2,7 +2,11 @@
 
 import {Pencil, Trash2} from 'lucide-react'
 import {useRouter} from 'next/navigation'
-import {type AdminProduct} from '../../../entities/product'
+import {
+	type AdminProduct,
+	getProductStatusLabel,
+	normalizeProductStatus,
+} from '../../../entities/product'
 import {
 	Button,
 	ConfirmDialog,
@@ -96,7 +100,10 @@ function ProductsListPageClient({
 						id: 'status',
 						header: 'Статус',
 						cell: row => (
-							<StatusBadge status={row.status ?? 'draft'} />
+							<StatusBadge
+								status={normalizeProductStatus(row.status)}
+								label={getProductStatusLabel(row.status)}
+							/>
 						),
 					},
 					{

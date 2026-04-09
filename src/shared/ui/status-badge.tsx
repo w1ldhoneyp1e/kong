@@ -6,6 +6,8 @@ type BadgeVariant = VariantProps<typeof badgeVariants>['variant']
 const STATUS_VARIANT: Record<string, BadgeVariant> = {
 	active: 'default',
 	published: 'default',
+	proposed: 'secondary',
+	rejected: 'destructive',
 	completed: 'secondary',
 	draft: 'outline',
 	pending: 'outline',
