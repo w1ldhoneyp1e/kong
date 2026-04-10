@@ -10,12 +10,12 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '../../../../../shared'
+} from '../../../shared'
 import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
-import {useProductCreateVm} from '../viewmodel'
+import {useAdminProductFormViewmodel} from '../viewmodel'
 
 function UploadDocumentPopup() {
-	const {documents} = useProductCreateVm()
+	const {documents} = useAdminProductFormViewmodel()
 	const canSubmit
 		= documents.newItem.title.trim().length > 0 && documents.newItem.url.trim().length > 0
 

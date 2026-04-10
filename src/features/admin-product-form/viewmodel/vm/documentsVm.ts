@@ -1,4 +1,4 @@
-import {DOCUMENT_KIND_OPTIONS, DOCUMENT_SOURCE_TYPE_OPTIONS} from '../../constants'
+import {DOCUMENT_KIND_OPTIONS, DOCUMENT_SOURCE_TYPE_OPTIONS} from '../../consts'
 import {type ProductCreateVm} from '../interface'
 import {type ProductCreateStore} from '../store-types'
 

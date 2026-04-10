@@ -1,4 +1,4 @@
-import {PRODUCT_STATUS_OPTIONS} from '../../../../../../entities/product'
+import {PRODUCT_STATUS_OPTIONS} from '../../../../entities/product'
 import {type ProductCreateVm} from '../interface'
 import {type ProductCreateStore} from '../store-types'
 

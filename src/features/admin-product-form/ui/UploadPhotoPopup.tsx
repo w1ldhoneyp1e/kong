@@ -1,11 +1,11 @@
 'use client'
 
-import {ImageUploadPopup} from '../../../../../widgets/image-upload-popup'
+import {ImageUploadPopup} from '../../../widgets/image-upload-popup'
 import {uploadProductImageFiles} from '../lib/uploadProductImageFiles'
-import {useProductCreateVm} from '../viewmodel'
+import {useAdminProductFormViewmodel} from '../viewmodel'
 
 function UploadPhotoPopup() {
-	const {media} = useProductCreateVm()
+	const {media} = useAdminProductFormViewmodel()
 
 	async function ingestFiles(files: FileList | File[] | null) {
 		if (!files?.length) {

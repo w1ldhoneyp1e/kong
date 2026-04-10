@@ -1,7 +1,7 @@
 'use client'
 
 import {Trash2} from 'lucide-react'
-import {Button, cn} from '../../../../../shared'
+import {Button, cn} from '../../../shared'
 import {type ProductDocument} from '../types'
 import {getDocumentFormatVisual, inferDocumentFormatFromUrl} from './documentAttachmentFormat'
 

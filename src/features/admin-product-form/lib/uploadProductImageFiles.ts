@@ -1,4 +1,4 @@
-import {readFileAsDataUrl} from '../../../../../shared'
+import {readFileAsDataUrl} from '../../../shared'
 
 async function uploadProductImageFiles(files: File[]): Promise<string[]> {
 	const list = files.filter(file => file.type.startsWith('image/'))

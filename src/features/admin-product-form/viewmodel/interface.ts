@@ -1,5 +1,5 @@
-import {type ProductStatusOption} from '../../../../../entities/product'
-import {type DOCUMENT_KIND_OPTIONS, type DOCUMENT_SOURCE_TYPE_OPTIONS} from '../constants'
+import {type ProductStatusOption} from '../../../entities/product'
+import {type DOCUMENT_KIND_OPTIONS, type DOCUMENT_SOURCE_TYPE_OPTIONS} from '../consts'
 import {
 	type ProductDocument,
 	type ProductDocumentKind,
@@ -9,7 +9,7 @@ import {
 
 type ProductFormMode = 'create' | 'edit'
 
-type ProductCreateVm = {
+type AdminProductFormViewmodel = {
 	main: {
 		title: string,
 		handle: string,
@@ -112,5 +112,5 @@ type ProductCreateVm = {
 
 export type {
 	ProductFormMode,
-	ProductCreateVm,
+	AdminProductFormViewmodel,
 }

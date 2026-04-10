@@ -1,12 +1,12 @@
 'use client'
 
 import {ChevronDown} from 'lucide-react'
-import {cn, Collapse} from '../../../../../shared'
-import {ProductSpecsFields} from '../../ui/ProductSpecsFields'
-import {type ProductCreateVm} from '../viewmodel'
+import {ProductSpecsFields} from '../../../app/admin/products/ui/ProductSpecsFields'
+import {cn, Collapse} from '../../../shared'
+import {type AdminProductFormViewmodel} from '../viewmodel'
 
 type SpecsSectionProps = {
-	specs: ProductCreateVm['specs'],
+	specs: AdminProductFormViewmodel['specs'],
 }
 
 function SpecsSection({

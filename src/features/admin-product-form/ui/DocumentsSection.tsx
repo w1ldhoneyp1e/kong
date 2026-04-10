@@ -2,12 +2,12 @@
 
 import {Plus} from 'lucide-react'
 import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
-import {type ProductCreateVm} from '../viewmodel'
+import {type AdminProductFormViewmodel} from '../viewmodel'
 import {DocumentAttachmentCard} from './DocumentAttachmentCard'
 import {UploadDocumentPopup} from './UploadDocumentPopup'
 
 type DocumentsSectionProps = {
-	documents: ProductCreateVm['documents'],
+	documents: AdminProductFormViewmodel['documents'],
 }
 
 function DocumentsSection({

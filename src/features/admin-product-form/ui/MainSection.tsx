@@ -6,11 +6,11 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '../../../../../shared'
-import {type ProductCreateVm} from '../viewmodel'
+} from '../../../shared'
+import {type AdminProductFormViewmodel} from '../viewmodel'
 
 type MainSectionProps = {
-	main: ProductCreateVm['main'],
+	main: AdminProductFormViewmodel['main'],
 }
 
 function MainSection({

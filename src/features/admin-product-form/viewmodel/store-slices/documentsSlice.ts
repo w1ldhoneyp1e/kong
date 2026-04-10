@@ -1,5 +1,5 @@
 import {type StateCreator} from 'zustand'
-import {randomId} from '../../../../../../shared'
+import {randomId} from '../../../../shared'
 import {type ProductCreateStore} from '../store-types'
 
 type DocumentsSlice = Pick<

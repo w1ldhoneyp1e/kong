@@ -1,5 +1,5 @@
-import {ProductCreatePageClient} from './ProductCreatePageClient'
+import {AdminProductForm} from '../../../../features/admin-product-form'
 
 export default function AdminProductCreatePage() {
-	return <ProductCreatePageClient />
+	return <AdminProductForm />
 }

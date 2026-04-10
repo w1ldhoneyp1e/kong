@@ -1,24 +1,22 @@
 'use client'
 
-import {type AdminProduct} from '../../../../entities/product'
+import {type AdminProduct} from '../../entities/product'
 import {
 	Button,
 	EntityPageHeader,
 	Link,
-} from '../../../../shared'
+} from '../../shared'
 import {DocumentsSection} from './ui/DocumentsSection'
 import {MainSection} from './ui/MainSection'
 import {SpecsSection} from './ui/SpecsSection'
 import {TagsSection} from './ui/TagsSection'
 import {UploadPhotoPopup} from './ui/UploadPhotoPopup'
 import {UploadPhotoSection} from './ui/UploadPhotoSection'
-import {
-	type ProductFormMode,
-	ProductCreateVmModelProvider,
-	useProductCreateVm,
-} from './viewmodel'
+import {type ProductFormMode} from './viewmodel'
+import {useAdminProductFormViewmodel} from './viewmodel/provider'
+import {AdminProductFormProvider} from './viewmodel/viewmodel'
 
-function ProductCreatePageContent() {
+function AdminProductFormContent() {
 	const {
 		page,
 		main,
@@ -26,7 +24,7 @@ function ProductCreatePageContent() {
 		tags,
 		media,
 		documents,
-	} = useProductCreateVm()
+	} = useAdminProductFormViewmodel()
 
 	return (
 		<div className="space-y-6">
@@ -85,24 +83,29 @@ function ProductCreatePageContent() {
 	)
 }
 
-function ProductCreatePageClient({
-	mode = 'create',
-	productId,
-	initialProduct,
-}: Readonly<{
+type AdminProductFormProps = Readonly<{
 	mode?: ProductFormMode,
 	productId?: string,
 	initialProduct?: AdminProduct,
-}>) {
+}>
+
+function AdminProductForm({
+	mode = 'create',
+	productId,
+	initialProduct,
+}: AdminProductFormProps) {
 	return (
-		<ProductCreateVmModelProvider
+		<AdminProductFormProvider
 			mode={mode}
 			productId={productId}
 			initialProduct={initialProduct}
 		>
-			<ProductCreatePageContent />
-		</ProductCreateVmModelProvider>
+			<AdminProductFormContent />
+		</AdminProductFormProvider>
 	)
 }
 
-export {ProductCreatePageClient}
+export {
+	AdminProductForm,
+	type AdminProductFormProps,
+}

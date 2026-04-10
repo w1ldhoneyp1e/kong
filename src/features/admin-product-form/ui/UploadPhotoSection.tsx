@@ -4,13 +4,13 @@ import {
 	useMemo,
 	useState,
 } from 'react'
-import {Button} from '../../../../../shared'
-import {type ProductCreateVm} from '../viewmodel'
+import {Button} from '../../../shared'
+import {type AdminProductFormViewmodel} from '../viewmodel'
 import {GalleryMainPreview} from './media/GalleryMainPreview'
 import {GalleryThumbsStrip} from './media/GalleryThumbsStrip'
 
 type UploadPhotoSectionProps = {
-	media: ProductCreateVm['media'],
+	media: AdminProductFormViewmodel['media'],
 }
 
 function UploadPhotoSection({

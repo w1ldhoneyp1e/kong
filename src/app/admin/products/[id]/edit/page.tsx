@@ -1,4 +1,4 @@
-import {ProductCreatePageClient} from '../../new/ProductCreatePageClient'
+import {AdminProductForm} from '../../../../../features/admin-product-form'
 import {fetchAdminProductServer} from '../../server'
 
 type Props = Readonly<{
@@ -10,7 +10,7 @@ export default async function AdminProductEditPage({params}: Props) {
 	const initialProduct = await fetchAdminProductServer(id)
 
 	return (
-		<ProductCreatePageClient
+		<AdminProductForm
 			mode="edit"
 			productId={id}
 			initialProduct={initialProduct}

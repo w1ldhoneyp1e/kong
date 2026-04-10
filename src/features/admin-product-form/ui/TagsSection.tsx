@@ -1,8 +1,8 @@
-import {FormField} from '../../../../../shared'
-import {type ProductCreateVm} from '../viewmodel'
+import {FormField} from '../../../shared'
+import {type AdminProductFormViewmodel} from '../viewmodel'
 
 type TagsSectionProps = {
-	tags: ProductCreateVm['tags'],
+	tags: AdminProductFormViewmodel['tags'],
 }
 
 function TagsSection({

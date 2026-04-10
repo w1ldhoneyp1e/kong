@@ -7,10 +7,10 @@ import {
 	useCreateProductMutation,
 	useProductTagsQuery,
 	useUpdateProductMutation,
-} from '../../../../../entities/product'
-import {randomId} from '../../../../../shared'
-import {type ProductCreateVm, type ProductFormMode} from './interface'
-import {ProductCreateVmProvider} from './provider'
+} from '../../../entities/product'
+import {randomId} from '../../../shared'
+import {type AdminProductFormViewmodel, type ProductFormMode} from './interface'
+import {AdminProductFormViewmodelProvider} from './provider'
 import {useProductCreateStore} from './store'
 import {
 	formatMutationError,
@@ -24,7 +24,7 @@ import {createPageVm} from './vm/pageVm'
 import {createSpecsVm} from './vm/specsVm'
 import {createTagsVm} from './vm/tagsVm'
 
-type ProductCreateVmModelProviderProps = Readonly<{
+type AdminProductFormProviderProps = Readonly<{
 	mode: ProductFormMode,
 	productId?: string,
 	initialProduct?: AdminProduct,
@@ -99,11 +99,11 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 	})
 }
 
-function useProductCreateVmModel(params: {
+function useAdminProductFormViewmodel(params: {
 	mode: ProductFormMode,
 	productId?: string,
 	initialProduct?: AdminProduct,
-}): ProductCreateVm {
+}): AdminProductFormViewmodel {
 	const router = useRouter()
 	const createMutation = useCreateProductMutation()
 	const updateMutation = useUpdateProductMutation()
@@ -216,25 +216,25 @@ function useProductCreateVmModel(params: {
 	}
 }
 
-function ProductCreateVmModelProvider({
+function AdminProductFormProvider({
 	mode,
 	productId,
 	initialProduct,
 	children,
-}: ProductCreateVmModelProviderProps) {
-	const vm = useProductCreateVmModel({
+}: AdminProductFormProviderProps) {
+	const viewmodel = useAdminProductFormViewmodel({
 		mode,
 		productId,
 		initialProduct,
 	})
 
 	return (
-		<ProductCreateVmProvider vm={vm}>
+		<AdminProductFormViewmodelProvider viewmodel={viewmodel}>
 			{children}
-		</ProductCreateVmProvider>
+		</AdminProductFormViewmodelProvider>
 	)
 }
 
 export {
-	ProductCreateVmModelProvider,
+	AdminProductFormProvider,
 }

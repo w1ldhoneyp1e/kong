@@ -1,5 +1,5 @@
 import {GripVertical} from 'lucide-react'
-import {cn} from '../../../../../../shared'
+import {cn} from '../../../../shared'
 import {type ProductGalleryImageItem} from '../../types'
 
 const GALLERY_DRAG_MIME = 'application/x-kong-gallery-index'
