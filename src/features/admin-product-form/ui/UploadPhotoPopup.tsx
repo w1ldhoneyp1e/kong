@@ -2,14 +2,18 @@
 
 import {ImageUploadPopup} from '../../../widgets/image-upload-popup'
 import {ImageUploaderDropzone} from '../../uploader/images'
-import {useAdminProductFormViewmodel} from '../viewmodel'
+import {type AdminProductFormViewmodel} from '../viewmodel'
 
-function UploadPhotoPopup() {
-	const {media} = useAdminProductFormViewmodel()
+type UploadPhotoPopupProps = {
+	media: AdminProductFormViewmodel['media'],
+}
 
+function UploadPhotoPopup({
+	media,
+}: Readonly<UploadPhotoPopupProps>) {
 	return (
 		<ImageUploadPopup
-			open={media.isOpen}
+			onClose={media.onClose}
 			disabled={media.disabled}
 			title="Фото товара"
 			dropzone={(
@@ -21,7 +25,6 @@ function UploadPhotoPopup() {
 			)}
 			imageDraft={media.imageDraft}
 			items={media.galleryImages}
-			onOpenChange={media.onOpenChange}
 			onImageDraftChange={media.onImageDraftChange}
 			onAddImageFromDraft={media.onAddImageFromDraft}
 			onRemoveImage={media.onRemoveGalleryImage}

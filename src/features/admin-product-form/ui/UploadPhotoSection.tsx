@@ -8,6 +8,7 @@ import {Button} from '../../../shared'
 import {type AdminProductFormViewmodel} from '../viewmodel'
 import {GalleryMainPreview} from './media/GalleryMainPreview'
 import {GalleryThumbsStrip} from './media/GalleryThumbsStrip'
+import {UploadPhotoPopup} from './UploadPhotoPopup'
 
 type UploadPhotoSectionProps = {
 	media: AdminProductFormViewmodel['media'],
@@ -102,6 +103,7 @@ function UploadPhotoSection({
 					</Button>
 				</div>
 			</div>
+			{media.isOpen && <UploadPhotoPopup media={media} />}
 		</section>
 	)
 }

@@ -1,10 +1,10 @@
-import {type ProductCreateVm} from '../interface'
+import {type AdminProductFormViewmodel} from '../interface'
 import {type ProductCreateStore} from '../store-types'
 
 function createSpecsVm(
 	store: ProductCreateStore,
 	disabled: boolean,
-): ProductCreateVm['specs'] {
+): AdminProductFormViewmodel['specs'] {
 	return {
 		disabled,
 		sectionExpanded: store.specsSectionExpanded,

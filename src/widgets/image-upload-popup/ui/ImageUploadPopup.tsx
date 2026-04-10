@@ -6,44 +6,38 @@ import {ImageUploadPopupHeader} from './ImageUploadPopupHeader'
 import {ImageUploadUrlInput} from './ImageUploadUrlInput'
 
 type ImageUploadPopupProps = {
-	open: boolean,
+	onClose: () => void,
 	disabled: boolean,
 	title: string,
 	dropzone: ReactNode,
 	imageDraft: string,
 	items: ImageUploadItem[],
-	onOpenChange: (open: boolean) => void,
 	onImageDraftChange: (value: string) => void,
 	onAddImageFromDraft: () => void,
 	onRemoveImage: (id: string) => void,
 }
 
 function ImageUploadPopup({
-	open,
+	onClose,
 	disabled,
 	title,
 	dropzone,
 	imageDraft,
 	items,
-	onOpenChange,
 	onImageDraftChange,
 	onAddImageFromDraft,
 	onRemoveImage,
 }: Readonly<ImageUploadPopupProps>) {
 	return (
 		<Modal
-			open={open}
-			onOpenChange={onOpenChange}
+			onClose={onClose}
 			disabled={disabled}
 			className="max-w-2xl"
 			ariaLabelledBy="image-upload-popup-title"
 		>
 			<ImageUploadPopupHeader
 				title={title}
-				disabled={disabled}
-				onClose={() => {
-					onOpenChange(false)
-				}}
+				onClose={onClose}
 			/>
 			<div className="space-y-6">
 				<p className="text-xs text-muted-foreground">

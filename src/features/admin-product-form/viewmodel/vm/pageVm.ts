@@ -1,14 +1,14 @@
-import {type ProductCreateVm} from '../interface'
+import {type AdminProductFormViewmodel} from '../interface'
 
 function createPageVm(params: {
-	mode: ProductCreateVm['page']['mode'],
+	mode: AdminProductFormViewmodel['page']['mode'],
 	title: string,
 	submitLabel: string,
 	disabled: boolean,
 	errorText: string,
 	onCancel: () => void,
 	onSubmit: (event: React.FormEvent) => void,
-}): ProductCreateVm['page'] {
+}): AdminProductFormViewmodel['page'] {
 	return {
 		mode: params.mode,
 		title: params.title,

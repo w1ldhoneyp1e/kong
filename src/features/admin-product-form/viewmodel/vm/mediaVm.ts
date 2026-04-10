@@ -1,10 +1,10 @@
-import {type ProductCreateVm} from '../interface'
+import {type AdminProductFormViewmodel} from '../interface'
 import {type ProductCreateStore} from '../store-types'
 
 function createMediaVm(
 	store: ProductCreateStore,
 	disabled: boolean,
-): ProductCreateVm['media'] {
+): AdminProductFormViewmodel['media'] {
 	return {
 		isOpen: store.isMediaModalOpen,
 		imageDraft: store.imageDraft,
@@ -17,7 +17,7 @@ function createMediaVm(
 		onDropzoneLeave: store.mediaDropzoneLeave,
 		onDropzoneReset: store.resetMediaDropzone,
 		onOpen: () => store.setMediaModalOpen(true),
-		onOpenChange: store.setMediaModalOpen,
+		onClose: () => store.setMediaModalOpen(false),
 		onImageDraftChange: store.setImageDraft,
 		onAddImageFromDraft: store.addGalleryImageFromDraft,
 		onAddGalleryUrls: store.addGalleryUrls,

@@ -1,11 +1,11 @@
-import {type ProductCreateVm} from '../interface'
+import {type AdminProductFormViewmodel} from '../interface'
 import {type ProductCreateStore} from '../store-types'
 
 function createTagsVm(
 	store: ProductCreateStore,
-	tagOptions: ProductCreateVm['tags']['tagOptions'],
+	tagOptions: AdminProductFormViewmodel['tags']['tagOptions'],
 	disabled: boolean,
-): ProductCreateVm['tags'] {
+): AdminProductFormViewmodel['tags'] {
 	return {
 		selectedTagIds: store.selectedTagIds,
 		tagOptions,

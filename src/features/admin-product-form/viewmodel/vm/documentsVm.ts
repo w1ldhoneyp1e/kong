@@ -1,11 +1,11 @@
 import {DOCUMENT_KIND_OPTIONS, DOCUMENT_SOURCE_TYPE_OPTIONS} from '../../consts'
-import {type ProductCreateVm} from '../interface'
+import {type AdminProductFormViewmodel} from '../interface'
 import {type ProductCreateStore} from '../store-types'
 
 function createDocumentsVm(
 	store: ProductCreateStore,
 	disabled: boolean,
-): ProductCreateVm['documents'] {
+): AdminProductFormViewmodel['documents'] {
 	return {
 		items: store.documents,
 		isModalOpen: store.isDocumentModalOpen,

@@ -14,18 +14,22 @@ import {
 } from '../../../shared'
 import {DocumentUploaderDropzone} from '../../uploader/documents'
 import {type ProductDocumentSourceType} from '../types'
-import {useAdminProductFormViewmodel} from '../viewmodel'
+import {type AdminProductFormViewmodel} from '../viewmodel'
 
-function UploadDocumentPopup() {
-	const {documents} = useAdminProductFormViewmodel()
+type UploadDocumentPopupProps = {
+	documents: AdminProductFormViewmodel['documents'],
+}
+
+function UploadDocumentPopup({
+	documents,
+}: Readonly<UploadDocumentPopupProps>) {
 	const canSubmit
 		= documents.newItem.title.trim().length > 0 && documents.newItem.url.trim().length > 0
 	const isFileMode = documents.newItem.sourceType === 'file'
 
 	return (
 		<Modal
-			open={documents.isModalOpen}
-			onOpenChange={documents.onOpenChange}
+			onClose={documents.onCloseModal}
 			disabled={documents.disabled}
 			className="h-[min(90vh,390px)] max-w-lg overflow-y-auto"
 			ariaLabelledBy="create-document-modal-title"

@@ -61,6 +61,8 @@ export {
 } from './ui/select'
 export {Link} from './ui/link'
 export {Modal} from './ui/modal'
+export {Popup} from './ui/popup'
+export type {PopupProps} from './ui/popup'
 export type {LinkProps} from './ui/link'
 export {
 	Carousel,

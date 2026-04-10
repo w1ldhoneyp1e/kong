@@ -10,7 +10,6 @@ import {DocumentsSection} from './ui/DocumentsSection'
 import {MainSection} from './ui/MainSection'
 import {SpecsSection} from './ui/SpecsSection'
 import {TagsSection} from './ui/TagsSection'
-import {UploadPhotoPopup} from './ui/UploadPhotoPopup'
 import {UploadPhotoSection} from './ui/UploadPhotoSection'
 import {type ProductFormMode} from './viewmodel'
 import {useAdminProductFormViewmodel} from './viewmodel/provider'
@@ -78,7 +77,6 @@ function AdminProductFormContent() {
 					</div>
 				</form>
 			</div>
-			<UploadPhotoPopup />
 		</div>
 	)
 }

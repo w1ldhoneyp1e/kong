@@ -3,25 +3,21 @@
 import * as React from 'react'
 import {cn} from '../lib/utils'
 
-function Modal({
-	open,
-	onOpenChange,
-	disabled = false,
-	children,
-	className,
-	ariaLabelledBy,
-}: Readonly<{
-	open: boolean,
-	onOpenChange: (open: boolean) => void,
+type ModalProps = {
+	onClose: () => void,
 	disabled?: boolean,
 	children: React.ReactNode,
 	className?: string,
 	ariaLabelledBy?: string,
-}>) {
-	if (!open) {
-		return null
-	}
+}
 
+function Modal({
+	onClose,
+	disabled = false,
+	children,
+	className,
+	ariaLabelledBy,
+}: Readonly<ModalProps>) {
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
 			<button
@@ -30,7 +26,7 @@ function Modal({
 				aria-label="Закрыть"
 				onClick={() => {
 					if (!disabled) {
-						onOpenChange(false)
+						onClose()
 					}
 				}}
 			/>

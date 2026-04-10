@@ -54,7 +54,7 @@ function DocumentsSection({
 					</span>
 				</button>
 			</div>
-			<UploadDocumentPopup />
+			{documents.isModalOpen && <UploadDocumentPopup documents={documents} />}
 		</section>
 	)
 }
