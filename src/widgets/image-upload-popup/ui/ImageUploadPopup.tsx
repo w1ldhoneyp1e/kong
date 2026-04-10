@@ -1,8 +1,7 @@
 'use client'
 import {type ReactNode} from 'react'
-import {Modal} from '../../../shared'
+import {Popup} from '../../../shared'
 import {type ImageUploadItem, ImageUploadItemsGrid} from './ImageUploadItemsGrid'
-import {ImageUploadPopupHeader} from './ImageUploadPopupHeader'
 import {ImageUploadUrlInput} from './ImageUploadUrlInput'
 
 type ImageUploadPopupProps = {
@@ -29,16 +28,17 @@ function ImageUploadPopup({
 	onRemoveImage,
 }: Readonly<ImageUploadPopupProps>) {
 	return (
-		<Modal
+		<Popup
+			title={title}
 			onClose={onClose}
+			onSubmit={onClose}
+			submitBtn={{
+				label: 'Готово',
+				onClick: onClose,
+			}}
 			disabled={disabled}
 			className="max-w-2xl"
-			ariaLabelledBy="image-upload-popup-title"
 		>
-			<ImageUploadPopupHeader
-				title={title}
-				onClose={onClose}
-			/>
 			<div className="space-y-6">
 				<p className="text-xs text-muted-foreground">
 					{'Первое фото в списке ниже — основное в карточке товара.'}
@@ -66,7 +66,7 @@ function ImageUploadPopup({
 					/>
 				</div>
 			</div>
-		</Modal>
+		</Popup>
 	)
 }
 export {ImageUploadPopup}

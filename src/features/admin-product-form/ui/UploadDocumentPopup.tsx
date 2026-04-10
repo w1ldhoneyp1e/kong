@@ -1,11 +1,9 @@
 'use client'
 
-import {X} from 'lucide-react'
 import {
-	Button,
 	FormField,
 	Input,
-	Modal,
+	Popup,
 	Select,
 	SelectContent,
 	SelectItem,
@@ -28,25 +26,20 @@ function UploadDocumentPopup({
 	const isFileMode = documents.newItem.sourceType === 'file'
 
 	return (
-		<Modal
+		<Popup
+			title="Новый документ"
 			onClose={documents.onCloseModal}
+			onSubmit={documents.onAdd}
+			submitBtn={{
+				label: 'Добавить',
+				onClick: documents.onAdd,
+				state: canSubmit
+					? undefined
+					: 'disabled',
+			}}
 			disabled={documents.disabled}
 			className="h-[min(90vh,390px)] max-w-lg overflow-y-auto"
-			ariaLabelledBy="create-document-modal-title"
 		>
-			<div className="mb-4 flex items-center justify-between gap-2">
-				<h3
-					id="create-document-modal-title"
-					className="text-lg font-semibold"
-				>
-					{'Новый документ'}
-				</h3>
-				<X
-					className="size-6 cursor-pointer text-muted-foreground hover:text-foreground"
-					aria-hidden={true}
-					onClick={documents.onCloseModal}
-				/>
-			</div>
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between gap-4">
 					<FormField
@@ -127,24 +120,7 @@ function UploadDocumentPopup({
 						</FormField>
 					)}
 			</div>
-			<div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-				<Button
-					type="button"
-					variant="outline"
-					disabled={documents.disabled}
-					onClick={documents.onCloseModal}
-				>
-					{'Отмена'}
-				</Button>
-				<Button
-					type="button"
-					disabled={documents.disabled || !canSubmit}
-					onClick={documents.onAdd}
-				>
-					{'Добавить'}
-				</Button>
-			</div>
-		</Modal>
+		</Popup>
 	)
 }
 
