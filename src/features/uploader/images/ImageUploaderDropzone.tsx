@@ -18,8 +18,6 @@ function ImageUploaderDropzone({
 		<FileDropzone
 			open={open}
 			disabled={disabled}
-			message="Перетащите изображения сюда или скопируйте и вставьте"
-			primaryActionLabel="С компьютера"
 			accept="image/*"
 			acceptFile={file => file.type.startsWith('image/')}
 			uploader={uploadProductImageFiles}

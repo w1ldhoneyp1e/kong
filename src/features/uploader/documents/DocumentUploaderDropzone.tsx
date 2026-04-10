@@ -19,8 +19,6 @@ function DocumentUploaderDropzone({
 			open={open}
 			disabled={disabled}
 			className="min-h-[8.5rem]"
-			message="Перетащите файл сюда или скопируйте и вставьте"
-			primaryActionLabel="С компьютера"
 			acceptFile={() => true}
 			uploader={uploadProductDocumentFiles}
 			onUploaded={onUploaded}

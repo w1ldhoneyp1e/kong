@@ -1,14 +1,12 @@
-import {Button} from '../../../shared'
+import {X} from 'lucide-react'
 
 type ImageUploadPopupHeaderProps = {
 	title: string,
-	disabled: boolean,
 	onClose: () => void,
 }
 
 function ImageUploadPopupHeader({
 	title,
-	disabled,
 	onClose,
 }: Readonly<ImageUploadPopupHeaderProps>) {
 	return (
@@ -19,15 +17,11 @@ function ImageUploadPopupHeader({
 			>
 				{title}
 			</h3>
-			<Button
-				type="button"
-				variant="outline"
-				size="sm"
-				disabled={disabled}
+			<X
+				className="size-6 cursor-pointer text-muted-foreground hover:text-foreground"
+				aria-hidden={true}
 				onClick={onClose}
-			>
-				{'Закрыть'}
-			</Button>
+			/>
 		</div>
 	)
 }

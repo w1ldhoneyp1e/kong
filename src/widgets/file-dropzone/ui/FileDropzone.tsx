@@ -1,8 +1,4 @@
-import {
-	type ReactNode,
-	useRef,
-	useState,
-} from 'react'
+import {useRef, useState} from 'react'
 import {
 	Button,
 	cn,
@@ -12,8 +8,6 @@ import {
 type FileDropzoneProps<T_UPLOAD_ITEM> = {
 	open: boolean,
 	disabled: boolean,
-	message: ReactNode,
-	primaryActionLabel: string,
 	acceptFile: (file: File) => boolean,
 	uploader: (files: File[]) => Promise<T_UPLOAD_ITEM[]>,
 	onUploaded: (items: T_UPLOAD_ITEM[]) => void | Promise<void>,
@@ -27,8 +21,6 @@ type FileDropzoneProps<T_UPLOAD_ITEM> = {
 function FileDropzone<T_UPLOAD_ITEM>({
 	open,
 	disabled,
-	message,
-	primaryActionLabel,
 	acceptFile,
 	uploader,
 	onUploaded,
@@ -111,18 +103,18 @@ function FileDropzone<T_UPLOAD_ITEM>({
 				}}
 			>
 				<p className="text-sm text-muted-foreground">
-					{message}
+					{'Перетащите файл сюда или скопируйте и вставьте'}
 				</p>
 				<div className="flex flex-wrap items-center justify-center gap-2">
 					<Button
 						type="button"
-						variant="outline"
+						variant="ghost"
 						disabled={disabled}
 						onClick={() => {
 							fileInputRef.current?.click()
 						}}
 					>
-						{primaryActionLabel}
+						{'Загрузить'}
 					</Button>
 					{hasSecondaryAction
 						? (

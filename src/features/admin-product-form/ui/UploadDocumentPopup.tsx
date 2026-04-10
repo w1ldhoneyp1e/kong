@@ -1,5 +1,6 @@
 'use client'
 
+import {X} from 'lucide-react'
 import {
 	Button,
 	FormField,
@@ -29,15 +30,11 @@ function UploadDocumentPopup() {
 				>
 					{'Новый документ'}
 				</h3>
-				<Button
-					type="button"
-					variant="outline"
-					size="sm"
-					disabled={documents.disabled}
+				<X
+					className="size-6 cursor-pointer text-muted-foreground hover:text-foreground"
+					aria-hidden={true}
 					onClick={documents.onCloseModal}
-				>
-					{'Закрыть'}
-				</Button>
+				/>
 			</div>
 			<div className="grid gap-4 sm:grid-cols-2">
 				<div className="space-y-2 sm:col-span-2">
