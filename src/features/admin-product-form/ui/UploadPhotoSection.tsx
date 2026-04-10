@@ -46,17 +46,6 @@ function UploadPhotoSection({
 			<h3 className="text-sm font-medium text-muted-foreground">
 				{`Фото${additionalText}`}
 			</h3>
-			{hasSlides
-				? (
-					<p className="text-xs text-muted-foreground">
-						{'Крупное окно — выбранное фото; ряд миниатюр — весь список. Перетащите миниатюру, чтобы изменить порядок; первое в ряду — основное для витрины.'}
-					</p>
-				)
-				: (
-					<p className="text-xs text-muted-foreground">
-						{'Добавьте фото через «Загрузить»: после этого здесь появятся превью и перестановка.'}
-					</p>
-				)}
 			<div className="space-y-3">
 				<GalleryMainPreview
 					url={shownUrl}
