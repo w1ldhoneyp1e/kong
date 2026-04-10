@@ -28,11 +28,11 @@ const DOCUMENT_SOURCE_TYPE_OPTIONS: {
 }[] = [
 	{
 		value: 'url',
-		label: 'URL',
+		label: 'По ссылке',
 	},
 	{
 		value: 'file',
-		label: 'Файл (пока хранится как URL)',
+		label: 'С компьютера',
 	},
 ]
 
