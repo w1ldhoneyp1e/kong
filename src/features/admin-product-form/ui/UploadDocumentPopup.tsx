@@ -5,13 +5,8 @@ import {
 	FormField,
 	Input,
 	Modal,
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
 } from '../../../shared'
-import {type ProductDocumentKind, type ProductDocumentSourceType} from '../types'
+import {DocumentUploaderDropzone} from '../../uploader/documents'
 import {useAdminProductFormViewmodel} from '../viewmodel'
 
 function UploadDocumentPopup() {
@@ -45,6 +40,22 @@ function UploadDocumentPopup() {
 				</Button>
 			</div>
 			<div className="grid gap-4 sm:grid-cols-2">
+				<div className="space-y-2 sm:col-span-2">
+					<DocumentUploaderDropzone
+						open={documents.isModalOpen}
+						disabled={documents.disabled}
+						onUploaded={items => {
+							const first = items[0]
+							if (!first) {
+								return
+							}
+
+							documents.onNewSourceTypeChange('file')
+							documents.onNewTitleChange(first.title)
+							documents.onNewUrlChange(first.url)
+						}}
+					/>
+				</div>
 				<FormField
 					className="sm:col-span-2"
 					label="Название"
@@ -58,58 +69,6 @@ function UploadDocumentPopup() {
 						}}
 						disabled={documents.disabled}
 					/>
-				</FormField>
-				<FormField
-					label="Тип"
-					htmlFor="create-doc-kind"
-				>
-					<Select
-						value={documents.newItem.kind}
-						onValueChange={value => {
-							documents.onNewKindChange(value as ProductDocumentKind)
-						}}
-						disabled={documents.disabled}
-					>
-						<SelectTrigger id="create-doc-kind">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							{documents.kindOptions.map(option => (
-								<SelectItem
-									key={option.value}
-									value={option.value}
-								>
-									{option.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</FormField>
-				<FormField
-					label="Источник"
-					htmlFor="create-doc-source-type"
-				>
-					<Select
-						value={documents.newItem.sourceType}
-						onValueChange={value => {
-							documents.onNewSourceTypeChange(value as ProductDocumentSourceType)
-						}}
-						disabled={documents.disabled}
-					>
-						<SelectTrigger id="create-doc-source-type">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							{documents.sourceTypeOptions.map(option => (
-								<SelectItem
-									key={option.value}
-									value={option.value}
-								>
-									{option.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
 				</FormField>
 				<FormField
 					className="sm:col-span-2"

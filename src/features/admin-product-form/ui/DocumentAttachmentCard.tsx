@@ -1,6 +1,6 @@
 'use client'
 
-import {Trash2} from 'lucide-react'
+import {X} from 'lucide-react'
 import {Button, cn} from '../../../shared'
 import {type ProductDocument} from '../types'
 import {getDocumentFormatVisual, inferDocumentFormatFromUrl} from './documentAttachmentFormat'
@@ -37,7 +37,7 @@ function DocumentAttachmentCard({
 				aria-label="Удалить документ"
 				onClick={onRemove}
 			>
-				<Trash2 className="size-3.5" />
+				<X className="size-3.5" />
 			</Button>
 			<div className="flex flex-1 flex-col items-center px-2 pb-1.5 pt-5">
 				<div
