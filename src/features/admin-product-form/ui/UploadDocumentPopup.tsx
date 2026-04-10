@@ -38,7 +38,7 @@ function UploadDocumentPopup({
 					: 'disabled',
 			}}
 			disabled={documents.disabled}
-			className="h-[min(90vh,390px)] max-w-lg overflow-y-auto"
+			className="h-[min(90vh,390px)] max-w-lg"
 		>
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between gap-4">
