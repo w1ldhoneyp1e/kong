@@ -38,7 +38,7 @@ function ImageUploadDropzone({
 			onDrop={onDrop}
 		>
 			<p className="text-sm text-muted-foreground">
-				{'Перетащите изображения сюда'}
+				{'Перетащите изображения сюда или скопируйте и вставьте'}
 			</p>
 			<div className="flex flex-wrap items-center justify-center gap-2">
 				<Button

@@ -1,6 +1,6 @@
 'use client'
 import {useRef} from 'react'
-import {Modal} from '../../../shared'
+import {Modal, useClipboardFilePaste} from '../../../shared'
 import {ImageUploadDropzone} from './ImageUploadDropzone'
 import {type ImageUploadItem, ImageUploadItemsGrid} from './ImageUploadItemsGrid'
 import {ImageUploadPopupHeader} from './ImageUploadPopupHeader'
@@ -42,6 +42,15 @@ function ImageUploadPopup({
 	onRemoveImage,
 }: Readonly<ImageUploadPopupProps>) {
 	const fileInputRef = useRef<HTMLInputElement>(null)
+
+	useClipboardFilePaste({
+		enabled: open,
+		disabled,
+		acceptFile: file => file.type.startsWith('image/'),
+		onFiles: async files => {
+			await onAddFiles(files)
+		},
+	})
 
 	return (
 		<Modal

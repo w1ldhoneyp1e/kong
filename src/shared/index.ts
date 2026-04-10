@@ -3,6 +3,8 @@ export {readFileAsDataUrl} from './lib/readFileAsDataUrl'
 export {cn} from './lib/utils'
 export {match} from './lib/match'
 export {scrollToTop} from './lib/scrollToTop'
+export {useClipboardFilePaste} from './lib/useClipboardFilePaste'
+export type {UseClipboardFilePasteParams} from './lib/useClipboardFilePaste'
 export {
 	getBackendUrl, getBackendUrlOptional, getApiBase,
 } from './lib/url'
