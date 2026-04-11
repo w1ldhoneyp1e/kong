@@ -31,27 +31,9 @@ export const adminNavItems: AdminNavItem[] = [
 		requiredPermission: 'customers:manage',
 	},
 	{
-		id: 'carts',
-		href: '/admin/carts',
-		label: 'Корзины',
-		requiredPermission: 'carts:manage',
-	},
-	{
-		id: 'store',
-		href: '/admin/store',
-		label: 'Магазин',
-		requiredPermission: 'store:update',
-	},
-	{
-		id: 'inventory-items',
-		href: '/admin/inventory-items',
-		label: 'Товары на складе',
-		requiredPermission: 'inventory:manage',
-	},
-	{
 		id: 'staff',
 		href: '/admin/staff',
-		label: 'Пользователи (staff)',
+		label: 'Работники',
 		requiredPermission: 'staff:manage',
 	},
 ]
