@@ -10,7 +10,9 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 
 	const {id} = req.params
 	const customerService = req.scope.resolve(Modules.CUSTOMER)
-	const customer = await customerService.retrieveCustomer(id).catch(() => null)
+	const customer = await customerService.retrieveCustomer(id, {
+		relations: ['addresses'],
+	}).catch(() => null)
 	if (!customer) {
 		res.status(404).json({error: 'Customer not found'})
 		return

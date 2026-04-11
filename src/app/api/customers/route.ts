@@ -1,8 +1,13 @@
 import {type NextRequest} from 'next/server'
 import {errorMessage, proxyToBackend} from '../_shared/proxyToBackend'
 
-async function GET() {
-	return proxyToBackend('/customers')
+async function GET(req: NextRequest) {
+	const search = req.nextUrl.search
+	const path = search
+		? `/customers${search}`
+		: '/customers'
+
+	return proxyToBackend(path)
 }
 
 async function POST(request: NextRequest) {
