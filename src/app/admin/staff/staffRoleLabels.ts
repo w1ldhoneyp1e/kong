@@ -1,3 +1,14 @@
+function formatStaffFullName(row: {
+	first_name?: string | null,
+	last_name?: string | null,
+}): string {
+	const parts = [row.first_name, row.last_name].filter(Boolean)
+
+	return parts.length > 0
+		? parts.join(' ')
+		: '—'
+}
+
 function getStaffRoleLabel(roleCode: string | null | undefined): string {
 	const k = (roleCode ?? '').toLowerCase()
 	if (k === 'owner') {
@@ -15,4 +26,7 @@ function getStaffRoleLabel(roleCode: string | null | undefined): string {
 	return roleCode ?? '—'
 }
 
-export {getStaffRoleLabel}
+export {
+	formatStaffFullName,
+	getStaffRoleLabel,
+}

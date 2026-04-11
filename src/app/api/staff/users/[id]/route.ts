@@ -11,7 +11,7 @@ async function GET(
 			return Response.json({error: 'Некорректный id'}, {status: 400})
 		}
 
-		return proxyToBackend(`/staff/users/${id}`)
+		return proxyToBackend(`/staff/users/${encodeURIComponent(id)}`)
 	}
 	catch (e) {
 		return Response.json(
@@ -33,7 +33,7 @@ async function PATCH(
 
 		const body = await request.json()
 
-		return proxyToBackend(`/staff/users/${id}`, {
+		return proxyToBackend(`/staff/users/${encodeURIComponent(id)}`, {
 			method: 'PATCH',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(body),
@@ -57,7 +57,7 @@ async function DELETE(
 			return Response.json({error: 'Некорректный id'}, {status: 400})
 		}
 
-		return proxyToBackend(`/staff/users/${id}`, {
+		return proxyToBackend(`/staff/users/${encodeURIComponent(id)}`, {
 			method: 'DELETE',
 		})
 	}

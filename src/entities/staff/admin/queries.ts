@@ -9,23 +9,13 @@ import {adminStaffApi} from './api'
 import {
 	type CreateStaffPayload,
 	type ListStaffResult,
-	type StaffUser,
 	type UpdateStaffRolePayload,
 } from './types'
 
 const adminStaffListKey = ['admin', 'staff', 'users'] as const
-const adminStaffDetailIdleKey = ['admin', 'staff', 'detail', 'none'] as const
-
-function adminStaffUserQueryKey(id: string) {
-	return ['admin', 'staff', 'users', id] as const
-}
 
 type UseStaffUsersQueryOptions = {
 	initialData?: ListStaffResult,
-}
-
-type UseStaffUserQueryOptions = {
-	initialData?: StaffUser,
 }
 
 function useStaffUsersQuery(options?: UseStaffUsersQueryOptions) {
@@ -33,20 +23,8 @@ function useStaffUsersQuery(options?: UseStaffUsersQueryOptions) {
 		queryKey: adminStaffListKey,
 		queryFn: () => adminStaffApi.listStaffUsers(),
 		initialData: options?.initialData,
-	})
-}
-
-function useStaffUserQuery(
-	id: string | undefined,
-	options?: UseStaffUserQueryOptions,
-) {
-	return useQuery({
-		queryKey: id
-			? adminStaffUserQueryKey(id)
-			: adminStaffDetailIdleKey,
-		queryFn: () => adminStaffApi.getStaffUser(id as string),
-		enabled: Boolean(id),
-		initialData: options?.initialData,
+		staleTime: 0,
+		refetchOnMount: 'always',
 	})
 }
 
@@ -72,13 +50,8 @@ function useUpdateStaffRoleMutation() {
 			id: string,
 			payload: UpdateStaffRolePayload,
 		}) => adminStaffApi.updateStaffRole(id, payload),
-		onSuccess: (_data, variables) =>
-			Promise.all([
-				queryClient.invalidateQueries({queryKey: adminStaffListKey}),
-				queryClient.invalidateQueries({
-					queryKey: adminStaffUserQueryKey(variables.id),
-				}),
-			]),
+		onSuccess: () =>
+			queryClient.invalidateQueries({queryKey: adminStaffListKey}),
 	})
 }
 
@@ -87,25 +60,18 @@ function useDeleteStaffUserMutation() {
 
 	return useMutation({
 		mutationFn: (id: string) => adminStaffApi.deleteStaffUser(id),
-		onSuccess: (_data, id) => {
-			queryClient.removeQueries({queryKey: adminStaffUserQueryKey(id)})
-
-			return queryClient.invalidateQueries({queryKey: adminStaffListKey})
-		},
+		onSuccess: () =>
+			queryClient.invalidateQueries({queryKey: adminStaffListKey}),
 	})
 }
 
 export {
-	adminStaffDetailIdleKey,
 	adminStaffListKey,
-	adminStaffUserQueryKey,
 	useCreateStaffUserMutation,
 	useDeleteStaffUserMutation,
-	useStaffUserQuery,
 	useStaffUsersQuery,
 	useUpdateStaffRoleMutation,
 }
 export type {
-	UseStaffUserQueryOptions,
 	UseStaffUsersQueryOptions,
 }

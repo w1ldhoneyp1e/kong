@@ -11,6 +11,7 @@ import {
 	EntityPageHeader,
 	Input,
 } from '../../../shared'
+import {CreateCustomerPopup} from './CreateCustomerPopup'
 import {useCustomersListStore} from './viewmodel/customersListStore'
 import {useCustomersListVm} from './viewmodel/useCustomersListVm'
 
@@ -50,6 +51,7 @@ function CustomersListPageClient({
 	const pageSize = useCustomersListStore(s => s.pageSize)
 
 	const [qDraft, setQDraft] = useState(q)
+	const [createOpen, setCreateOpen] = useState(false)
 
 	useEffect(() => {
 		setQDraft(q)
@@ -57,13 +59,17 @@ function CustomersListPageClient({
 
 	return (
 		<div>
+			<CreateCustomerPopup
+				open={createOpen}
+				onOpenChange={setCreateOpen}
+			/>
 			<EntityPageHeader
 				title="Покупатели"
 				actions={(
 					<Button
 						type="button"
 						onClick={() => {
-							router.push('/admin/customers/new')
+							setCreateOpen(true)
 						}}
 					>
 						{'Создать покупателя'}

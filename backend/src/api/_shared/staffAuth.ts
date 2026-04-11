@@ -1,6 +1,8 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import jwt from 'jsonwebtoken'
+import {STAFF_MODULE} from '../../modules/staff'
 import {getAuthHeader} from './getAuthHeader'
+import {normalizeStaffActorId, resolveStaffUserFromRouteParam} from './staffActorId'
 import {getStaffPermissions} from './staffPermissions'
 
 type StaffJwtPayload = {
@@ -110,13 +112,20 @@ async function requirePermission(
 		return null
 	}
 
-	const perms = await getStaffPermissions(req, payload.actor_id).catch(() => [])
+	const staffService = req.scope.resolve(STAFF_MODULE) as any
+	const staffUser = await resolveStaffUserFromRouteParam(staffService, payload.actor_id) as {id?: string} | null
+	const rbacActorId = staffUser?.id ?? normalizeStaffActorId(payload.actor_id)
+
+	const perms = await getStaffPermissions(req, rbacActorId).catch(() => [])
 	if (!perms.includes(permissionKey)) {
 		error(res, 403, 'Недостаточно прав')
 		return null
 	}
 
-	return payload
+	return {
+		actor_type: payload.actor_type,
+		actor_id: rbacActorId,
+	}
 }
 
 export {

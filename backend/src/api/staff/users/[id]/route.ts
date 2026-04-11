@@ -2,11 +2,8 @@ import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {RBAC_MODULE} from '../../../../modules/rbac'
 import {STAFF_MODULE} from '../../../../modules/staff'
 import {requirePermission} from '../../../_shared/staffAuth'
-import {getStaffPermissions} from '../../../_shared/staffPermissions'
-
-function normalizeActorId(id: string): string {
-	return id.trim().toLowerCase()
-}
+import {getPrimaryStaffRoleCodeForActor, getStaffPermissions} from '../../../_shared/staffPermissions'
+import {resolveStaffUserFromRouteParam, routeStaffUserParamId} from '../../../_shared/staffActorId'
 
 async function getRoleIdByCode(
 	req: MedusaRequest,
@@ -30,48 +27,35 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		return
 	}
 
-	const {id} = req.params as {id?: string}
-	if (!id || typeof id !== 'string') {
+	const id = routeStaffUserParamId(req.params as {id?: string | string[]})
+	if (!id) {
 		res.status(400).json({error: 'Некорректный id'})
 		return
 	}
 
-	const actorId = normalizeActorId(id)
-
 	const staffService = req.scope.resolve(STAFF_MODULE) as any
-	const users = await staffService.listStaffUsers({id: actorId}, {take: 1}).catch(() => ([]))
-	const user = Array.isArray(users)
-		? users[0]
-		: null
+	const user = await resolveStaffUserFromRouteParam(staffService, id) as {
+		id: string,
+		email?: string | null,
+		first_name?: string | null,
+		last_name?: string | null,
+		created_at?: string,
+	} | null
 	if (!user?.id) {
 		res.status(404).json({error: 'User not found'})
 		return
 	}
 
-	const rbacService = req.scope.resolve(RBAC_MODULE) as any
-	const actorRoles = await rbacService.listActorRoles({
-		actor_type: 'staff',
-		actor_id: actorId,
-	}, {take: 10}).catch(() => ([]))
+	const rbacActorId = user.id
 
-	const roleCodes = (Array.isArray(actorRoles)
-		? actorRoles
-		: [])
-		.map((ar: any) => ar.role?.code)
-		.filter((v: unknown) => typeof v === 'string') as string[]
-
-	const roleCode = roleCodes.includes('owner')
-		? 'owner'
-		: roleCodes.includes('admin')
-			? 'admin'
-			: roleCodes.includes('manager')
-				? 'manager'
-				: roleCodes[0] ?? null
+	const roleCode = await getPrimaryStaffRoleCodeForActor(req, rbacActorId)
 
 	res.json({
 		user: {
 			id: user.id,
 			email: user.email,
+			first_name: (user as {first_name?: string | null}).first_name ?? null,
+			last_name: (user as {last_name?: string | null}).last_name ?? null,
 			roleCode,
 			created_at: (user as {created_at?: string}).created_at ?? null,
 		},
@@ -88,8 +72,8 @@ const PATCH = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => 
 		return
 	}
 
-	const {id} = req.params as {id?: string}
-	if (!id || typeof id !== 'string') {
+	const id = routeStaffUserParamId(req.params as {id?: string | string[]})
+	if (!id) {
 		res.status(400).json({error: 'Некорректный id'})
 		return
 	}
@@ -107,7 +91,14 @@ const PATCH = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => 
 		return
 	}
 
-	const actorId = normalizeActorId(id)
+	const staffService = req.scope.resolve(STAFF_MODULE) as any
+	const user = await resolveStaffUserFromRouteParam(staffService, id) as {id: string} | null
+	if (!user?.id) {
+		res.status(404).json({error: 'User not found'})
+		return
+	}
+
+	const rbacActorId = user.id
 
 	const rbacService = req.scope.resolve(RBAC_MODULE) as unknown as {
 		listActorRoles: (f: unknown, c: unknown) => Promise<unknown[]>,
@@ -118,8 +109,11 @@ const PATCH = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => 
 
 	const actorRoles = await rbacService.listActorRoles({
 		actor_type: 'staff',
-		actor_id: actorId,
-	}, {take: 50}).catch(() => ([]))
+		actor_id: rbacActorId,
+	}, {
+		take: 50,
+		relations: ['role'],
+	}).catch(() => ([]))
 
 	const ownerRoles = await rbacService.listRoles({code: 'owner'}, {take: 1}).catch(() => ([]))
 	const ownerRoleId = Array.isArray(ownerRoles)
@@ -156,29 +150,34 @@ const PATCH = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => 
 		return
 	}
 
-	await rbacService.deleteActorRoles({
-		actor_type: 'staff',
-		actor_id: actorId,
-	}).catch(() => {})
-
-	await rbacService.createActorRoles([{
-		actor_type: 'staff',
-		actor_id: actorId,
-		role_id: roleId,
-	}]).catch(() => {})
-
-	const staffService = req.scope.resolve(STAFF_MODULE) as {
-		listStaffUsers: (f: unknown, c: unknown) => Promise<{email?: string | null}[]>,
+	try {
+		await rbacService.deleteActorRoles({
+			actor_type: 'staff',
+			actor_id: rbacActorId,
+		})
+		await rbacService.createActorRoles([{
+			actor_type: 'staff',
+			actor_id: rbacActorId,
+			role_id: roleId,
+		}])
 	}
-	const usersAfter = await staffService.listStaffUsers({id: actorId}, {take: 1}).catch(() => ([]))
-	const row = Array.isArray(usersAfter)
-		? usersAfter[0]
-		: null
+	catch (e) {
+		const msg = e instanceof Error
+			? e.message
+			: 'Не удалось обновить роль'
+		res.status(500).json({error: msg})
+
+		return
+	}
+
+	const row = await staffService.retrieveStaffUser(rbacActorId).catch(() => null)
 
 	res.json({
 		user: {
-			id: actorId,
+			id: rbacActorId,
 			email: row?.email ?? null,
+			first_name: row?.first_name ?? null,
+			last_name: row?.last_name ?? null,
 			roleCode,
 		},
 	})
@@ -190,19 +189,29 @@ const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> =>
 		return
 	}
 
-	const {id} = req.params as {id?: string}
-	if (!id || typeof id !== 'string') {
+	const id = routeStaffUserParamId(req.params as {id?: string | string[]})
+	if (!id) {
 		res.status(400).json({error: 'Некорректный id'})
 		return
 	}
 
-	const actorId = normalizeActorId(id)
+	const staffService = req.scope.resolve(STAFF_MODULE) as any
+	const user = await resolveStaffUserFromRouteParam(staffService, id) as {id: string} | null
+	if (!user?.id) {
+		res.status(404).json({error: 'User not found'})
+		return
+	}
+
+	const rbacActorId = user.id
 
 	const rbacService = req.scope.resolve(RBAC_MODULE) as any
 	const actorRoles = await rbacService.listActorRoles({
 		actor_type: 'staff',
-		actor_id: actorId,
-	}, {take: 50}).catch(() => ([]))
+		actor_id: rbacActorId,
+	}, {
+		take: 50,
+		relations: ['role'],
+	}).catch(() => ([]))
 
 	const ownerRoles = await rbacService.listRoles({code: 'owner'}, {take: 1}).catch(() => ([]))
 	const ownerRoleId = Array.isArray(ownerRoles)
@@ -220,12 +229,11 @@ const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> =>
 		return
 	}
 
-	const staffService = req.scope.resolve(STAFF_MODULE) as any
-	await staffService.deleteStaffUsers([actorId]).catch(() => {})
+	await staffService.deleteStaffUsers([rbacActorId]).catch(() => {})
 
 	await rbacService.deleteActorRoles({
 		actor_type: 'staff',
-		actor_id: actorId,
+		actor_id: rbacActorId,
 	}).catch(() => {})
 
 	res.status(204).send()

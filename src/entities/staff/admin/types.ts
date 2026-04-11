@@ -1,6 +1,8 @@
 type StaffUser = {
 	id: string,
 	email?: string | null,
+	first_name?: string | null,
+	last_name?: string | null,
 	roleCode?: string | null,
 	created_at?: string | null,
 }
@@ -8,6 +10,8 @@ type StaffUser = {
 type CreateStaffPayload = {
 	email: string,
 	password: string,
+	first_name?: string | null,
+	last_name?: string | null,
 	roleCode?: 'admin' | 'manager',
 }
 
@@ -17,6 +21,7 @@ type UpdateStaffRolePayload = {
 
 type ListStaffResult = {
 	users: StaffUser[],
+	count?: number,
 }
 
 export type {

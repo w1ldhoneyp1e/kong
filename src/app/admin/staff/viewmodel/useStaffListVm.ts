@@ -4,6 +4,7 @@ import {
 	type ListStaffResult,
 	useDeleteStaffUserMutation,
 	useStaffUsersQuery,
+	useUpdateStaffRoleMutation,
 } from '../../../../entities/staff'
 import {useStaffListStore} from './staffListStore'
 
@@ -18,6 +19,7 @@ function useStaffListVm(initialList?: ListStaffResult) {
 	})
 
 	const deleteMutation = useDeleteStaffUserMutation()
+	const updateRoleMutation = useUpdateStaffRoleMutation()
 	const deleteConfirmId = useStaffListStore(s => s.deleteConfirmId)
 	const setDeleteConfirmId = useStaffListStore(s => s.setDeleteConfirmId)
 
@@ -32,6 +34,7 @@ function useStaffListVm(initialList?: ListStaffResult) {
 	const error
 		= (queryError && errorMessage(queryError))
 		?? (deleteMutation.error && errorMessage(deleteMutation.error))
+		?? (updateRoleMutation.error && errorMessage(updateRoleMutation.error))
 		?? ''
 
 	return {
@@ -39,6 +42,7 @@ function useStaffListVm(initialList?: ListStaffResult) {
 		loading,
 		error,
 		deleteMutation,
+		updateRoleMutation,
 		deleteConfirmId,
 		setDeleteConfirmId,
 	}

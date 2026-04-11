@@ -1,6 +1,7 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import {randomUUID} from 'node:crypto'
 import {RBAC_MODULE} from '../../../modules/rbac'
 import {STAFF_MODULE} from '../../../modules/staff'
 
@@ -22,8 +23,10 @@ async function ensureOwnerUser(
 
 	const staffService = req.scope.resolve(STAFF_MODULE) as any
 	const existing = await staffService.listStaffUsers({email}, {take: 1}).catch(() => ([]))
-	const hasUser = Array.isArray(existing) && existing.length > 0
-	if (!hasUser) {
+	let user = Array.isArray(existing) && existing.length > 0
+		? existing[0]
+		: null
+	if (!user) {
 		let passwordHash = process.env.OWNER_PASSWORD_HASH
 		const ownerPassword = process.env.OWNER_PASSWORD
 		if (!passwordHash && ownerPassword) {
@@ -34,11 +37,20 @@ async function ensureOwnerUser(
 			throw new Error('Для OWNER_EMAIL нужно задать OWNER_PASSWORD или OWNER_PASSWORD_HASH')
 		}
 
+		const newId = randomUUID()
 		await staffService.createStaffUsers([{
-			id: email,
+			id: newId,
 			email,
 			password_hash: passwordHash,
 		}]).catch(() => {})
+		const after = await staffService.listStaffUsers({email}, {take: 1}).catch(() => ([]))
+		user = Array.isArray(after) && after.length > 0
+			? after[0]
+			: null
+	}
+
+	if (!user?.id) {
+		return
 	}
 
 	const rbacService = req.scope.resolve(RBAC_MODULE) as any
@@ -54,7 +66,7 @@ async function ensureOwnerUser(
 
 	const actorRoles = await rbacService.listActorRoles({
 		actor_type: 'staff',
-		actor_id: email,
+		actor_id: user.id,
 	}, {take: 100}).catch(() => ([]))
 	const hasOwnerRole = (Array.isArray(actorRoles)
 		? actorRoles
@@ -66,7 +78,7 @@ async function ensureOwnerUser(
 
 	await rbacService.createActorRoles([{
 		actor_type: 'staff',
-		actor_id: email,
+		actor_id: user.id,
 		role_id: ownerRole.id,
 	}]).catch(() => {})
 }

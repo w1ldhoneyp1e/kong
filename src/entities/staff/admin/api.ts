@@ -45,10 +45,15 @@ function messageFromErrorData(data: unknown): string {
 	return 'Ошибка запроса'
 }
 
+function staffUsersPath(id: string): string {
+	return `${getApiBase()}/staff/users/${encodeURIComponent(id)}`
+}
+
 const adminStaffApi = {
 	listStaffUsers: async (): Promise<ListStaffResult> => {
 		const res = await fetch(`${getApiBase()}/staff/users`, {
 			credentials: 'same-origin',
+			cache: 'no-store',
 		})
 		const data = (await parseRes(res)) as ListStaffResult & {error?: string}
 
@@ -58,30 +63,17 @@ const adminStaffApi = {
 
 		return {
 			users: data.users ?? [],
+			count: typeof data.count === 'number'
+				? data.count
+				: undefined,
 		}
-	},
-
-	getStaffUser: async (id: string): Promise<StaffUser> => {
-		const res = await fetch(`${getApiBase()}/staff/users/${id}`, {
-			credentials: 'same-origin',
-		})
-		const data = (await parseRes(res)) as {user?: StaffUser}
-
-		if (!res.ok) {
-			throw new Error(messageFromErrorData(data))
-		}
-
-		if (!data.user) {
-			throw new Error('Пользователь не найден')
-		}
-
-		return data.user
 	},
 
 	createStaffUser: async (payload: CreateStaffPayload): Promise<StaffUser> => {
 		const res = await fetch(`${getApiBase()}/staff/users`, {
 			method: 'POST',
 			credentials: 'same-origin',
+			cache: 'no-store',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(payload),
 		})
@@ -96,16 +88,21 @@ const adminStaffApi = {
 			throw new Error('Ответ без пользователя')
 		}
 
-		return data
+		return {
+			...data,
+			first_name: data.first_name ?? null,
+			last_name: data.last_name ?? null,
+		}
 	},
 
 	updateStaffRole: async (
 		id: string,
 		payload: UpdateStaffRolePayload,
 	): Promise<StaffUser> => {
-		const res = await fetch(`${getApiBase()}/staff/users/${id}`, {
+		const res = await fetch(staffUsersPath(id), {
 			method: 'PATCH',
 			credentials: 'same-origin',
+			cache: 'no-store',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(payload),
 		})
@@ -124,9 +121,10 @@ const adminStaffApi = {
 	},
 
 	deleteStaffUser: async (id: string): Promise<void> => {
-		const res = await fetch(`${getApiBase()}/staff/users/${id}`, {
+		const res = await fetch(staffUsersPath(id), {
 			method: 'DELETE',
 			credentials: 'same-origin',
+			cache: 'no-store',
 		})
 
 		if (res.status === 204) {

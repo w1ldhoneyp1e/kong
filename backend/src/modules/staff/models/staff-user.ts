@@ -5,6 +5,8 @@ const StaffUser = model
 		id: model.id().primaryKey(),
 		email: model.text().unique(),
 		password_hash: model.text(),
+		first_name: model.text().nullable(),
+		last_name: model.text().nullable(),
 	})
 
 export default StaffUser

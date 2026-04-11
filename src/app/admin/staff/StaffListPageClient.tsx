@@ -1,7 +1,7 @@
 'use client'
 
 import {Trash2} from 'lucide-react'
-import {useRouter} from 'next/navigation'
+import {useState} from 'react'
 import {type ListStaffResult, type StaffUser} from '../../../entities/staff'
 import {
 	Badge,
@@ -9,8 +9,15 @@ import {
 	ConfirmDialog,
 	DataTable,
 	EntityPageHeader,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '../../../shared'
-import {getStaffRoleLabel} from './staffRoleLabels'
+import {useStaffSession} from '../StaffSessionContext'
+import {CreateStaffPopup} from './CreateStaffPopup'
+import {formatStaffFullName, getStaffRoleLabel} from './staffRoleLabels'
 import {useStaffListVm} from './viewmodel/useStaffListVm'
 
 function staffRoleVariant(
@@ -28,22 +35,107 @@ function staffRoleVariant(
 	return 'secondary'
 }
 
+function StaffListRoleCell({
+	row,
+	canAssignAdmin,
+	isPending,
+	pendingUserId,
+	onRoleChange,
+}: Readonly<{
+	row: StaffUser,
+	canAssignAdmin: boolean,
+	isPending: boolean,
+	pendingUserId: string | undefined,
+	onRoleChange: (id: string, roleCode: string) => void,
+}>) {
+	const roleLower = (row.roleCode ?? '').toLowerCase()
+	const isOwner = roleLower === 'owner'
+	const isAdmin = roleLower === 'admin'
+	const canEdit = !isOwner && (canAssignAdmin || !isAdmin)
+	const saving = isPending && pendingUserId === row.id
+
+	if (isOwner || !canEdit) {
+		return (
+			<Badge variant={staffRoleVariant(row.roleCode)}>
+				{getStaffRoleLabel(row.roleCode)}
+			</Badge>
+		)
+	}
+
+	const value = row.roleCode ?? 'manager'
+
+	return (
+		<div
+			className="min-w-[160px]"
+			onClick={e => {
+				e.stopPropagation()
+			}}
+			onPointerDown={e => {
+				e.stopPropagation()
+			}}
+		>
+			<Select
+				value={value}
+				disabled={saving}
+				onValueChange={v => {
+					if (value === v) {
+						return
+					}
+
+					onRoleChange(row.id, v)
+				}}
+			>
+				<SelectTrigger className="h-8 w-[160px]">
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					{canAssignAdmin
+						? (
+							<>
+								<SelectItem value="admin">
+									{'Админ'}
+								</SelectItem>
+								<SelectItem value="manager">
+									{'Менеджер'}
+								</SelectItem>
+							</>
+						)
+						: (
+							<SelectItem value="manager">
+								{'Менеджер'}
+							</SelectItem>
+						)}
+				</SelectContent>
+			</Select>
+		</div>
+	)
+}
+
 function StaffListPageClient({
 	initialList,
 }: Readonly<{initialList?: ListStaffResult}>) {
-	const router = useRouter()
 	const vm = useStaffListVm(initialList)
 	const confirmDeleteId = vm.deleteConfirmId
+	const [createOpen, setCreateOpen] = useState(false)
+	const {permissions} = useStaffSession()
+	const canAssignAdmin = permissions.includes('roles:manage')
+	const pendingId = vm.updateRoleMutation.isPending
+		? vm.updateRoleMutation.variables?.id
+		: undefined
 
 	return (
 		<div>
+			<CreateStaffPopup
+				open={createOpen}
+				onOpenChange={setCreateOpen}
+			/>
 			<EntityPageHeader
 				title="Работники"
 				actions={(
 					<Button
 						type="button"
 						onClick={() => {
-							router.push('/admin/staff/new')
+							setCreateOpen(true)
 						}}
 					>
 						{'Добавить пользователя'}
@@ -72,21 +164,32 @@ function StaffListPageClient({
 						cell: row => row.email ?? '—',
 					},
 					{
+						id: 'fio',
+						header: 'ФИО',
+						cell: row => formatStaffFullName(row),
+					},
+					{
 						id: 'role',
 						header: 'Роль',
 						cell: row => (
-							<Badge variant={staffRoleVariant(row.roleCode)}>
-								{getStaffRoleLabel(row.roleCode)}
-							</Badge>
+							<StaffListRoleCell
+								row={row}
+								canAssignAdmin={canAssignAdmin}
+								isPending={vm.updateRoleMutation.isPending}
+								pendingUserId={pendingId}
+								onRoleChange={(id, roleCode) => {
+									vm.updateRoleMutation.mutate({
+										id,
+										payload: {roleCode},
+									})
+								}}
+							/>
 						),
 					},
 				]}
 				data={vm.users}
 				getRowKey={row => row.id}
 				loading={vm.loading}
-				onRowClick={row => {
-					router.push(`/admin/staff/${encodeURIComponent(row.id)}`)
-				}}
 				actions={row => {
 					const isOwner = (row.roleCode ?? '').toLowerCase() === 'owner'
 

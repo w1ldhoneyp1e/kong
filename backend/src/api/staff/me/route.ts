@@ -2,6 +2,7 @@ import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {RBAC_MODULE} from '../../../modules/rbac'
 import {STAFF_MODULE} from '../../../modules/staff'
 import {verifyStaffJwt} from '../../_shared/staffAuth'
+import {normalizeStaffActorId, resolveStaffUserFromRouteParam} from '../../_shared/staffActorId'
 import {getStaffPermissions} from '../../_shared/staffPermissions'
 
 function asString(value: unknown): string | null {
@@ -12,28 +13,23 @@ function asString(value: unknown): string | null {
 	return null
 }
 
-function normalizeActorId(id: string): string {
-	return id.trim().toLowerCase()
-}
-
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const payload = verifyStaffJwt(req, res)
 	if (!payload) {
 		return
 	}
 
-	const actorId = normalizeActorId(payload.actor_id)
-
 	const staffService = req.scope.resolve(STAFF_MODULE) as any
-	const staffUsers = await staffService.listStaffUsers({id: actorId}, {take: 1}).catch(() => ([]))
-	const staffUser = Array.isArray(staffUsers)
-		? staffUsers[0]
-		: null
+	const staffUser = await resolveStaffUserFromRouteParam(staffService, payload.actor_id) as {
+		id: string,
+		email?: string | null,
+	} | null
+	const rbacActorId = staffUser?.id ?? normalizeStaffActorId(payload.actor_id)
 
 	const rbacService = req.scope.resolve(RBAC_MODULE) as any
 	const actorRoles = await rbacService.listActorRoles({
 		actor_type: 'staff',
-		actor_id: actorId,
+		actor_id: rbacActorId,
 	}, {take: 50}).catch(() => ([]))
 
 	const roleCodesFromRelations = (Array.isArray(actorRoles)
@@ -78,11 +74,11 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 				? 'manager'
 				: roleCodes[0] ?? null
 
-	const permissions = await getStaffPermissions(req, actorId).catch(() => [])
+	const permissions = await getStaffPermissions(req, rbacActorId).catch(() => [])
 
 	res.json({
 		staff: {
-			id: staffUser?.id ?? actorId,
+			id: staffUser?.id ?? rbacActorId,
 			email: staffUser?.email ?? null,
 			roleCode,
 			roles: roleCodes,

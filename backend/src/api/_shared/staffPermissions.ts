@@ -76,6 +76,70 @@ async function getStaffPermissions(
 	return Array.from(new Set(keys))
 }
 
+async function getPrimaryStaffRoleCodeForActor(
+	req: MedusaRequest,
+	actorId: string,
+): Promise<string | null> {
+	const rbacService = req.scope.resolve(RBAC_MODULE) as any
+	const actorRoles = await rbacService.listActorRoles({
+		actor_type: 'staff',
+		actor_id: actorId,
+	}, {
+		take: 50,
+		relations: ['role'],
+	}).catch(() => ([]))
+
+	const arr = Array.isArray(actorRoles)
+		? actorRoles
+		: []
+
+	const roleCodesFromRelations = arr
+		.map((ar: {role?: {code?: unknown}}) => asString(ar.role?.code))
+		.filter((v): v is string => typeof v === 'string')
+
+	const roleIds = arr
+		.map((ar: {role_id?: unknown, role?: {id?: unknown}}) =>
+			asString(ar.role_id) ?? asString(ar.role?.id))
+		.filter((v): v is string => typeof v === 'string')
+
+	const roles = await rbacService.listRoles({}, {take: 2000}).catch(() => ([]))
+	const roleCodeById = new Map<string, string>()
+	if (Array.isArray(roles)) {
+		for (const role of roles) {
+			const id = asString(role?.id)
+			const code = asString(role?.code)
+			if (id && code) {
+				roleCodeById.set(id, code)
+			}
+		}
+	}
+
+	const roleCodesSet = new Set<string>(roleCodesFromRelations)
+	for (const roleId of roleIds) {
+		const code = roleCodeById.get(roleId)
+		if (code) {
+			roleCodesSet.add(code)
+		}
+	}
+
+	const roleCodes = Array.from(roleCodesSet)
+
+	if (roleCodes.includes('owner')) {
+		return 'owner'
+	}
+
+	if (roleCodes.includes('admin')) {
+		return 'admin'
+	}
+
+	if (roleCodes.includes('manager')) {
+		return 'manager'
+	}
+
+	return roleCodes[0] ?? null
+}
+
 export {
+	getPrimaryStaffRoleCodeForActor,
 	getStaffPermissions,
 }

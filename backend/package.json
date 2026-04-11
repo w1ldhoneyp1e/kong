@@ -8,6 +8,7 @@
     "dev": "./node_modules/.bin/medusa develop",
     "start": "./node_modules/.bin/medusa start",
     "build": "./node_modules/.bin/medusa build",
+    "db:migrate": "./node_modules/.bin/medusa db:migrate",
     "lint": "eslint src/ backend/ --ext .ts,.tsx,.js,.jsx --fix"
   },
   "dependencies": {
