@@ -1,24 +1,16 @@
-import {AdminEntityDetail} from '../../AdminEntityDetail'
-
-const editFields = [
-	{
-		key: 'status',
-		label: 'Статус',
-	},
-]
+import {fetchAdminOrderServer} from '../server'
+import {OrderDetailPageClient} from './OrderDetailPageClient'
 
 type Props = {params: Promise<{id: string}>}
 
 export default async function AdminOrderDetailPage({params}: Props) {
 	const {id} = await params
+	const initialOrder = await fetchAdminOrderServer(id)
 
 	return (
-		<AdminEntityDetail
-			entity="orders"
+		<OrderDetailPageClient
 			id={id}
-			title="Заказ"
-			backHref="/admin/orders"
-			editFields={editFields}
+			initialOrder={initialOrder}
 		/>
 	)
 }

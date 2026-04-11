@@ -10,7 +10,16 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 
 	const {id} = req.params
 	const orderService = req.scope.resolve(Modules.ORDER)
-	const order = await orderService.retrieveOrder(id).catch(() => null)
+	const order = await orderService.retrieveOrder(id, {
+		relations: [
+			'items',
+			'summary',
+			'shipping_methods',
+			'transactions',
+			'shipping_address',
+			'billing_address',
+		],
+	}).catch(() => null)
 	if (!order) {
 		res.status(404).json({error: 'Order not found'})
 		return

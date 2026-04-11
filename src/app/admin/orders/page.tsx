@@ -1,32 +1,11 @@
-import {AdminEntityList} from '../AdminEntityList'
+import {OrdersListPageClient} from './OrdersListPageClient'
+import {fetchAdminOrdersServer} from './server'
 
-const columns = [
-	{
-		key: 'id',
-		label: 'ID',
-	},
-	{
-		key: 'status',
-		label: 'Статус',
-	},
-	{
-		key: 'display_id',
-		label: 'Номер',
-	},
-	{
-		key: 'created_at',
-		label: 'Создан',
-	},
-]
+export default async function AdminOrdersPage() {
+	const initialList = await fetchAdminOrdersServer({
+		limit: 20,
+		offset: 0,
+	})
 
-export default function AdminOrdersPage() {
-	return (
-		<AdminEntityList
-			title="Заказы"
-			description="Список заказов"
-			apiPath="orders"
-			basePath="/admin/orders"
-			columns={columns}
-		/>
-	)
+	return <OrdersListPageClient initialList={initialList} />
 }
