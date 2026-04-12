@@ -3,10 +3,9 @@
 import {useEffect, useState} from 'react'
 import {useCreateStaffUserMutation} from '../../../../entities/staff'
 import {
-	Button,
 	FormField,
 	Input,
-	Modal,
+	Popup,
 	Select,
 	SelectContent,
 	SelectItem,
@@ -54,20 +53,28 @@ function CreateStaffPopup({
 	}
 
 	return (
-		<Modal
+		<Popup
+			title="Новый пользователь"
 			onClose={() => {
 				onOpenChange(false)
 			}}
+			submitBtn={{
+				label: 'Создать',
+				onClick: () => {
+					createMutation.mutate({
+						email: email.trim(),
+						password,
+						first_name: firstName.trim() || null,
+						last_name: lastName.trim() || null,
+						roleCode: viewerIsOwner
+							? roleCode
+							: 'manager',
+					})
+				},
+			}}
 			disabled={createMutation.isPending}
 			className="max-w-md"
-			ariaLabelledBy="create-staff-title"
 		>
-			<h2
-				id="create-staff-title"
-				className="mb-4 text-lg font-semibold"
-			>
-				{'Новый пользователь'}
-			</h2>
 			{error
 				? (
 					<p
@@ -145,47 +152,8 @@ function CreateStaffPopup({
 							</p>
 						)}
 				</FormField>
-				<div className="flex flex-wrap justify-end gap-2 pt-2">
-					<Button
-						type="button"
-						variant="outline"
-						onClick={() => {
-							onOpenChange(false)
-						}}
-					>
-						{'Отмена'}
-					</Button>
-					<Button
-						type="button"
-						disabled={
-							createMutation.isPending
-							|| !email.trim()
-							|| !password
-						}
-						onClick={() => {
-							createMutation.mutate(
-								{
-									email: email.trim(),
-									password,
-									first_name: firstName.trim() || null,
-									last_name: lastName.trim() || null,
-									roleCode: viewerIsOwner
-										? roleCode
-										: 'manager',
-								},
-								{
-									onSuccess: () => {
-										onOpenChange(false)
-									},
-								},
-							)
-						}}
-					>
-						{'Создать'}
-					</Button>
-				</div>
 			</div>
-		</Modal>
+		</Popup>
 	)
 }
 

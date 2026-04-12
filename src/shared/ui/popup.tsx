@@ -9,7 +9,6 @@ import {Modal} from './modal'
 type PopupProps = Readonly<{
 	title: string,
 	onClose: () => void,
-	onSubmit: () => void,
 	submitBtn: {
 		label: string,
 		onClick: () => void,
@@ -23,7 +22,6 @@ type PopupProps = Readonly<{
 function Popup({
 	title,
 	onClose,
-	onSubmit,
 	submitBtn,
 	className,
 	children,
@@ -80,7 +78,7 @@ function Popup({
 						type="button"
 						state={submitBtn.state}
 						disabled={submitBtnDisabled}
-						onClick={onSubmit}
+						onClick={submitBtn.onClick}
 					>
 						{submitBtn.label}
 					</Button>

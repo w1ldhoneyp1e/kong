@@ -29,7 +29,6 @@ function UploadDocumentPopup({
 		<Popup
 			title="Новый документ"
 			onClose={documents.onCloseModal}
-			onSubmit={documents.onAdd}
 			submitBtn={{
 				label: 'Добавить',
 				onClick: documents.onAdd,

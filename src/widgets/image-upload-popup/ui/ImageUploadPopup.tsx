@@ -31,7 +31,6 @@ function ImageUploadPopup({
 		<Popup
 			title={title}
 			onClose={onClose}
-			onSubmit={onClose}
 			submitBtn={{
 				label: 'Готово',
 				onClick: onClose,
