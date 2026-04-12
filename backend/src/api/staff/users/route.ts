@@ -1,10 +1,10 @@
+import {randomUUID} from 'node:crypto'
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import bcrypt from 'bcryptjs'
-import {randomUUID} from 'node:crypto'
 import {RBAC_MODULE} from '../../../modules/rbac'
 import {STAFF_MODULE} from '../../../modules/staff'
 import {requirePermission} from '../../_shared/staffAuth'
-import {getPrimaryStaffRoleCodeForActor, getStaffPermissions} from '../../_shared/staffPermissions'
+import {getPrimaryStaffRoleCodeForActor} from '../../_shared/staffPermissions'
 
 type CreateStaffBody = {
 	email?: string,
@@ -65,11 +65,10 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		return
 	}
 
+	const actorRoleCode = await getPrimaryStaffRoleCodeForActor(req, actor.actor_id)
 	if (roleCode !== 'manager') {
-		const perms = await getStaffPermissions(req, actor.actor_id).catch(() => [])
-		const canManageRoles = perms.includes('roles:manage')
-		if (!canManageRoles) {
-			res.status(403).json({error: 'Недостаточно прав'})
+		if (actorRoleCode !== 'owner') {
+			res.status(403).json({error: 'Назначить админа может только владелец'})
 			return
 		}
 	}
@@ -131,7 +130,10 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const alreadyHasRole = (Array.isArray(existingRoleLinks)
 		? existingRoleLinks
 		: [])
-		.some((ar: {role_id?: string, role?: {id?: string}}) =>
+		.some((ar: {
+			role_id?: string,
+			role?: {id?: string},
+		}) =>
 			(ar.role_id ?? ar.role?.id) === roleId)
 
 	if (!alreadyHasRole) {
@@ -209,7 +211,10 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	}
 
 	if (staffUsers.length === 0) {
-		const users = await staffService.listStaffUsers({}, {take: limit, skip: offset}).catch(() => ([]))
+		const users = await staffService.listStaffUsers({}, {
+			take: limit,
+			skip: offset,
+		}).catch(() => ([]))
 		staffUsers = rowsFromListPayload(users)
 		total = staffUsers.length
 	}

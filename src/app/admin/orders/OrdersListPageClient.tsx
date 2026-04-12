@@ -89,7 +89,7 @@ function OrdersListPageClient({
 				</div>
 				<div className="flex min-w-[240px] flex-1 flex-col gap-2">
 					<span className="text-sm font-medium">
-						{'Поиск (email или номер)'}
+						{'Поиск'}
 					</span>
 					<div className="flex gap-2">
 						<Input
@@ -97,7 +97,7 @@ function OrdersListPageClient({
 							onChange={e => {
 								setQDraft(e.target.value)
 							}}
-							placeholder="user@mail.ru или 1001"
+							placeholder="Email или номер заказа"
 						/>
 						<Button
 							type="button"

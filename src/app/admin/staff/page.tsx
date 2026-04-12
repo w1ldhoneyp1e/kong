@@ -1,5 +1,5 @@
 import {fetchAdminStaffUsersServer} from './server'
-import {StaffListPageClient} from './StaffListPageClient'
+import {StaffListPageClient} from './ui/StaffListPageClient'
 
 export default async function AdminStaffPage() {
 	const initialList = await fetchAdminStaffUsersServer()

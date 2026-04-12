@@ -82,15 +82,16 @@ function CustomersListPageClient({
 			<div className="mb-6 flex flex-wrap items-end gap-4">
 				<div className="flex min-w-[280px] flex-1 flex-col gap-2">
 					<span className="text-sm font-medium">
-						{'Поиск (email, имя, фамилия)'}
+						{'Поиск'}
 					</span>
 					<div className="flex gap-2">
 						<Input
+							className="w-[300px]"
 							value={qDraft}
 							onChange={e => {
 								setQDraft(e.target.value)
 							}}
-							placeholder="Введите запрос"
+							placeholder="Email или имя"
 						/>
 						<Button
 							type="button"

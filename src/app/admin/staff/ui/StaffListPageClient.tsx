@@ -2,7 +2,7 @@
 
 import {Trash2} from 'lucide-react'
 import {useState} from 'react'
-import {type ListStaffResult, type StaffUser} from '../../../entities/staff'
+import {type ListStaffResult, type StaffUser} from '../../../../entities/staff'
 import {
 	Badge,
 	Button,
@@ -14,11 +14,11 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '../../../shared'
-import {useStaffSession} from '../StaffSessionContext'
+} from '../../../../shared'
+import {useStaffSession} from '../../StaffSessionContext'
+import {useStaffListVm} from '../viewmodel/useStaffListVm'
+import {formatStaffFullName, getStaffRoleLabel} from '../viewmodel/utils/staffRoleLabels'
 import {CreateStaffPopup} from './CreateStaffPopup'
-import {formatStaffFullName, getStaffRoleLabel} from './staffRoleLabels'
-import {useStaffListVm} from './viewmodel/useStaffListVm'
 
 function staffRoleVariant(
 	roleCode: string | null | undefined,
@@ -37,24 +37,93 @@ function staffRoleVariant(
 
 function StaffListRoleCell({
 	row,
-	canAssignAdmin,
+	viewerRoleCode,
 	isPending,
 	pendingUserId,
 	onRoleChange,
 }: Readonly<{
 	row: StaffUser,
-	canAssignAdmin: boolean,
+	viewerRoleCode: string | null,
 	isPending: boolean,
 	pendingUserId: string | undefined,
 	onRoleChange: (id: string, roleCode: string) => void,
 }>) {
-	const roleLower = (row.roleCode ?? '').toLowerCase()
-	const isOwner = roleLower === 'owner'
-	const isAdmin = roleLower === 'admin'
-	const canEdit = !isOwner && (canAssignAdmin || !isAdmin)
+	const rowLower = (row.roleCode ?? '').toLowerCase()
+	const rowIsOwner = rowLower === 'owner'
+	const viewerLower = (viewerRoleCode ?? '').toLowerCase()
+	const viewerIsOwner = viewerLower === 'owner'
+	const viewerIsAdmin = viewerLower === 'admin'
 	const saving = isPending && pendingUserId === row.id
 
-	if (isOwner || !canEdit) {
+	if (rowIsOwner && viewerIsOwner) {
+		return (
+			<div
+				className="min-w-[160px]"
+				onClick={e => {
+					e.stopPropagation()
+				}}
+				onPointerDown={e => {
+					e.stopPropagation()
+				}}
+			>
+				<Select
+					value="owner"
+					disabled={true}
+				>
+					<SelectTrigger className="h-8 w-[160px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="owner">
+							{getStaffRoleLabel('owner')}
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+		)
+	}
+
+	if (viewerIsOwner && (rowLower === 'admin' || rowLower === 'manager')) {
+		const value = row.roleCode ?? 'manager'
+
+		return (
+			<div
+				className="min-w-[160px]"
+				onClick={e => {
+					e.stopPropagation()
+				}}
+				onPointerDown={e => {
+					e.stopPropagation()
+				}}
+			>
+				<Select
+					value={value}
+					disabled={saving}
+					onValueChange={v => {
+						if (value === v) {
+							return
+						}
+
+						onRoleChange(row.id, v)
+					}}
+				>
+					<SelectTrigger className="h-8 w-[160px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="admin">
+							{getStaffRoleLabel('admin')}
+						</SelectItem>
+						<SelectItem value="manager">
+							{getStaffRoleLabel('manager')}
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+		)
+	}
+
+	if (viewerIsAdmin) {
 		return (
 			<Badge variant={staffRoleVariant(row.roleCode)}>
 				{getStaffRoleLabel(row.roleCode)}
@@ -62,52 +131,10 @@ function StaffListRoleCell({
 		)
 	}
 
-	const value = row.roleCode ?? 'manager'
-
 	return (
-		<div
-			className="min-w-[160px]"
-			onClick={e => {
-				e.stopPropagation()
-			}}
-			onPointerDown={e => {
-				e.stopPropagation()
-			}}
-		>
-			<Select
-				value={value}
-				disabled={saving}
-				onValueChange={v => {
-					if (value === v) {
-						return
-					}
-
-					onRoleChange(row.id, v)
-				}}
-			>
-				<SelectTrigger className="h-8 w-[160px]">
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					{canAssignAdmin
-						? (
-							<>
-								<SelectItem value="admin">
-									{'Админ'}
-								</SelectItem>
-								<SelectItem value="manager">
-									{'Менеджер'}
-								</SelectItem>
-							</>
-						)
-						: (
-							<SelectItem value="manager">
-								{'Менеджер'}
-							</SelectItem>
-						)}
-				</SelectContent>
-			</Select>
-		</div>
+		<Badge variant={staffRoleVariant(row.roleCode)}>
+			{getStaffRoleLabel(row.roleCode)}
+		</Badge>
 	)
 }
 
@@ -117,8 +144,8 @@ function StaffListPageClient({
 	const vm = useStaffListVm(initialList)
 	const confirmDeleteId = vm.deleteConfirmId
 	const [createOpen, setCreateOpen] = useState(false)
-	const {permissions} = useStaffSession()
-	const canAssignAdmin = permissions.includes('roles:manage')
+	const {role: viewerRoleCode} = useStaffSession()
+	const viewerIsAdmin = (viewerRoleCode ?? '').toLowerCase() === 'admin'
 	const pendingId = vm.updateRoleMutation.isPending
 		? vm.updateRoleMutation.variables?.id
 		: undefined
@@ -142,9 +169,6 @@ function StaffListPageClient({
 					</Button>
 				)}
 			/>
-			<p className="mb-6 text-muted-foreground">
-				{'Учётные записи staff (RBAC)'}
-			</p>
 			{vm.error && !vm.loading
 				? (
 					<p
@@ -174,7 +198,7 @@ function StaffListPageClient({
 						cell: row => (
 							<StaffListRoleCell
 								row={row}
-								canAssignAdmin={canAssignAdmin}
+								viewerRoleCode={viewerRoleCode}
 								isPending={vm.updateRoleMutation.isPending}
 								pendingUserId={pendingId}
 								onRoleChange={(id, roleCode) => {
@@ -191,7 +215,16 @@ function StaffListPageClient({
 				getRowKey={row => row.id}
 				loading={vm.loading}
 				actions={row => {
-					const isOwner = (row.roleCode ?? '').toLowerCase() === 'owner'
+					const rowLower = (row.roleCode ?? '').toLowerCase()
+					const isRowOwner = rowLower === 'owner'
+					const isRowAdmin = rowLower === 'admin'
+					const deleteDisabled = isRowOwner
+						|| (viewerIsAdmin && isRowAdmin)
+					const deleteTitle = isRowOwner
+						? 'Владельца нельзя удалить'
+						: viewerIsAdmin && isRowAdmin
+							? 'Удалить админа может только владелец'
+							: 'Удалить'
 
 					return (
 						<div className="relative z-10 flex justify-end gap-1">
@@ -200,21 +233,19 @@ function StaffListPageClient({
 								size="icon"
 								variant="ghost"
 								className="size-9 rounded-md hover:bg-background focus-visible:bg-background"
-								disabled={isOwner}
-								title={isOwner
-									? 'Владельца нельзя удалить'
-									: 'Удалить'}
+								disabled={deleteDisabled}
+								title={deleteTitle}
 								aria-label="Удалить пользователя"
 								onClick={event => {
 									event.stopPropagation()
-									if (!isOwner) {
+									if (!deleteDisabled) {
 										vm.setDeleteConfirmId(row.id)
 									}
 								}}
 							>
 								<Trash2
 									className={
-										isOwner
+										deleteDisabled
 											? 'size-5 text-muted-foreground'
 											: 'size-5 text-destructive'
 									}

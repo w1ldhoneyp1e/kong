@@ -7,6 +7,7 @@ import {
 } from 'react'
 
 type StaffSessionValue = {
+	actorId: string | null,
 	email: string | null,
 	role: string | null,
 	permissions: string[],

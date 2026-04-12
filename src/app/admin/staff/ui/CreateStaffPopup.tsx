@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from 'react'
-import {useCreateStaffUserMutation} from '../../../entities/staff'
+import {useCreateStaffUserMutation} from '../../../../entities/staff'
 import {
 	Button,
 	FormField,
@@ -12,8 +12,9 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '../../../shared'
-import {useStaffSession} from '../StaffSessionContext'
+} from '../../../../shared'
+import {useStaffSession} from '../../StaffSessionContext'
+import {getStaffRoleLabel} from '../viewmodel/utils/staffRoleLabels'
 
 function CreateStaffPopup({
 	open,
@@ -22,8 +23,8 @@ function CreateStaffPopup({
 	open: boolean,
 	onOpenChange: (open: boolean) => void,
 }>) {
-	const {permissions} = useStaffSession()
-	const canAssignAdmin = permissions.includes('roles:manage')
+	const {role: viewerRoleCode} = useStaffSession()
+	const viewerIsOwner = (viewerRoleCode ?? '').toLowerCase() === 'owner'
 	const createMutation = useCreateStaffUserMutation()
 	const [email, setEmail] = useState('')
 	const [firstName, setFirstName] = useState('')
@@ -117,34 +118,32 @@ function CreateStaffPopup({
 					/>
 				</FormField>
 				<FormField label="Роль">
-					<Select
-						value={roleCode}
-						onValueChange={v => {
-							setRoleCode(v as 'admin' | 'manager')
-						}}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Роль" />
-						</SelectTrigger>
-						<SelectContent>
-							{canAssignAdmin
-								? (
-									<>
-										<SelectItem value="admin">
-											{'Админ'}
-										</SelectItem>
-										<SelectItem value="manager">
-											{'Менеджер'}
-										</SelectItem>
-									</>
-								)
-								: (
-									<SelectItem value="manager">
-										{'Менеджер'}
+					{viewerIsOwner
+						? (
+							<Select
+								value={roleCode}
+								onValueChange={v => {
+									setRoleCode(v as 'admin' | 'manager')
+								}}
+							>
+								<SelectTrigger>
+									<SelectValue placeholder="Роль" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="admin">
+										{getStaffRoleLabel('admin')}
 									</SelectItem>
-								)}
-						</SelectContent>
-					</Select>
+									<SelectItem value="manager">
+										{getStaffRoleLabel('manager')}
+									</SelectItem>
+								</SelectContent>
+							</Select>
+						)
+						: (
+							<p className="text-sm text-muted-foreground">
+								{getStaffRoleLabel('manager')}
+							</p>
+						)}
 				</FormField>
 				<div className="flex flex-wrap justify-end gap-2 pt-2">
 					<Button
@@ -170,7 +169,7 @@ function CreateStaffPopup({
 									password,
 									first_name: firstName.trim() || null,
 									last_name: lastName.trim() || null,
-									roleCode: canAssignAdmin
+									roleCode: viewerIsOwner
 										? roleCode
 										: 'manager',
 								},

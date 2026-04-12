@@ -1,9 +1,9 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {RBAC_MODULE} from '../../../../modules/rbac'
 import {STAFF_MODULE} from '../../../../modules/staff'
-import {requirePermission} from '../../../_shared/staffAuth'
-import {getPrimaryStaffRoleCodeForActor, getStaffPermissions} from '../../../_shared/staffPermissions'
 import {resolveStaffUserFromRouteParam, routeStaffUserParamId} from '../../../_shared/staffActorId'
+import {requirePermission} from '../../../_shared/staffAuth'
+import {getPrimaryStaffRoleCodeForActor} from '../../../_shared/staffPermissions'
 
 async function getRoleIdByCode(
 	req: MedusaRequest,
@@ -100,48 +100,29 @@ const PATCH = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => 
 
 	const rbacActorId = user.id
 
-	const rbacService = req.scope.resolve(RBAC_MODULE) as unknown as {
-		listActorRoles: (f: unknown, c: unknown) => Promise<unknown[]>,
-		deleteActorRoles: (f: unknown) => Promise<unknown>,
-		createActorRoles: (rows: unknown[]) => Promise<unknown>,
-		listRoles: (f: unknown, c: unknown) => Promise<unknown[]>,
-	}
-
-	const actorRoles = await rbacService.listActorRoles({
-		actor_type: 'staff',
-		actor_id: rbacActorId,
-	}, {
-		take: 50,
-		relations: ['role'],
-	}).catch(() => ([]))
-
-	const ownerRoles = await rbacService.listRoles({code: 'owner'}, {take: 1}).catch(() => ([]))
-	const ownerRoleId = Array.isArray(ownerRoles)
-		? ownerRoles[0]?.id
-		: null
-
-	const isTargetOwner = (Array.isArray(actorRoles)
-		? actorRoles
-		: []).some(
-		(ar: {
-			role_id?: string,
-			role?: {id?: string},
-		}) =>
-			(ar.role_id ?? ar.role?.id) === ownerRoleId,
-	)
-
-	if (isTargetOwner) {
+	const targetRoleCode = await getPrimaryStaffRoleCodeForActor(req, rbacActorId)
+	const targetLower = (targetRoleCode ?? '').toLowerCase()
+	if (targetLower === 'owner') {
 		res.status(403).json({error: 'Роль owner нельзя изменить'})
 		return
 	}
 
-	if (roleCode !== 'manager') {
-		const perms = await getStaffPermissions(req, actor.actor_id).catch(() => [])
-		const canManageRoles = perms.includes('roles:manage')
-		if (!canManageRoles) {
-			res.status(403).json({error: 'Недостаточно прав'})
-			return
-		}
+	const actorRoleCode = await getPrimaryStaffRoleCodeForActor(req, actor.actor_id)
+	const actorLower = (actorRoleCode ?? '').toLowerCase()
+	if (actorLower !== 'owner' && targetLower === 'admin') {
+		res.status(403).json({error: 'Роль админа может менять только владелец'})
+		return
+	}
+
+	if (roleCode !== 'manager' && actorLower !== 'owner') {
+		res.status(403).json({error: 'Назначить админа может только владелец'})
+		return
+	}
+
+	const rbacService = req.scope.resolve(RBAC_MODULE) as unknown as {
+		deleteActorRoles: (f: unknown) => Promise<unknown>,
+		createActorRoles: (rows: unknown[]) => Promise<unknown>,
+		listRoles: (f: unknown, c: unknown) => Promise<unknown[]>,
 	}
 
 	const roleId = await getRoleIdByCode(req, roleCode)
@@ -204,30 +185,21 @@ const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> =>
 
 	const rbacActorId = user.id
 
-	const rbacService = req.scope.resolve(RBAC_MODULE) as any
-	const actorRoles = await rbacService.listActorRoles({
-		actor_type: 'staff',
-		actor_id: rbacActorId,
-	}, {
-		take: 50,
-		relations: ['role'],
-	}).catch(() => ([]))
-
-	const ownerRoles = await rbacService.listRoles({code: 'owner'}, {take: 1}).catch(() => ([]))
-	const ownerRoleId = Array.isArray(ownerRoles)
-		? ownerRoles[0]?.id
-		: null
-
-	const isOwner = (Array.isArray(actorRoles)
-		? actorRoles
-		: []).some(
-		ar => (ar.role_id ?? ar.role?.id) === ownerRoleId,
-	)
-
-	if (isOwner) {
+	const targetRoleCode = await getPrimaryStaffRoleCodeForActor(req, rbacActorId)
+	const targetLower = (targetRoleCode ?? '').toLowerCase()
+	if (targetLower === 'owner') {
 		res.status(403).json({error: 'Owner нельзя удалить'})
 		return
 	}
+
+	const actorRoleCode = await getPrimaryStaffRoleCodeForActor(req, actor.actor_id)
+	const actorLower = (actorRoleCode ?? '').toLowerCase()
+	if (actorLower !== 'owner' && targetLower === 'admin') {
+		res.status(403).json({error: 'Удалить админа может только владелец'})
+		return
+	}
+
+	const rbacService = req.scope.resolve(RBAC_MODULE) as any
 
 	await staffService.deleteStaffUsers([rbacActorId]).catch(() => {})
 

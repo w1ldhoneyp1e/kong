@@ -34,7 +34,12 @@ async function loadStaffSession() {
 
 		const data = (await res.json()) as StaffMeJson
 
+		const id = data.staff?.id
+
 		return {
+			actorId: typeof id === 'string' && id.length > 0
+				? id
+				: null,
 			email: data.staff?.email ?? null,
 			role: data.staff?.roleCode ?? null,
 			permissions: data.permissions ?? [],
