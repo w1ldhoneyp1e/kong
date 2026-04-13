@@ -33,8 +33,35 @@ function StaffListRoleCell({
 	const saving = isPending && pendingUserId === row.id
 
 	return choose(
-		[
-			[rowIsOwner && viewerIsOwner, () => (
+		[rowIsOwner && viewerIsOwner, () => (
+			<div
+				className="min-w-[160px]"
+				onClick={e => {
+					e.stopPropagation()
+				}}
+				onPointerDown={e => {
+					e.stopPropagation()
+				}}
+			>
+				<Select
+					value="owner"
+					disabled={true}
+				>
+					<SelectTrigger className="h-8 w-[160px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="owner">
+							{getStaffRoleLabel('owner')}
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+		)],
+		[viewerIsOwner && (rowLower === 'admin' || rowLower === 'manager'), () => {
+			const value = row.roleCode ?? 'manager'
+
+			return (
 				<div
 					className="min-w-[160px]"
 					onClick={e => {
@@ -45,65 +72,36 @@ function StaffListRoleCell({
 					}}
 				>
 					<Select
-						value="owner"
-						disabled={true}
+						value={value}
+						disabled={saving}
+						onValueChange={v => {
+							if (value === v) {
+								return
+							}
+
+							onRoleChange(row.id, v)
+						}}
 					>
 						<SelectTrigger className="h-8 w-[160px]">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="owner">
-								{getStaffRoleLabel('owner')}
+							<SelectItem value="admin">
+								{getStaffRoleLabel('admin')}
+							</SelectItem>
+							<SelectItem value="manager">
+								{getStaffRoleLabel('manager')}
 							</SelectItem>
 						</SelectContent>
 					</Select>
 				</div>
-			)],
-			[viewerIsOwner && (rowLower === 'admin' || rowLower === 'manager'), () => {
-				const value = row.roleCode ?? 'manager'
-
-				return (
-					<div
-						className="min-w-[160px]"
-						onClick={e => {
-							e.stopPropagation()
-						}}
-						onPointerDown={e => {
-							e.stopPropagation()
-						}}
-					>
-						<Select
-							value={value}
-							disabled={saving}
-							onValueChange={v => {
-								if (value === v) {
-									return
-								}
-
-								onRoleChange(row.id, v)
-							}}
-						>
-							<SelectTrigger className="h-8 w-[160px]">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="admin">
-									{getStaffRoleLabel('admin')}
-								</SelectItem>
-								<SelectItem value="manager">
-									{getStaffRoleLabel('manager')}
-								</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-				)
-			}],
-			[viewerIsAdmin, () => (
-				<Badge variant={staffRoleVariant(row.roleCode)}>
-					{getStaffRoleLabel(row.roleCode)}
-				</Badge>
-			)],
-		],
+			)
+		}],
+		[viewerIsAdmin, () => (
+			<Badge variant={staffRoleVariant(row.roleCode)}>
+				{getStaffRoleLabel(row.roleCode)}
+			</Badge>
+		)],
 		() => (
 			<Badge variant={staffRoleVariant(row.roleCode)}>
 				{getStaffRoleLabel(row.roleCode)}
