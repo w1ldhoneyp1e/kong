@@ -1,5 +1,6 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
+import {attachProductsToDefaultSalesChannel} from '../../_shared/productSalesChannel'
 import {requirePermission} from '../../_shared/staffAuth'
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
@@ -30,6 +31,7 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const productService = req.scope.resolve(Modules.PRODUCT)
 	const body = req.body as Record<string, unknown>
 	const updated = await productService.updateProducts(id, body as never)
+	await attachProductsToDefaultSalesChannel(req, [id])
 	res.json({product: updated})
 }
 

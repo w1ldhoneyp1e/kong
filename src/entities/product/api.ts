@@ -21,6 +21,22 @@ type ListProductsResponse = {
 	count: number,
 }
 
+function publishableApiKey(): string | undefined {
+	const key = process.env.MEDUSA_PUBLISHABLE_KEY
+		?? process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+
+	return typeof key === 'string' && key.length > 0
+		? key
+		: undefined
+}
+
+function buildStoreHeaders(): HeadersInit | undefined {
+	const key = publishableApiKey()
+	return key
+		? {'x-publishable-api-key': key}
+		: undefined
+}
+
 async function listProducts(params: {
 	q?: string,
 	limit?: number,
@@ -46,6 +62,7 @@ async function listProducts(params: {
 	}
 	const url = `${getBackendUrlOptional()}/store/products?${searchParams}`
 	const res = await fetch(url, {
+		headers: buildStoreHeaders(),
 		next: params.q
 			? {revalidate: 0}
 			: undefined,
@@ -61,7 +78,10 @@ async function getProductByHandle(handle: string): Promise<MedusaProduct | null>
 	searchParams.set('handle', handle)
 	searchParams.set('limit', '1')
 	const url = `${getBackendUrlOptional()}/store/products?${searchParams}`
-	const res = await fetch(url, {cache: 'no-store'})
+	const res = await fetch(url, {
+		cache: 'no-store',
+		headers: buildStoreHeaders(),
+	})
 	if (!res.ok) {
 		throw new Error('Failed to fetch product by handle')
 	}
