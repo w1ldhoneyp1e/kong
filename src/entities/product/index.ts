@@ -28,7 +28,7 @@ export type {
 	ProductStatusOption,
 	UpdateProductPayload,
 } from './admin'
-export {getProductByHandle, listProducts} from './api'
+export {getProductByHandle, listPopularProducts, listProducts} from './api'
 export type {MedusaProduct, ListProductsResponse} from './api'
 export {mapMedusaProductToCardProps} from './mapMedusaToCard'
 export {ProductCard} from './ProductCard'

@@ -6,6 +6,7 @@ type MedusaProduct = {
 	description: string | null,
 	handle: string | null,
 	thumbnail: string | null,
+	created_at?: string | null,
 	variants?: {
 		id: string,
 		title: string | null,
@@ -73,6 +74,44 @@ async function listProducts(params: {
 	return res.json() as Promise<ListProductsResponse>
 }
 
+const POPULAR_TAGS = new Set([
+	'popular',
+	'hit',
+	'bestseller',
+	'best seller',
+	'хит',
+	'популярное',
+])
+
+function productPopularityScore(product: MedusaProduct): number {
+	// TODO: Replace tag-based popularity with storefront statistics
+	// once views, cart additions, and order counts are collected.
+	const tagValues = product.tags?.map(tag => tag.value.trim().toLowerCase()) ?? []
+	if (tagValues.some(value => POPULAR_TAGS.has(value))) {
+		return 1
+	}
+
+	return 0
+}
+
+async function listPopularProducts(limit = 8): Promise<ListProductsResponse> {
+	const candidateLimit = Math.max(limit * 3, 24)
+	const response = await listProducts({
+		limit: candidateLimit,
+		offset: 0,
+		order: 'created_at',
+	})
+	const products = [...response.products]
+		.sort((a, b) => productPopularityScore(b) - productPopularityScore(a))
+		.slice(0, limit)
+
+	return {
+		...response,
+		products,
+		count: products.length,
+	}
+}
+
 async function getProductByHandle(handle: string): Promise<MedusaProduct | null> {
 	const searchParams = new URLSearchParams()
 	searchParams.set('handle', handle)
@@ -90,5 +129,5 @@ async function getProductByHandle(handle: string): Promise<MedusaProduct | null>
 	return data.products[0] ?? null
 }
 
-export {getProductByHandle, listProducts}
+export {getProductByHandle, listPopularProducts, listProducts}
 export type {MedusaProduct, ListProductsResponse}
