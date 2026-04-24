@@ -1,5 +1,9 @@
+import {type Metadata} from 'next'
 import Image from 'next/image'
-import {Badge, Button} from '../../../../shared'
+import {notFound} from 'next/navigation'
+import {getProductByHandle} from '../../../../entities/product'
+import {AddToCartButton} from '../../../../features/cart'
+import {Badge} from '../../../../shared'
 
 type PageProps = {
 	params: Promise<{
@@ -7,33 +11,39 @@ type PageProps = {
 	}>,
 }
 
+async function generateMetadata({params}: PageProps): Promise<Metadata> {
+	const {handle} = await params
+	const product = await getProductByHandle(handle)
+
+	return {
+		title: product?.title ?? 'Товар',
+		description: product?.description ?? 'Карточка товара',
+	}
+}
+
 async function ProductPage({params}: PageProps) {
 	const {handle} = await params
-
-	const mockProduct = {
-		id: handle,
-		title: 'Классическая рубашка',
-		description:
-      'Стильная рубашка из 100% хлопка. Идеально подходит для повседневной носки и деловых встреч. Доступна в нескольких цветах.',
-		image: null,
-		price: 2990,
-		originalPrice: 3990,
-		currency: 'RUB',
-		tags: ['Новинка', 'Хит продаж'],
-		available: true,
-		sizes: ['S', 'M', 'L', 'XL'],
-		colors: ['Белый', 'Голубой', 'Черный'],
+	const product = await getProductByHandle(handle)
+	if (!product) {
+		notFound()
 	}
+	const price = product.variants?.[0]?.prices?.[0]?.amount
+	const formattedPrice = typeof price === 'number'
+		? new Intl.NumberFormat('ru-RU', {
+			style: 'currency',
+			currency: 'RUB',
+		}).format(price / 100)
+		: 'Цена по запросу'
 
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="grid md:grid-cols-2 gap-8">
 				<div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
-					{mockProduct.image
+					{product.thumbnail
 						? (
 							<Image
-								src={mockProduct.image}
-								alt={mockProduct.title}
+								src={product.thumbnail}
+								alt={product.title ?? 'Товар'}
 								fill={true}
 								className="object-cover"
 							/>
@@ -43,14 +53,14 @@ async function ProductPage({params}: PageProps) {
 								{'Нет изображения'}
 							</div>
 						)}
-					{mockProduct.tags && mockProduct.tags.length > 0 && (
+					{product.tags && product.tags.length > 0 && (
 						<div className="absolute top-4 left-4 flex flex-col gap-2">
-							{mockProduct.tags.map(tag => (
+							{product.tags.map(tag => (
 								<Badge
-									key={tag}
+									key={tag.value}
 									variant="secondary"
 								>
-									{tag}
+									{tag.value}
 								</Badge>
 							))}
 						</div>
@@ -58,62 +68,17 @@ async function ProductPage({params}: PageProps) {
 				</div>
 				<div className="flex flex-col gap-6">
 					<div>
-						<h1 className="text-3xl font-bold mb-2">{mockProduct.title}</h1>
-						<p className="text-gray-600">{mockProduct.description}</p>
+						<h1 className="text-3xl font-bold mb-2">{product.title ?? 'Без названия'}</h1>
+						<p className="text-gray-600">{product.description ?? 'Описание появится позже.'}</p>
 					</div>
 					<div className="flex items-center gap-3">
-						<span className="text-3xl font-bold">
-							{new Intl.NumberFormat('ru-RU', {
-								style: 'currency',
-								currency: mockProduct.currency,
-							}).format(mockProduct.price)}
-						</span>
-						{mockProduct.originalPrice && (
-							<span className="text-xl text-gray-500 line-through">
-								{new Intl.NumberFormat('ru-RU', {
-									style: 'currency',
-									currency: mockProduct.currency,
-								}).format(mockProduct.originalPrice)}
-							</span>
-						)}
+						<span className="text-3xl font-bold">{formattedPrice}</span>
 					</div>
-					<div>
-						<h3 className="font-semibold mb-2">{'Размер'}</h3>
-						<div className="flex gap-2">
-							{mockProduct.sizes.map(size => (
-								<Button
-									key={size}
-									variant="outline"
-									className="w-12"
-								>
-									{size}
-								</Button>
-							))}
-						</div>
-					</div>
-					<div>
-						<h3 className="font-semibold mb-2">{'Цвет'}</h3>
-						<div className="flex gap-2">
-							{mockProduct.colors.map(color => (
-								<Button
-									key={color}
-									variant="outline"
-								>
-									{color}
-								</Button>
-							))}
-						</div>
-					</div>
-					<Button
-						size="lg"
-						className="w-full"
-					>
-						{'Добавить в корзину'}
-					</Button>
+					<AddToCartButton variantId={product.variants?.[0]?.id ?? null} />
 				</div>
 			</div>
 		</div>
 	)
 }
 
-export {ProductPage as default}
+export {generateMetadata, ProductPage as default}

@@ -2,6 +2,7 @@
 
 import {useRouter} from 'next/navigation'
 import {type ReactNode, useLayoutEffect} from 'react'
+import {useCategoriesQuery} from '../../../entities/category'
 import {
 	type AdminProduct,
 	useCreateProductMutation,
@@ -37,7 +38,9 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 	}
 
 	const handle = initialProduct.handle ?? ''
-	const status = initialProduct.status
+	const status = typeof initialProduct.status === 'string' && initialProduct.status.trim().length > 0
+		? initialProduct.status
+		: 'draft'
 	const material = initialProduct.material ?? ''
 	const weight = typeof initialProduct.weight === 'number'
 		? String(initialProduct.weight)
@@ -54,6 +57,7 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 	const selectedTagIds = (initialProduct.tags ?? [])
 		.map(tag => tag.id)
 		.filter(id => id.trim().length > 0)
+	const selectedCategoryId = initialProduct.categories?.[0]?.id ?? null
 	const galleryImages = [
 		...(initialProduct.images ?? []),
 	].sort((a, b) => {
@@ -87,6 +91,7 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 		width,
 		height,
 		selectedTagIds,
+		selectedCategoryId,
 		galleryImages,
 		documents: docs,
 		specsSectionExpanded: productSpecsHaveAnyValue({
@@ -108,6 +113,7 @@ function useAdminProductFormViewmodel(params: {
 	const createMutation = useCreateProductMutation()
 	const updateMutation = useUpdateProductMutation()
 	const {data: tagOptions = []} = useProductTagsQuery()
+	const {data: categoryOptions = []} = useCategoriesQuery()
 	const store = useProductCreateStore()
 
 	useLayoutEffect(() => {
@@ -148,7 +154,7 @@ function useAdminProductFormViewmodel(params: {
 		const payload = {
 			title: store.title.trim(),
 			handle: store.handle.trim() || undefined,
-			status: store.status,
+			status: store.status.trim() || 'draft',
 			thumbnail: store.galleryImages[0]?.url.trim() || null,
 			images: store.galleryImages.map(item => ({url: item.url})),
 			material: store.material.trim() || null,
@@ -157,6 +163,9 @@ function useAdminProductFormViewmodel(params: {
 			width: parseNumberOrNull(store.width),
 			height: parseNumberOrNull(store.height),
 			tag_ids: store.selectedTagIds,
+			category_ids: store.selectedCategoryId
+				? [store.selectedCategoryId]
+				: [],
 			metadata: {
 				documents: metadataDocuments,
 			},
@@ -192,7 +201,7 @@ function useAdminProductFormViewmodel(params: {
 		: 'Сохранить'
 
 	return {
-		main: createMainVm(store, disabled),
+		main: createMainVm(store, categoryOptions, disabled),
 		specs: createSpecsVm(store, disabled),
 		tags: createTagsVm(store, tagOptions, disabled),
 		media: createMediaVm(store, disabled),

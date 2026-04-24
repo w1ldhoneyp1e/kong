@@ -1,50 +1,78 @@
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
-import {CATEGORY_MODULE} from '../../modules/category'
+import {Modules} from '@medusajs/framework/utils'
 import {requirePermission} from '../_shared/staffAuth'
 
 type CategoryRecord = {
 	id: string,
-	name: string,
-	slug: string,
-	parent_id?: string | null | {id?: string},
+	name?: string | null,
+	handle?: string | null,
+	parent_category_id?: string | null,
+	parent_category?: {id?: string} | null,
+	is_active?: boolean,
+	is_internal?: boolean,
 }
 
 type CategoryService = {
-	listCategories: (filters?: object, config?: {take?: number}) => Promise<CategoryRecord[]>,
-	createCategories: (data: {
+	listProductCategories: (
+		filters?: object,
+		config?: {take?: number, select?: string[], order?: Record<string, 'ASC' | 'DESC'>},
+	) => Promise<CategoryRecord[]>,
+	createProductCategories: (data: {
 		name: string,
-		slug: string,
-		parent_id?: string | null,
-	}[]) => Promise<CategoryRecord[]>,
+		handle?: string,
+		description?: string,
+		is_active?: boolean,
+		is_internal?: boolean,
+		parent_category_id?: string | null,
+	}) => Promise<CategoryRecord>,
 }
 
 function parentIdFromRecord(record: CategoryRecord): string | null {
-	const p = record.parent_id
-	if (p === null || p === undefined) {
-		return null
-	}
-	if (typeof p === 'object' && p !== null && 'id' in p) {
-		const id = (p as {id?: string}).id
-		return id ?? null
-	}
-	return typeof p === 'string'
-		? p
-		: null
+	return record.parent_category_id
+		?? record.parent_category?.id
+		?? null
 }
 
 function toDto(record: CategoryRecord) {
+	const name = record.name ?? ''
+	const slug = record.handle ?? ''
+
 	return {
 		id: record.id,
-		name: record.name,
-		slug: record.slug,
+		name,
+		slug,
 		parentId: parentIdFromRecord(record),
 	}
 }
 
+function isRenderableCategory(record: ReturnType<typeof toDto>): boolean {
+	return record.name.trim().length > 0 && record.slug.trim().length > 0
+}
+
+async function getDetailedProductCategories(categoryService: CategoryService): Promise<CategoryRecord[]> {
+	return categoryService.listProductCategories({}, {
+		take: 1000,
+		select: [
+			'id',
+			'name',
+			'handle',
+			'parent_category_id',
+			'is_active',
+			'is_internal',
+		],
+		order: {
+			rank: 'ASC',
+			name: 'ASC',
+		},
+	})
+}
+
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
-	const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
-	const list = await categoryService.listCategories({}, {take: 1000})
-	const categories = list.map(c => toDto(c))
+	const categoryService = req.scope.resolve(Modules.PRODUCT) as unknown as CategoryService
+	const detailed = await getDetailedProductCategories(categoryService)
+	const categories = detailed
+		.map(c => toDto(c))
+		.filter(isRenderableCategory)
 	res.json({categories})
 }
 
@@ -54,13 +82,14 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 		return
 	}
 
-	const {
-		name, slug, parentId,
-	} = (req.body as {
+	const body = (req.body as {
 		name?: string,
 		slug?: string,
 		parentId?: string | null,
 	}) || {}
+	const name = body.name?.trim() ?? ''
+	const slug = body.slug?.trim() ?? ''
+	const parentId = body.parentId ?? null
 
 	if (!name || !slug) {
 		res.status(400).json({
@@ -70,20 +99,34 @@ const POST = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	}
 
 	try {
-		const categoryService = req.scope.resolve(CATEGORY_MODULE) as CategoryService
-		const createdList = await categoryService.createCategories([
-			{
-				name,
-				slug,
-				parent_id: parentId ?? null,
-			},
-		])
-		const created = createdList?.[0]
+		const categoryService = req.scope.resolve(Modules.PRODUCT) as unknown as CategoryService
+		const existingList = await getDetailedProductCategories(categoryService)
+		const normalizedSlug = slug.toLowerCase()
+		const existing = existingList.find(category => {
+			const categorySlug = (category.handle ?? '').trim().toLowerCase()
+
+			return categorySlug === normalizedSlug
+		})
+		if (existing?.id) {
+			res.status(409).json({
+				error: 'Категория с таким URL уже существует',
+			})
+			return
+		}
+
+		const created = await categoryService.createProductCategories({
+			name,
+			handle: normalizedSlug,
+			description: '',
+			is_active: true,
+			is_internal: false,
+			parent_category_id: parentId ?? null,
+		})
 		if (!created?.id) {
 			res.status(500).json({error: 'Сервер не вернул id категории'})
 			return
 		}
-		res.status(201).json({id: created.id})
+		res.status(201).json({category: toDto(created)})
 	}
 	catch (e) {
 		const message = e instanceof Error

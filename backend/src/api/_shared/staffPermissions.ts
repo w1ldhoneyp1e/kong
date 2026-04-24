@@ -98,7 +98,10 @@ async function getPrimaryStaffRoleCodeForActor(
 		.filter((v): v is string => typeof v === 'string')
 
 	const roleIds = arr
-		.map((ar: {role_id?: unknown, role?: {id?: unknown}}) =>
+		.map((ar: {
+			role_id?: unknown,
+			role?: {id?: unknown},
+		}) =>
 			asString(ar.role_id) ?? asString(ar.role?.id))
 		.filter((v): v is string => typeof v === 'string')
 

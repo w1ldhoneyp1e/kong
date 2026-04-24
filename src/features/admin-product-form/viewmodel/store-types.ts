@@ -9,6 +9,7 @@ type ProductCreateMainState = {
 	title: string,
 	handle: string,
 	status: string,
+	selectedCategoryId: string | null,
 }
 
 type ProductCreateSpecsState = {
@@ -52,6 +53,7 @@ type ProductCreateMainActions = {
 	setTitle: (value: string) => void,
 	setHandle: (value: string) => void,
 	setStatus: (value: string) => void,
+	setSelectedCategoryId: (value: string | null) => void,
 }
 
 type ProductCreateSpecsActions = {

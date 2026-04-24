@@ -81,7 +81,9 @@ function flattenCategoryTree(
 
 const categoriesApi = {
 	getAll: async (): Promise<Category[]> => {
-		const res = await fetch(`${getApiBase()}/categories`)
+		const res = await fetch(`${getApiBase()}/categories`, {
+			cache: 'no-store',
+		})
 		const data = (await parseRes(res)) as {
 			categories?: Category[],
 			message?: string,
@@ -96,7 +98,9 @@ const categoriesApi = {
 	},
 
 	getById: async (id: string): Promise<Category> => {
-		const res = await fetch(`${getApiBase()}/categories/${id}`)
+		const res = await fetch(`${getApiBase()}/categories/${id}`, {
+			cache: 'no-store',
+		})
 		const data = (await parseRes(res)) as {category?: Category}
 
 		if (!res.ok) {
@@ -106,7 +110,7 @@ const categoriesApi = {
 		return data.category as Category
 	},
 
-	create: async (name: string, slug: string, parentId?: string | null): Promise<{id: string}> => {
+	create: async (name: string, slug: string, parentId?: string | null): Promise<Category> => {
 		const res = await fetch(`${getApiBase()}/categories`, {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
@@ -118,6 +122,7 @@ const categoriesApi = {
 		})
 		const raw = await parseRes(res)
 		const data = raw as {
+			category?: Category,
 			id?: string,
 			error?: string,
 			message?: string,
@@ -130,8 +135,17 @@ const categoriesApi = {
 			throw new Error(msg)
 		}
 
+		if (data.category) {
+			return data.category
+		}
+
 		if (typeof data?.id === 'string') {
-			return {id: data.id}
+			return {
+				id: data.id,
+				name,
+				slug,
+				parentId: parentId ?? null,
+			}
 		}
 
 		throw new Error('Ответ без id')

@@ -4,7 +4,6 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 module.exports = defineConfig({
 	modules: [
-		{resolve: './src/modules/category'},
 		{resolve: './src/modules/rbac'},
 		{resolve: './src/modules/staff'},
 	],

@@ -33,6 +33,11 @@ type AdminProductTag = {
 	value?: string | null,
 }
 
+type AdminProductCategory = {
+	id: string,
+	name?: string | null,
+}
+
 type AdminTagOption = {
 	id: string,
 	value?: string | null,
@@ -72,6 +77,7 @@ type AdminProduct = {
 	images?: AdminProductImage[],
 	options?: AdminProductOption[],
 	tags?: AdminProductTag[],
+	categories?: AdminProductCategory[],
 }
 
 type CreateProductPayload = {
@@ -91,6 +97,7 @@ type CreateProductPayload = {
 	width?: number | null,
 	height?: number | null,
 	tag_ids?: string[],
+	category_ids?: string[],
 	metadata?: {
 		documents?: {
 			id: string,
@@ -116,6 +123,7 @@ export type {
 	AdminProductMetadata,
 	AdminProductOption,
 	AdminProductTag,
+	AdminProductCategory,
 	AdminTagOption,
 	AdminProductVariant,
 	CreateProductPayload,

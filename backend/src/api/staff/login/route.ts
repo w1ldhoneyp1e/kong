@@ -1,7 +1,7 @@
+import {randomUUID} from 'node:crypto'
 import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import {randomUUID} from 'node:crypto'
 import {RBAC_MODULE} from '../../../modules/rbac'
 import {STAFF_MODULE} from '../../../modules/staff'
 

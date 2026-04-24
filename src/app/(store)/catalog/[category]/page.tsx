@@ -1,102 +1,61 @@
+import {type Metadata} from 'next'
 import Link from 'next/link'
+import {notFound} from 'next/navigation'
 import {categoriesApi} from '../../../../entities/category'
-import {ProductCard} from '../../../../entities/product'
+import {
+	listProducts,
+	mapMedusaProductToCardProps,
+	ProductCard,
+} from '../../../../entities/product'
 
 type PageProps = {
 	params: Promise<{
 		category: string,
 	}>,
+	searchParams?: Promise<{
+		page?: string,
+		sort?: 'created_at' | 'title',
+	}>,
 }
 
-async function CatalogPage({params}: PageProps) {
+const PER_PAGE = 12
+
+async function generateMetadata({params}: PageProps): Promise<Metadata> {
 	const {category: categorySlug} = await params
 	const categories = await categoriesApi.getAll().catch(() => [])
 	const currentCategory = categories.find(c => c.slug === categorySlug)
 
-	const mockProducts = [
-		{
-			url: '/product/classic-shirt',
-			image: undefined,
-			tags: [{
-				label: 'New',
-				theme: 'popular' as const,
-			}],
-			label: 'Spring Collection',
-			title: 'Классическая рубашка',
-			description: 'Стильная рубашка из 100% хлопка для повседневной носки',
-			colors: ['#ffffff', '#000000', '#5468ff'],
-			price: 2990,
-			originalPrice: 3990,
-			currency: {
-				symbol: '₽',
-				position: 'suffix' as const,
-			},
-			rating: 4,
-			reviews: 12,
-			available: true,
-		},
-		{
-			url: '/product/slim-jeans',
-			image: undefined,
-			tags: [{
-				label: 'Sale',
-				theme: 'on-sale' as const,
-			}],
-			label: 'Denim Collection',
-			title: 'Джинсы slim fit',
-			description: 'Удобные джинсы для повседневной носки из премиального денима',
-			colors: ['#1e3a8a', '#475569', '#000000'],
-			price: 3990,
-			originalPrice: 5990,
-			currency: {
-				symbol: '₽',
-				position: 'suffix' as const,
-			},
-			rating: 5,
-			reviews: 28,
-			available: true,
-		},
-		{
-			url: '/product/sport-sneakers',
-			image: undefined,
-			tags: [{
-				label: 'Popular',
-				theme: 'popular' as const,
-			}],
-			label: 'Sport Line',
-			title: 'Спортивные кроссовки',
-			description: 'Легкие и удобные кроссовки для активного образа жизни',
-			colors: ['#ffffff', '#000000', '#ef4444', '#3b82f6'],
-			price: 5990,
-			currency: {
-				symbol: '₽',
-				position: 'suffix' as const,
-			},
-			rating: 4,
-			reviews: 45,
-			available: true,
-		},
-		{
-			url: '/product/leather-bag',
-			image: undefined,
-			tags: [{
-				label: 'Eco',
-				theme: 'eco' as const,
-			}],
-			label: 'Accessories',
-			title: 'Кожаная сумка',
-			description: 'Элегантная сумка из натуральной кожи',
-			colors: ['#92400e', '#000000'],
-			price: 8990,
-			currency: {
-				symbol: '₽',
-				position: 'suffix' as const,
-			},
-			rating: 5,
-			reviews: 18,
-			available: true,
-		},
-	]
+	return {
+		title: currentCategory?.name ?? 'Каталог',
+		description: `Категория ${currentCategory?.name ?? categorySlug}`,
+	}
+}
+
+async function CatalogPage({params, searchParams}: PageProps) {
+	const {category: categorySlug} = await params
+	const query = searchParams
+		? await searchParams
+		: {}
+	const page = Math.max(1, Number(query.page ?? '1') || 1)
+	const offset = (page - 1) * PER_PAGE
+	const sort = query.sort === 'title'
+		? 'title'
+		: 'created_at'
+	const categories = await categoriesApi.getAll().catch(() => [])
+	const currentCategory = categories.find(c => c.slug === categorySlug)
+	if (!currentCategory) {
+		notFound()
+	}
+	const productsResponse = await listProducts({
+		categoryId: currentCategory.id,
+		limit: PER_PAGE,
+		offset,
+		order: sort,
+	}).catch(() => ({
+		products: [],
+		count: 0,
+	}))
+	const totalPages = Math.max(1, Math.ceil(productsResponse.count / PER_PAGE))
 
 	return (
 		<div className="container mx-auto px-4 py-8 lg:py-10">
@@ -117,26 +76,39 @@ async function CatalogPage({params}: PageProps) {
 			)}
 			<div className="mb-6 lg:mb-10">
 				<h1 className="heading-2">
-					{currentCategory?.name ?? categorySlug}
+					{currentCategory.name}
 				</h1>
 				<p
 					className="small-regular mt-2"
 					style={{color: 'var(--color-neutral-dark)'}}
 				>
-					{'Найдено товаров: '}{mockProducts.length}
+					{'Найдено товаров: '}{productsResponse.count}
 				</p>
 			</div>
+			<div className="mb-5 flex items-center gap-3 text-sm">
+				<Link href={`/catalog/${categorySlug}?sort=created_at&page=1`}>{'Сначала новые'}</Link>
+				<Link href={`/catalog/${categorySlug}?sort=title&page=1`}>{'По названию'}</Link>
+			</div>
 			<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-4">
-				{mockProducts.map(product => (
+				{productsResponse.products.map(product => (
 					<ProductCard
-						key={product.url}
-						{...product}
+						key={product.id}
+						{...mapMedusaProductToCardProps(product)}
 						view="grid"
 					/>
 				))}
+			</div>
+			<div className="mt-8 flex items-center gap-4 text-sm">
+				{page > 1 && (
+					<Link href={`/catalog/${categorySlug}?sort=${sort}&page=${page - 1}`}>{'Назад'}</Link>
+				)}
+				<span>{`Страница ${page} из ${totalPages}`}</span>
+				{page < totalPages && (
+					<Link href={`/catalog/${categorySlug}?sort=${sort}&page=${page + 1}`}>{'Вперед'}</Link>
+				)}
 			</div>
 		</div>
 	)
 }
 
-export {CatalogPage as default}
+export {CatalogPage as default, generateMetadata}

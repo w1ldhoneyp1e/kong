@@ -23,6 +23,13 @@ function derivePortalHrefAndLabel(pathname: string, roleCode: string | null): {
 	portalHref: string,
 	portalLabel: string,
 } {
+	if (roleCode === 'customer') {
+		return {
+			portalHref: '/account/profile',
+			portalLabel: 'Профиль',
+		}
+	}
+
 	const isInAdmin = pathname.startsWith('/admin')
 	if (isInAdmin) {
 		return {

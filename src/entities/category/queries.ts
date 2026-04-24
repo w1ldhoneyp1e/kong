@@ -5,7 +5,7 @@ import {
 	useQuery,
 	useQueryClient,
 } from '@tanstack/react-query'
-import {type Category, api as categoriesApi} from './api'
+import {api as categoriesApi} from './api'
 
 const categoriesQueryKey = ['categories'] as const
 
@@ -29,18 +29,8 @@ function useCreateCategoryMutation() {
 			slug: string,
 			parentId?: string | null,
 		}) => categoriesApi.create(name, slug, parentId),
-		onSuccess: (result, variables) => {
-			const newCategory: Category = {
-				id: result.id,
-				name: variables.name,
-				slug: variables.slug,
-				parentId: variables.parentId ?? null,
-			}
-			queryClient.setQueryData<Category[]>(categoriesQueryKey, prev =>
-				prev
-					? [...prev, newCategory]
-					: [newCategory],
-			)
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: categoriesQueryKey})
 		},
 	})
 }

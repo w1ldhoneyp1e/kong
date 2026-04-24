@@ -9,6 +9,8 @@ import {
 } from '../../../shared'
 import {type AdminProductFormViewmodel} from '../viewmodel'
 
+const EMPTY_CATEGORY_VALUE = '__none__'
+
 type MainSectionProps = {
 	main: AdminProductFormViewmodel['main'],
 }
@@ -69,6 +71,38 @@ function MainSection({
 									value={option.value}
 								>
 									{option.label}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</FormField>
+				<FormField
+					className="sm:col-span-2"
+					label="Категория"
+					htmlFor="create-product-category"
+				>
+					<Select
+						value={main.selectedCategoryId ?? EMPTY_CATEGORY_VALUE}
+						onValueChange={value => {
+							main.onCategoryChange(value === EMPTY_CATEGORY_VALUE
+								? null
+								: value)
+						}}
+						disabled={main.disabled}
+					>
+						<SelectTrigger id="create-product-category">
+							<SelectValue placeholder="Без категории" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value={EMPTY_CATEGORY_VALUE}>
+								{'Без категории'}
+							</SelectItem>
+							{main.categoryOptions.map(category => (
+								<SelectItem
+									key={category.id}
+									value={category.id}
+								>
+									{category.name}
 								</SelectItem>
 							))}
 						</SelectContent>

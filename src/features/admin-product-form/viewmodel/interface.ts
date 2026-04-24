@@ -1,3 +1,4 @@
+import {type Category} from '../../../entities/category'
 import {type ProductStatusOption} from '../../../entities/product'
 import {type DOCUMENT_KIND_OPTIONS, type DOCUMENT_SOURCE_TYPE_OPTIONS} from '../consts'
 import {
@@ -14,11 +15,14 @@ type AdminProductFormViewmodel = {
 		title: string,
 		handle: string,
 		status: string,
+		selectedCategoryId: string | null,
+		categoryOptions: Category[],
 		statusOptions: ProductStatusOption[],
 		disabled: boolean,
 		onTitleChange: (value: string) => void,
 		onHandleChange: (value: string) => void,
 		onStatusChange: (value: string) => void,
+		onCategoryChange: (value: string | null) => void,
 	},
 	specs: {
 		disabled: boolean,

@@ -22,6 +22,7 @@ export type {
 	AdminProductImage,
 	AdminProductMetadata,
 	AdminProductOption,
+	AdminProductCategory,
 	AdminProductTag,
 	AdminTagOption,
 	AdminProductVariant,

@@ -29,7 +29,7 @@ function Footer() {
 				},
 				{
 					label: 'Контакты',
-					href: '/contact',
+					href: '/contacts',
 				},
 				{
 					label: 'Вакансии',

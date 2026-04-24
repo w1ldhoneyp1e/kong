@@ -19,6 +19,7 @@ export type {
 	AdminProductImage,
 	AdminProductMetadata,
 	AdminProductOption,
+	AdminProductCategory,
 	AdminProductTag,
 	AdminTagOption,
 	AdminProductVariant,
@@ -27,7 +28,7 @@ export type {
 	ProductStatusOption,
 	UpdateProductPayload,
 } from './admin'
-export {listProducts} from './api'
+export {getProductByHandle, listProducts} from './api'
 export type {MedusaProduct, ListProductsResponse} from './api'
 export {mapMedusaProductToCardProps} from './mapMedusaToCard'
 export {ProductCard} from './ProductCard'
