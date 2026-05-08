@@ -6,7 +6,21 @@ import {
 	CardContent,
 	CardHeader,
 	CardTitle,
+	StatusBadge,
 } from '../../../../shared'
+
+function formatVariantPrice(variant: NonNullable<AdminProduct['variants']>[number]): string {
+	const amount = variant.prices?.[0]?.amount
+	const currency = variant.prices?.[0]?.currency_code ?? 'rub'
+	if (typeof amount !== 'number') {
+		return '—'
+	}
+
+	return new Intl.NumberFormat('ru-RU', {
+		style: 'currency',
+		currency: currency.toUpperCase(),
+	}).format(amount / 100)
+}
 
 function ProductVariantsCard({product}: Readonly<{product: AdminProduct}>) {
 	return (
@@ -30,6 +44,12 @@ function ProductVariantsCard({product}: Readonly<{product: AdminProduct}>) {
 											{'SKU'}
 										</th>
 										<th className="px-3 py-2 text-left font-medium">
+											{'Цена'}
+										</th>
+										<th className="px-3 py-2 text-left font-medium">
+											{'Доступность'}
+										</th>
+										<th className="px-3 py-2 text-left font-medium">
 											{'ID'}
 										</th>
 									</tr>
@@ -45,6 +65,19 @@ function ProductVariantsCard({product}: Readonly<{product: AdminProduct}>) {
 											</td>
 											<td className="px-3 py-2">
 												{variant.sku ?? '—'}
+											</td>
+											<td className="px-3 py-2">
+												{formatVariantPrice(variant)}
+											</td>
+											<td className="px-3 py-2">
+												<StatusBadge
+													status={variant.metadata?.available === false
+														? 'inactive'
+														: 'active'}
+													label={variant.metadata?.available === false
+														? 'Недоступен'
+														: 'Доступен'}
+												/>
 											</td>
 											<td className="px-3 py-2 font-mono text-xs text-muted-foreground">
 												{variant.id}

@@ -8,6 +8,7 @@ import {
 } from '../../shared'
 import {DocumentsSection} from './ui/DocumentsSection'
 import {MainSection} from './ui/MainSection'
+import {SalesSection} from './ui/SalesSection'
 import {SpecsSection} from './ui/SpecsSection'
 import {TagsSection} from './ui/TagsSection'
 import {UploadPhotoSection} from './ui/UploadPhotoSection'
@@ -19,6 +20,7 @@ function AdminProductFormContent() {
 	const {
 		page,
 		main,
+		sales,
 		specs,
 		tags,
 		media,
@@ -44,6 +46,7 @@ function AdminProductFormContent() {
 					onSubmit={page.onSubmit}
 				>
 					<MainSection main={main} />
+					<SalesSection sales={sales} />
 					<SpecsSection specs={specs} />
 					<TagsSection tags={tags} />
 					<UploadPhotoSection media={media} />

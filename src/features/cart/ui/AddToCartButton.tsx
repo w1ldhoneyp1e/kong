@@ -77,7 +77,9 @@ function AddToCartButton({variantId}: AddToCartButtonProps) {
 				onClick={handleClick}
 				state={loading
 					? 'loading'
-					: 'default'}
+					: variantId
+						? 'default'
+						: 'disabled'}
 			>
 				{'Добавить в корзину'}
 			</Button>

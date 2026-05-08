@@ -5,6 +5,7 @@ import {
 	createDocumentsSlice,
 	createMainSlice,
 	createMediaSlice,
+	createSalesSlice,
 	createSpecsSlice,
 	createTagsSlice,
 	getInitialState,
@@ -14,6 +15,7 @@ import {type ProductCreateStore} from './store-types'
 const useProductCreateStore = create<ProductCreateStore>((set, get, storeApi) => ({
 	...getInitialState(),
 	...createMainSlice(set, get, storeApi),
+	...createSalesSlice(set, get, storeApi),
 	...createSpecsSlice(set, get, storeApi),
 	...createTagsSlice(set, get, storeApi),
 	...createMediaSlice(set, get, storeApi),

@@ -10,7 +10,11 @@ type MedusaProduct = {
 	variants?: {
 		id: string,
 		title: string | null,
+		sku?: string | null,
 		prices?: {amount: number}[],
+		metadata?: {
+			available?: boolean,
+		} & Record<string, unknown>,
 	}[],
 	tags?: {value: string}[],
 	collection_id?: string | null,

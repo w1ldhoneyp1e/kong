@@ -15,6 +15,7 @@ import {AdminProductFormViewmodelProvider} from './provider'
 import {useProductCreateStore} from './store'
 import {
 	formatMutationError,
+	parseMoneyToMinorUnits,
 	parseNumberOrNull,
 	productSpecsHaveAnyValue,
 } from './utils'
@@ -22,6 +23,7 @@ import {createDocumentsVm} from './vm/documentsVm'
 import {createMainVm} from './vm/mainVm'
 import {createMediaVm} from './vm/mediaVm'
 import {createPageVm} from './vm/pageVm'
+import {createSalesVm} from './vm/salesVm'
 import {createSpecsVm} from './vm/specsVm'
 import {createTagsVm} from './vm/tagsVm'
 
@@ -57,6 +59,9 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 	const selectedTagIds = (initialProduct.tags ?? [])
 		.map(tag => tag.id)
 		.filter(id => id.trim().length > 0)
+	const primaryVariant = initialProduct.variants?.[0]
+	const primaryVariantPrice = primaryVariant?.prices?.[0]?.amount
+	const variantAvailable = primaryVariant?.metadata?.available
 	const selectedCategoryId = initialProduct.categories?.[0]?.id ?? null
 	const galleryImages = [
 		...(initialProduct.images ?? []),
@@ -91,6 +96,15 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 		width,
 		height,
 		selectedTagIds,
+		variantId: primaryVariant?.id ?? null,
+		variantTitle: primaryVariant?.title?.trim() ?? 'Основной',
+		variantSku: primaryVariant?.sku?.trim() ?? '',
+		variantPrice: typeof primaryVariantPrice === 'number'
+			? String(primaryVariantPrice / 100)
+			: '',
+		variantAvailable: typeof variantAvailable === 'boolean'
+			? variantAvailable
+			: true,
 		selectedCategoryId,
 		galleryImages,
 		documents: docs,
@@ -151,12 +165,31 @@ function useAdminProductFormViewmodel(params: {
 			url: document.url.trim(),
 		})).filter(document => document.title.length > 0 && document.url.length > 0)
 
+		const variantPrice = parseMoneyToMinorUnits(store.variantPrice)
+		const variantPayload = {
+			...(store.variantId
+				? {id: store.variantId}
+				: {}),
+			title: store.variantTitle.trim() || 'Основной',
+			sku: store.variantSku.trim() || undefined,
+			prices: variantPrice === null || variantPrice === undefined
+				? []
+				: [{
+					amount: variantPrice,
+					currency_code: 'rub',
+				}],
+			metadata: {
+				available: store.variantAvailable,
+			},
+		}
+
 		const payload = {
 			title: store.title.trim(),
 			handle: store.handle.trim() || undefined,
 			status: store.status.trim() || 'draft',
 			thumbnail: store.galleryImages[0]?.url.trim() || null,
 			images: store.galleryImages.map(item => ({url: item.url})),
+			variants: [variantPayload],
 			material: store.material.trim() || null,
 			weight: parseNumberOrNull(store.weight),
 			length: parseNumberOrNull(store.length),
@@ -202,6 +235,7 @@ function useAdminProductFormViewmodel(params: {
 
 	return {
 		main: createMainVm(store, categoryOptions, disabled),
+		sales: createSalesVm(store, disabled),
 		specs: createSpecsVm(store, disabled),
 		tags: createTagsVm(store, tagOptions, disabled),
 		media: createMediaVm(store, disabled),

@@ -2,7 +2,9 @@ import {type MedusaProduct} from './api'
 import {type ProductCardProps} from './ProductCard'
 
 function mapMedusaProductToCardProps(product: MedusaProduct): Partial<ProductCardProps> {
-	const amount = product.variants?.[0]?.prices?.[0]?.amount
+	const firstAvailableVariant = product.variants?.find(variant => variant.metadata?.available !== false)
+	const displayVariant = firstAvailableVariant ?? product.variants?.[0]
+	const amount = displayVariant?.prices?.[0]?.amount
 
 	return {
 		url: product.handle
@@ -22,7 +24,7 @@ function mapMedusaProductToCardProps(product: MedusaProduct): Partial<ProductCar
 			label: t.value,
 			theme: 'popular' as const,
 		})),
-		available: true,
+		available: Boolean(firstAvailableVariant && amount !== undefined && amount !== null),
 		view: 'grid',
 	}
 }

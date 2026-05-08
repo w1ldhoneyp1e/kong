@@ -11,6 +11,9 @@ type AdminProductVariant = {
 	sku?: string | null,
 	barcode?: string | null,
 	prices?: AdminMoneyAmount[],
+	metadata?: {
+		available?: boolean,
+	} & Record<string, unknown>,
 }
 
 type AdminProductImage = {
@@ -98,6 +101,18 @@ type CreateProductPayload = {
 	height?: number | null,
 	tag_ids?: string[],
 	category_ids?: string[],
+	variants?: {
+		id?: string,
+		title: string,
+		sku?: string,
+		prices?: {
+			amount: number,
+			currency_code: string,
+		}[],
+		metadata?: {
+			available?: boolean,
+		} & Record<string, unknown>,
+	}[],
 	metadata?: {
 		documents?: {
 			id: string,

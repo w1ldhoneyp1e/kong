@@ -16,6 +16,15 @@ function parseNumberOrNull(value: string): number | null | undefined {
 	return n
 }
 
+function parseMoneyToMinorUnits(value: string): number | null | undefined {
+	const parsed = parseNumberOrNull(value)
+	if (parsed === null || parsed === undefined) {
+		return parsed
+	}
+
+	return Math.round(parsed * 100)
+}
+
 function formatMutationError(err: unknown): string {
 	if (err instanceof Error) {
 		return err.message
@@ -26,6 +35,7 @@ function formatMutationError(err: unknown): string {
 
 export {
 	formatMutationError,
+	parseMoneyToMinorUnits,
 	parseNumberOrNull,
 	productSpecsHaveAnyValue,
 }

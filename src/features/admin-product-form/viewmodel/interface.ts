@@ -24,6 +24,17 @@ type AdminProductFormViewmodel = {
 		onStatusChange: (value: string) => void,
 		onCategoryChange: (value: string | null) => void,
 	},
+	sales: {
+		variantTitle: string,
+		variantSku: string,
+		variantPrice: string,
+		variantAvailable: boolean,
+		disabled: boolean,
+		onVariantTitleChange: (value: string) => void,
+		onVariantSkuChange: (value: string) => void,
+		onVariantPriceChange: (value: string) => void,
+		onVariantAvailableChange: (value: boolean) => void,
+	},
 	specs: {
 		disabled: boolean,
 		sectionExpanded: boolean,

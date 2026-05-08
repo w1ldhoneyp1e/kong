@@ -2,8 +2,8 @@ import {type Metadata} from 'next'
 import Image from 'next/image'
 import {notFound} from 'next/navigation'
 import {getProductByHandle} from '../../../../entities/product'
-import {AddToCartButton} from '../../../../features/cart'
 import {Badge} from '../../../../shared'
+import {ProductPurchasePanel} from './ProductPurchasePanel'
 
 type PageProps = {
 	params: Promise<{
@@ -27,14 +27,6 @@ async function ProductPage({params}: PageProps) {
 	if (!product) {
 		notFound()
 	}
-	const price = product.variants?.[0]?.prices?.[0]?.amount
-	const formattedPrice = typeof price === 'number'
-		? new Intl.NumberFormat('ru-RU', {
-			style: 'currency',
-			currency: 'RUB',
-		}).format(price / 100)
-		: 'Цена по запросу'
-
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="grid md:grid-cols-2 gap-8">
@@ -71,10 +63,7 @@ async function ProductPage({params}: PageProps) {
 						<h1 className="text-3xl font-bold mb-2">{product.title ?? 'Без названия'}</h1>
 						<p className="text-gray-600">{product.description ?? 'Описание появится позже.'}</p>
 					</div>
-					<div className="flex items-center gap-3">
-						<span className="text-3xl font-bold">{formattedPrice}</span>
-					</div>
-					<AddToCartButton variantId={product.variants?.[0]?.id ?? null} />
+					<ProductPurchasePanel variants={product.variants} />
 				</div>
 			</div>
 		</div>

@@ -12,6 +12,14 @@ type ProductCreateMainState = {
 	selectedCategoryId: string | null,
 }
 
+type ProductCreateSalesState = {
+	variantId: string | null,
+	variantTitle: string,
+	variantSku: string,
+	variantPrice: string,
+	variantAvailable: boolean,
+}
+
 type ProductCreateSpecsState = {
 	material: string,
 	weight: string,
@@ -44,6 +52,7 @@ type ProductCreateDocumentsState = {
 
 type ProductCreateStoreState =
 	& ProductCreateMainState
+	& ProductCreateSalesState
 	& ProductCreateSpecsState
 	& ProductCreateTagsState
 	& ProductCreateMediaState
@@ -54,6 +63,14 @@ type ProductCreateMainActions = {
 	setHandle: (value: string) => void,
 	setStatus: (value: string) => void,
 	setSelectedCategoryId: (value: string | null) => void,
+}
+
+type ProductCreateSalesActions = {
+	setVariantId: (value: string | null) => void,
+	setVariantTitle: (value: string) => void,
+	setVariantSku: (value: string) => void,
+	setVariantPrice: (value: string) => void,
+	setVariantAvailable: (value: boolean) => void,
 }
 
 type ProductCreateSpecsActions = {
@@ -95,6 +112,7 @@ type ProductCreateDocumentsActions = {
 
 type ProductCreateStoreActions =
 	& ProductCreateMainActions
+	& ProductCreateSalesActions
 	& ProductCreateSpecsActions
 	& ProductCreateTagsActions
 	& ProductCreateMediaActions
