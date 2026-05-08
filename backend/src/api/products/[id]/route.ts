@@ -2,6 +2,11 @@ import {type MedusaRequest, type MedusaResponse} from '@medusajs/framework'
 import {Modules} from '@medusajs/framework/utils'
 import {attachProductsToDefaultSalesChannel} from '../../_shared/productSalesChannel'
 import {requirePermission} from '../../_shared/staffAuth'
+import {
+	retrieveAdminProduct,
+	splitProductPayload,
+	syncSalesVariants,
+} from '../salesVariant'
 
 const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const actor = await requirePermission(req, res, 'catalog:manage')
@@ -10,10 +15,7 @@ const GET = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	}
 
 	const {id} = req.params
-	const productService = req.scope.resolve(Modules.PRODUCT)
-	const product = await productService.retrieveProduct(id, {
-		relations: ['variants', 'options', 'images', 'tags', 'categories'],
-	}).catch(() => null)
+	const product = await retrieveAdminProduct(req, id)
 	if (!product) {
 		res.status(404).json({error: 'Product not found'})
 		return
@@ -30,9 +32,12 @@ const PUT = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
 	const {id} = req.params
 	const productService = req.scope.resolve(Modules.PRODUCT)
 	const body = req.body as Record<string, unknown>
-	const updated = await productService.updateProducts(id, body as never)
+	const {productPayload, salesVariants} = splitProductPayload(body)
+	await productService.updateProducts(id, productPayload as never)
+	await syncSalesVariants(req, id, salesVariants)
 	await attachProductsToDefaultSalesChannel(req, [id])
-	res.json({product: updated})
+	const product = await retrieveAdminProduct(req, id)
+	res.json({product})
 }
 
 const DELETE = async (req: MedusaRequest, res: MedusaResponse): Promise<void> => {
