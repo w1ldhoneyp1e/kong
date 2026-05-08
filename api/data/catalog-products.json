@@ -5,11 +5,11 @@
       "title": "Rope Bag Test",
       "subtitle": null,
       "handle": "rope-bag-test",
-      "description": "Frontend-compatible payload",
-      "status": "published",
-      "thumbnail": "https://example.com/rope-bag.jpg",
+      "description": null,
+      "status": "draft",
+      "thumbnail": "/dev-uploads/products/9853ad56-cdf0-4680-a3b0-59b8784609dc.webp",
       "created_at": "2026-05-08T10:48:37.985Z",
-      "updated_at": "2026-05-08T10:48:37.985Z",
+      "updated_at": "2026-05-08T13:11:55.097Z",
       "material": "Nylon",
       "weight": 450,
       "length": 30,
@@ -28,14 +28,9 @@
       },
       "images": [
         {
-          "id": "image_mowsl3z6ezzu04",
-          "url": "https://example.com/rope-bag.jpg",
+          "id": "image_mowxpdjtp2ru65",
+          "url": "/dev-uploads/products/9853ad56-cdf0-4680-a3b0-59b8784609dc.webp",
           "rank": 0
-        },
-        {
-          "id": "image_mowsl3z68qee4r",
-          "url": "https://example.com/rope-bag-2.jpg",
-          "rank": 1
         }
       ],
       "options": [],
@@ -45,15 +40,8 @@
           "value": "popular"
         }
       ],
-      "categories": [
-        {
-          "id": "bags",
-          "name": "bags"
-        }
-      ],
-      "category_ids": [
-        "bags"
-      ],
+      "categories": [],
+      "category_ids": [],
       "collection_id": null,
       "variants": [
         {
@@ -76,13 +64,13 @@
     {
       "id": "prod_demo_belay_device",
       "title": "Belay Device Alpine",
-      "subtitle": "Migration fixture",
+      "subtitle": null,
       "handle": "belay-device-alpine",
-      "description": "Temporary catalog record while NestJS backend is being migrated.",
-      "status": "published",
-      "thumbnail": null,
+      "description": null,
+      "status": "draft",
+      "thumbnail": "/dev-uploads/products/04cbc2c0-da89-4db4-b255-ec646048c63b.avif",
       "created_at": "2026-05-08T00:00:00.000Z",
-      "updated_at": "2026-05-08T00:00:00.000Z",
+      "updated_at": "2026-05-08T13:13:25.491Z",
       "material": "Aluminum",
       "weight": 87,
       "length": null,
@@ -91,23 +79,31 @@
       "metadata": {
         "documents": []
       },
-      "images": [],
+      "images": [
+        {
+          "id": "image_mowxrbarsit06n",
+          "url": "/dev-uploads/products/04cbc2c0-da89-4db4-b255-ec646048c63b.avif",
+          "rank": 0
+        },
+        {
+          "id": "image_mowxrbar40n29y",
+          "url": "/dev-uploads/products/74d8889f-cdfd-44e6-9885-c529dbd12d4a.jpeg",
+          "rank": 1
+        }
+      ],
       "options": [],
       "tags": [
         {
           "id": "tag_demo_popular",
+          "value": "tag_demo_popular"
+        },
+        {
+          "id": "popular",
           "value": "popular"
         }
       ],
-      "categories": [
-        {
-          "id": "cat_demo_hardware",
-          "name": "Hardware"
-        }
-      ],
-      "category_ids": [
-        "cat_demo_hardware"
-      ],
+      "categories": [],
+      "category_ids": [],
       "collection_id": null,
       "variants": [
         {

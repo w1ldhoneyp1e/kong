@@ -20,7 +20,8 @@ yarn.lock
 
 # production
 /build
-api/dist
+/api/dist
+/api/data
 
 # dev-only uploads (Next public static)
 public/dev-uploads/
@@ -45,9 +46,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# medusa
-.medusa
 
 # nest api local data
 api/data/staff-users.json

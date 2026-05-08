@@ -2,7 +2,7 @@ import {type NextRequest, NextResponse} from 'next/server'
 
 const STAFF_TOKEN_COOKIE = 'kong_staff_token'
 
-export function middleware(req: NextRequest) {
+function middleware(req: NextRequest) {
 	const {pathname} = req.nextUrl
 
 	if (pathname.startsWith('/admin')) {
@@ -17,6 +17,11 @@ export function middleware(req: NextRequest) {
 	return NextResponse.next()
 }
 
-export const config = {
+const config = {
 	matcher: ['/admin/:path*'],
+}
+
+export {
+	middleware,
+	config,
 }

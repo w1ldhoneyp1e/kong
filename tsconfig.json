@@ -30,7 +30,6 @@
     "useUnknownInCatchVariables": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "plugins": [{"name": "next"}],
     "paths": {"@/*": ["./src/*"]}
   },
