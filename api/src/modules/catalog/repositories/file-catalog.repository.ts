@@ -8,7 +8,15 @@ import {
 } from './catalog.repository'
 import {CatalogProduct} from '../types/catalog-product.types'
 
-const CATALOG_FILE_PATH = path.resolve(process.cwd(), 'data/catalog-products.json')
+function resolveApiDataPath(fileName: string): string {
+	const cwd = process.cwd()
+	const apiRoot = path.basename(cwd) === 'api'
+		? cwd
+		: path.resolve(cwd, 'api')
+	return path.resolve(apiRoot, 'data', fileName)
+}
+
+const CATALOG_FILE_PATH = resolveApiDataPath('catalog-products.json')
 
 type CatalogStore = {
 	products: CatalogProduct[],

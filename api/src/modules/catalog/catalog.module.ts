@@ -31,5 +31,9 @@ import {ProductTagService} from './services/product-tag.service'
 			useClass: FileCatalogRepository,
 		},
 	],
+	exports: [
+		CatalogService,
+		CatalogRepository,
+	],
 })
 export class CatalogModule {}

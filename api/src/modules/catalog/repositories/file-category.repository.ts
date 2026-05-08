@@ -5,7 +5,15 @@ import {UpsertCategoryDto} from '../dto/upsert-category.dto'
 import {CatalogCategory} from '../types/category.types'
 import {CategoryRepository} from './category.repository'
 
-const CATEGORIES_FILE_PATH = path.resolve(process.cwd(), 'data/catalog-categories.json')
+function resolveApiDataPath(fileName: string): string {
+	const cwd = process.cwd()
+	const apiRoot = path.basename(cwd) === 'api'
+		? cwd
+		: path.resolve(cwd, 'api')
+	return path.resolve(apiRoot, 'data', fileName)
+}
+
+const CATEGORIES_FILE_PATH = resolveApiDataPath('catalog-categories.json')
 
 type CategoryStore = {
 	categories: CatalogCategory[],

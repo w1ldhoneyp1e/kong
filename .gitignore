@@ -49,6 +49,12 @@ next-env.d.ts
 # medusa
 .medusa
 
+# nest api local data
+api/data/staff-users.json
+api/data/customers.json
+api/data/orders.json
+api/data/carts.json
+
 # IDE
 .vscode
 .idea
