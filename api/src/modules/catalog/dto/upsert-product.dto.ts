@@ -2,6 +2,8 @@ import {
 	IsArray,
 	IsBoolean,
 	IsInt,
+	IsNumber,
+	IsObject,
 	IsOptional,
 	IsString,
 	Min,
@@ -30,13 +32,50 @@ export class UpsertProductVariantDto {
 	@IsString()
 	sku?: string
 
-	@IsBoolean()
-	available!: boolean
-
 	@IsArray()
 	@ValidateNested({each: true})
 	@Type(() => UpsertProductVariantPriceDto)
 	prices!: UpsertProductVariantPriceDto[]
+
+	@IsOptional()
+	@IsObject()
+	metadata?: {
+		available?: boolean,
+	} & Record<string, unknown>
+}
+
+export class UpsertProductImageDto {
+	@IsOptional()
+	@IsString()
+	id?: string
+
+	@IsString()
+	url!: string
+}
+
+export class UpsertProductDocumentDto {
+	@IsString()
+	id!: string
+
+	@IsString()
+	title!: string
+
+	@IsString()
+	kind!: string
+
+	@IsString()
+	sourceType!: string
+
+	@IsString()
+	url!: string
+}
+
+export class UpsertProductMetadataDto {
+	@IsOptional()
+	@IsArray()
+	@ValidateNested({each: true})
+	@Type(() => UpsertProductDocumentDto)
+	documents?: UpsertProductDocumentDto[]
 }
 
 export class UpsertProductDto {
@@ -65,6 +104,36 @@ export class UpsertProductDto {
 
 	@IsOptional()
 	@IsArray()
+	@ValidateNested({each: true})
+	@Type(() => UpsertProductImageDto)
+	images?: UpsertProductImageDto[]
+
+	@IsOptional()
+	@IsString()
+	material?: string | null
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsNumber()
+	weight?: number | null
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsNumber()
+	length?: number | null
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsNumber()
+	width?: number | null
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsNumber()
+	height?: number | null
+
+	@IsOptional()
+	@IsArray()
 	@IsString({each: true})
 	tag_ids?: string[]
 
@@ -77,4 +146,9 @@ export class UpsertProductDto {
 	@ValidateNested({each: true})
 	@Type(() => UpsertProductVariantDto)
 	variants!: UpsertProductVariantDto[]
+
+	@IsOptional()
+	@ValidateNested()
+	@Type(() => UpsertProductMetadataDto)
+	metadata?: UpsertProductMetadataDto
 }

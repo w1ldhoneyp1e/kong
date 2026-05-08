@@ -39,13 +39,21 @@ export class CatalogService {
 	}
 
 	async listStoreProducts(query: StoreListProductsQueryDto): Promise<{products: CatalogProduct[], count: number}> {
-		const products = await this.catalogRepository.listProducts({
+		const params = {
+			categoryId: query['category_id[]'],
 			handle: query.handle,
+			limit: query.limit,
+			offset: query.offset,
+			order: query.order,
 			query: query.q,
-		})
+		}
+		const [products, count] = await Promise.all([
+			this.catalogRepository.listProducts(params),
+			this.catalogRepository.countProducts(params),
+		])
 		return {
 			products,
-			count: products.length,
+			count,
 		}
 	}
 

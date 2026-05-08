@@ -1,6 +1,79 @@
 {
   "products": [
     {
+      "id": "prod_mowsl3z5j1yajj",
+      "title": "Rope Bag Test",
+      "subtitle": null,
+      "handle": "rope-bag-test",
+      "description": "Frontend-compatible payload",
+      "status": "published",
+      "thumbnail": "https://example.com/rope-bag.jpg",
+      "created_at": "2026-05-08T10:48:37.985Z",
+      "updated_at": "2026-05-08T10:48:37.985Z",
+      "material": "Nylon",
+      "weight": 450,
+      "length": 30,
+      "width": 18,
+      "height": 12,
+      "metadata": {
+        "documents": [
+          {
+            "id": "doc_1",
+            "title": "Instruction",
+            "kind": "instruction",
+            "sourceType": "url",
+            "url": "https://example.com/instruction.pdf"
+          }
+        ]
+      },
+      "images": [
+        {
+          "id": "image_mowsl3z6ezzu04",
+          "url": "https://example.com/rope-bag.jpg",
+          "rank": 0
+        },
+        {
+          "id": "image_mowsl3z68qee4r",
+          "url": "https://example.com/rope-bag-2.jpg",
+          "rank": 1
+        }
+      ],
+      "options": [],
+      "tags": [
+        {
+          "id": "popular",
+          "value": "popular"
+        }
+      ],
+      "categories": [
+        {
+          "id": "bags",
+          "name": "bags"
+        }
+      ],
+      "category_ids": [
+        "bags"
+      ],
+      "collection_id": null,
+      "variants": [
+        {
+          "id": "variant_mowsl3z6a7zubx",
+          "title": "Основной",
+          "sku": "ROPE-BAG-TEST",
+          "available": true,
+          "prices": [
+            {
+              "amount": 12900,
+              "currency_code": "rub"
+            }
+          ],
+          "metadata": {
+            "available": true
+          }
+        }
+      ]
+    },
+    {
       "id": "prod_demo_belay_device",
       "title": "Belay Device Alpine",
       "subtitle": "Migration fixture",
@@ -32,6 +105,10 @@
           "name": "Hardware"
         }
       ],
+      "category_ids": [
+        "cat_demo_hardware"
+      ],
+      "collection_id": null,
       "variants": [
         {
           "id": "variant_demo_belay_device",

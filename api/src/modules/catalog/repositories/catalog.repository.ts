@@ -4,10 +4,16 @@ import {UpsertProductDto} from '../dto/upsert-product.dto'
 type ListCatalogProductsParams = {
 	query?: string,
 	handle?: string,
+	categoryId?: string,
+	order?: string,
+	offset?: number,
+	limit?: number,
 }
 
 abstract class CatalogRepository {
 	abstract listProducts(params?: ListCatalogProductsParams): Promise<CatalogProduct[]>
+
+	abstract countProducts(params?: ListCatalogProductsParams): Promise<number>
 
 	abstract getProductById(id: string): Promise<CatalogProduct | null>
 

@@ -51,5 +51,7 @@ export type CatalogProduct = {
 		id: string,
 		name?: string | null,
 	}>,
+	category_ids?: string[],
+	collection_id?: string | null,
 	variants: CatalogVariant[],
 }

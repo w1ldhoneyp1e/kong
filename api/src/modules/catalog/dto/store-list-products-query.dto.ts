@@ -21,4 +21,12 @@ export class StoreListProductsQueryDto {
 	@IsInt()
 	@Min(1)
 	limit?: number
+
+	@IsOptional()
+	@IsString()
+	order?: string
+
+	@IsOptional()
+	@IsString()
+	'category_id[]'?: string
 }

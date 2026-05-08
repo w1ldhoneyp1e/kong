@@ -17,22 +17,19 @@ type CatalogStore = {
 @Injectable()
 export class FileCatalogRepository extends CatalogRepository {
 	async listProducts(params?: ListCatalogProductsParams): Promise<CatalogProduct[]> {
-		const store = await this.readStore()
-		const handle = params?.handle?.trim().toLowerCase()
-		const query = params?.query?.trim().toLowerCase()
+		const filtered = await this.filterProducts(params)
+		const ordered = this.applyOrder(filtered, params?.order)
+		const offset = params?.offset ?? 0
+		const limit = params?.limit
 
-		return store.products.filter(product => {
-			if (handle && product.handle.toLowerCase() !== handle) {
-				return false
-			}
+		return limit === undefined
+			? ordered.slice(offset)
+			: ordered.slice(offset, offset + limit)
+	}
 
-			if (!query) {
-				return true
-			}
-
-			return product.title.toLowerCase().includes(query)
-				|| product.handle.toLowerCase().includes(query)
-		})
+	async countProducts(params?: ListCatalogProductsParams): Promise<number> {
+		const filtered = await this.filterProducts(params)
+		return filtered.length
 	}
 
 	async getProductById(id: string): Promise<CatalogProduct | null> {
@@ -116,6 +113,30 @@ export class FileCatalogRepository extends CatalogRepository {
 		await writeFile(CATALOG_FILE_PATH, `${JSON.stringify(store, null, 2)}\n`, 'utf8')
 	}
 
+	private async filterProducts(params?: ListCatalogProductsParams): Promise<CatalogProduct[]> {
+		const store = await this.readStore()
+		const handle = params?.handle?.trim().toLowerCase()
+		const query = params?.query?.trim().toLowerCase()
+		const categoryId = params?.categoryId?.trim()
+
+		return store.products.filter(product => {
+			if (handle && product.handle.toLowerCase() !== handle) {
+				return false
+			}
+
+			if (categoryId && !(product.category_ids ?? []).includes(categoryId)) {
+				return false
+			}
+
+			if (!query) {
+				return true
+			}
+
+			return product.title.toLowerCase().includes(query)
+				|| product.handle.toLowerCase().includes(query)
+		})
+	}
+
 	private mapDtoToProduct(
 		input: UpsertProductDto,
 		params: {
@@ -136,15 +157,19 @@ export class FileCatalogRepository extends CatalogRepository {
 			thumbnail: input.thumbnail ?? null,
 			created_at: params.createdAt,
 			updated_at: params.updatedAt,
-			material: null,
-			weight: null,
-			length: null,
-			width: null,
-			height: null,
+			material: input.material ?? null,
+			weight: input.weight ?? null,
+			length: input.length ?? null,
+			width: input.width ?? null,
+			height: input.height ?? null,
 			metadata: {
-				documents: [],
+				documents: input.metadata?.documents ?? [],
 			},
-			images: [],
+			images: (input.images ?? []).map((image, index) => ({
+				id: image.id ?? this.createId('image'),
+				url: image.url,
+				rank: index,
+			})),
 			options: [],
 			tags: (input.tag_ids ?? []).map(tagId => ({
 				id: tagId,
@@ -154,17 +179,39 @@ export class FileCatalogRepository extends CatalogRepository {
 				id: categoryId,
 				name: categoryId,
 			})),
+			category_ids: input.category_ids ?? [],
+			collection_id: null,
 			variants: input.variants.map(variant => ({
 				id: variant.id ?? this.createId('variant'),
 				title: variant.title,
 				sku: variant.sku ?? null,
-				available: variant.available,
+				available: variant.metadata?.available !== false,
 				prices: variant.prices,
 				metadata: {
-					available: variant.available,
+					available: variant.metadata?.available !== false,
+					...(variant.metadata ?? {}),
 				},
 			})),
 		}
+	}
+
+	private applyOrder(products: CatalogProduct[], order?: string): CatalogProduct[] {
+		if (!order) {
+			return products
+		}
+
+		const next = [...products]
+		if (order === 'title') {
+			next.sort((a, b) => a.title.localeCompare(b.title, 'ru'))
+			return next
+		}
+
+		if (order === 'created_at') {
+			next.sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''))
+			return next
+		}
+
+		return products
 	}
 
 	private normalizeHandle(value: string): string {
