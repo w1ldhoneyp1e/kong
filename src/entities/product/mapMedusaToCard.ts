@@ -1,5 +1,5 @@
 import {type MedusaProduct} from './api'
-import {type ProductCardProps} from './ProductCard'
+import {type ProductCardProps} from './card/ProductCard'
 
 function mapMedusaProductToCardProps(product: MedusaProduct): Partial<ProductCardProps> {
 	const firstAvailableVariant = product.variants?.find(variant => variant.metadata?.available !== false)
