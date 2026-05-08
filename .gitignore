@@ -20,6 +20,7 @@ yarn.lock
 
 # production
 /build
+api/dist
 
 # dev-only uploads (Next public static)
 public/dev-uploads/

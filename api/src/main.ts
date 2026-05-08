@@ -17,12 +17,12 @@ async function bootstrap(): Promise<void> {
 	)
 	const env = app.get(EnvironmentService)
 
-	await app.register(cors, {
+	await app.register(cookie as never)
+	await app.register(cors as never, {
 		origin: [env.appUrl],
 		credentials: true,
 	})
-	await app.register(cookie)
-	await app.register(helmet)
+	await app.register(helmet as never)
 
 	app.useGlobalPipes(new ValidationPipe({
 		transform: true,
