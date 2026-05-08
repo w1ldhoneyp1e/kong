@@ -1,0 +1,28 @@
+{
+  "categories": [
+    {
+      "id": "cat_demo_hardware",
+      "name": "Hardware",
+      "slug": "hardware",
+      "parentId": null
+    },
+    {
+      "id": "cat_demo_bags",
+      "name": "Bags",
+      "slug": "bags",
+      "parentId": null
+    },
+    {
+      "id": "cat_mowsyck8oyygup",
+      "name": "Aggressive",
+      "slug": "aggressive",
+      "parentId": "cat_demo_hardware"
+    },
+    {
+      "id": "cat_mowt4g8qluy7gp",
+      "name": "Climbing Shoes Updated",
+      "slug": "climbing-shoes",
+      "parentId": null
+    }
+  ]
+}

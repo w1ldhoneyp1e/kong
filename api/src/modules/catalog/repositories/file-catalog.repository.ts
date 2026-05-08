@@ -16,6 +16,8 @@ type CatalogStore = {
 
 @Injectable()
 export class FileCatalogRepository extends CatalogRepository {
+	private static writeQueue = Promise.resolve()
+
 	async listProducts(params?: ListCatalogProductsParams): Promise<CatalogProduct[]> {
 		const filtered = await this.filterProducts(params)
 		const ordered = this.applyOrder(filtered, params?.order)
@@ -44,54 +46,70 @@ export class FileCatalogRepository extends CatalogRepository {
 	}
 
 	async createProduct(input: UpsertProductDto): Promise<CatalogProduct> {
-		const store = await this.readStore()
-		const now = new Date().toISOString()
-		const product = this.mapDtoToProduct(input, {
-			id: this.createId('prod'),
-			createdAt: now,
-			updatedAt: now,
+		return this.mutateStore(store => {
+			const now = new Date().toISOString()
+			const product = this.mapDtoToProduct(input, {
+				id: this.createId('prod'),
+				createdAt: now,
+				updatedAt: now,
+			})
+
+			store.products.unshift(product)
+			return {
+				nextStore: store,
+				result: product,
+			}
 		})
-
-		store.products.unshift(product)
-		await this.writeStore(store)
-
-		return product
 	}
 
 	async updateProduct(id: string, input: UpsertProductDto): Promise<CatalogProduct | null> {
-		const store = await this.readStore()
-		const index = store.products.findIndex(product => product.id === id)
-		if (index < 0) {
-			return null
-		}
+		return this.mutateStore(store => {
+			const index = store.products.findIndex(product => product.id === id)
+			if (index < 0) {
+				return {
+					nextStore: store,
+					result: null,
+				}
+			}
 
-		const existing = store.products[index]
-		if (!existing) {
-			return null
-		}
+			const existing = store.products[index]
+			if (!existing) {
+				return {
+					nextStore: store,
+					result: null,
+				}
+			}
 
-		const updated = this.mapDtoToProduct(input, {
-			id: existing.id,
-			createdAt: existing.created_at ?? new Date().toISOString(),
-			updatedAt: new Date().toISOString(),
+			const updated = this.mapDtoToProduct(input, {
+				id: existing.id,
+				createdAt: existing.created_at ?? new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			})
+			store.products[index] = updated
+			return {
+				nextStore: store,
+				result: updated,
+			}
 		})
-		store.products[index] = updated
-		await this.writeStore(store)
-
-		return updated
 	}
 
 	async deleteProduct(id: string): Promise<boolean> {
-		const store = await this.readStore()
-		const nextProducts = store.products.filter(product => product.id !== id)
-		if (nextProducts.length === store.products.length) {
-			return false
-		}
+		return this.mutateStore(store => {
+			const nextProducts = store.products.filter(product => product.id !== id)
+			if (nextProducts.length === store.products.length) {
+				return {
+					nextStore: store,
+					result: false,
+				}
+			}
 
-		await this.writeStore({
-			products: nextProducts,
+			return {
+				nextStore: {
+					products: nextProducts,
+				},
+				result: true,
+			}
 		})
-		return true
 	}
 
 	private async readStore(): Promise<CatalogStore> {
@@ -111,6 +129,22 @@ export class FileCatalogRepository extends CatalogRepository {
 	private async writeStore(store: CatalogStore): Promise<void> {
 		await mkdir(path.dirname(CATALOG_FILE_PATH), {recursive: true})
 		await writeFile(CATALOG_FILE_PATH, `${JSON.stringify(store, null, 2)}\n`, 'utf8')
+	}
+
+	private async mutateStore<T>(mutator: (store: CatalogStore) => {
+		nextStore: CatalogStore,
+		result: T,
+	}): Promise<T> {
+		const operation = FileCatalogRepository.writeQueue.then(async () => {
+			const store = await this.readStore()
+			const {
+				nextStore, result,
+			} = mutator(store)
+			await this.writeStore(nextStore)
+			return result
+		})
+		FileCatalogRepository.writeQueue = operation.then(() => undefined, () => undefined)
+		return operation
 	}
 
 	private async filterProducts(params?: ListCatalogProductsParams): Promise<CatalogProduct[]> {
