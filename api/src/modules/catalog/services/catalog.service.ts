@@ -24,26 +24,18 @@ export class CatalogService {
 		return {product}
 	}
 
-	createAdminProduct(input: UpsertProductDto): {message: string, payload: UpsertProductDto} {
-		return {
-			message: 'Catalog write migration is not implemented yet',
-			payload: input,
-		}
+	async createAdminProduct(input: UpsertProductDto): Promise<{product: CatalogProduct}> {
+		const product = await this.catalogRepository.createProduct(input)
+		return {product}
 	}
 
-	updateAdminProduct(id: string, input: UpsertProductDto): {message: string, id: string, payload: UpsertProductDto} {
-		return {
-			message: 'Catalog write migration is not implemented yet',
-			id,
-			payload: input,
-		}
+	async updateAdminProduct(id: string, input: UpsertProductDto): Promise<{product: CatalogProduct | null}> {
+		const product = await this.catalogRepository.updateProduct(id, input)
+		return {product}
 	}
 
-	deleteAdminProduct(id: string): {message: string, id: string} {
-		return {
-			message: 'Catalog delete migration is not implemented yet',
-			id,
-		}
+	async deleteAdminProduct(id: string): Promise<void> {
+		await this.catalogRepository.deleteProduct(id)
 	}
 
 	async listStoreProducts(query: StoreListProductsQueryDto): Promise<{products: CatalogProduct[], count: number}> {

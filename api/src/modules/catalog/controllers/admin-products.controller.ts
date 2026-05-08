@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	HttpCode,
+	HttpStatus,
 	Param,
 	Post,
 	Put,
@@ -34,7 +35,7 @@ export class AdminProductsController {
 	}
 
 	@Post()
-	@HttpCode(501)
+	@HttpCode(HttpStatus.CREATED)
 	createProduct(
 		@Body() input: UpsertProductDto,
 	) {
@@ -42,7 +43,6 @@ export class AdminProductsController {
 	}
 
 	@Put(':id')
-	@HttpCode(501)
 	updateProduct(
 		@Param('id') id: string,
 		@Body() input: UpsertProductDto,
@@ -51,7 +51,7 @@ export class AdminProductsController {
 	}
 
 	@Delete(':id')
-	@HttpCode(501)
+	@HttpCode(HttpStatus.NO_CONTENT)
 	deleteProduct(
 		@Param('id') id: string,
 	) {

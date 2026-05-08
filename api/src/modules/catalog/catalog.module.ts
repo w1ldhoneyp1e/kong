@@ -1,8 +1,8 @@
 import {Module} from '@nestjs/common'
 import {AdminProductsController} from './controllers/admin-products.controller'
 import {StoreProductsController} from './controllers/store-products.controller'
-import {InMemoryCatalogRepository} from './repositories/in-memory-catalog.repository'
 import {CatalogRepository} from './repositories/catalog.repository'
+import {FileCatalogRepository} from './repositories/file-catalog.repository'
 import {CatalogService} from './services/catalog.service'
 
 @Module({
@@ -14,7 +14,7 @@ import {CatalogService} from './services/catalog.service'
 		CatalogService,
 		{
 			provide: CatalogRepository,
-			useClass: InMemoryCatalogRepository,
+			useClass: FileCatalogRepository,
 		},
 	],
 })
