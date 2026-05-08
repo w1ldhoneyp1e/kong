@@ -14,6 +14,10 @@ import {
 	Input,
 	Label,
 } from '../../../shared'
+import {
+	clearStoredCartId,
+	emitCartUpdated,
+} from '../../../features/cart'
 
 const CART_ID_KEY = 'kong_cart_id'
 
@@ -71,7 +75,8 @@ function CheckoutPage() {
 			return
 		}
 
-		localStorage.removeItem(CART_ID_KEY)
+		clearStoredCartId()
+		emitCartUpdated()
 		setSubmitState('done')
 	}
 

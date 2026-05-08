@@ -2,15 +2,18 @@
 
 import {useState} from 'react'
 import {Button} from '../../../shared'
-
-const CART_ID_KEY = 'kong_cart_id'
+import {
+	emitCartUpdated,
+	getStoredCartId,
+	setStoredCartId,
+} from '../model'
 
 type AddToCartButtonProps = {
 	variantId: string | null,
 }
 
 async function ensureCartId(): Promise<string> {
-	const cached = localStorage.getItem(CART_ID_KEY)
+	const cached = getStoredCartId()
 	if (cached) {
 		return cached
 	}
@@ -27,7 +30,7 @@ async function ensureCartId(): Promise<string> {
 		throw new Error('Не удалось создать корзину')
 	}
 
-	localStorage.setItem(CART_ID_KEY, data.cart.id)
+	setStoredCartId(data.cart.id)
 	return data.cart.id
 }
 
@@ -57,6 +60,7 @@ function AddToCartButton({variantId}: AddToCartButtonProps) {
 			if (!res.ok) {
 				throw new Error('Не удалось добавить товар')
 			}
+			emitCartUpdated()
 			setMessage('Товар добавлен в корзину')
 		}
 		catch (e) {

@@ -6,6 +6,20 @@ import {
 	useState,
 } from 'react'
 import {
+	Minus,
+	Plus,
+	Trash2,
+} from 'lucide-react'
+import {
+	type Cart,
+	cartItemsCount,
+	cartItemsTotal,
+	emitCartUpdated,
+	formatCartMoney,
+	getStoredCartId,
+} from '../../../features/cart'
+import {
+	Button,
 	Card,
 	CardContent,
 	CardFooter,
@@ -14,27 +28,15 @@ import {
 	Link,
 } from '../../../shared'
 
-const CART_ID_KEY = 'kong_cart_id'
-
-type CartLine = {
-	id: string,
-	title?: string,
-	quantity: number,
-	unit_price?: number,
-}
-
-type Cart = {
-	id: string,
-	items?: CartLine[],
-}
-
 function CartPage() {
 	const [cart, setCart] = useState<Cart | null>(null)
 	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
+	const [pendingLineId, setPendingLineId] = useState<string | null>(null)
 
 	useEffect(() => {
 		const load = async () => {
-			const cartId = localStorage.getItem(CART_ID_KEY)
+			const cartId = getStoredCartId()
 			if (!cartId) {
 				setLoading(false)
 				return
@@ -53,12 +55,81 @@ function CartPage() {
 	}, [])
 
 	const total = useMemo(() => {
-		if (!cart?.items) {
-			return 0
+		return cartItemsTotal(cart)
+	}, [cart])
+
+	const itemsCount = useMemo(() => {
+		return cartItemsCount(cart)
+	}, [cart])
+
+	const updateLineQuantity = async (lineId: string, quantity: number) => {
+		if (!cart?.id || quantity < 1) {
+			return
 		}
 
-		return cart.items.reduce((sum, item) => sum + (item.unit_price ?? 0) * item.quantity, 0)
-	}, [cart])
+		setPendingLineId(lineId)
+		setError(null)
+		try {
+			const res = await fetch(`/api/carts/${cart.id}`, {
+				method: 'PUT',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					action: 'update_line_item',
+					line_id: lineId,
+					quantity,
+				}),
+			})
+			const data = await res.json().catch(() => ({})) as {cart?: Cart, error?: string}
+			if (!res.ok || !data.cart) {
+				throw new Error(data.error ?? 'Не удалось обновить корзину')
+			}
+			setCart(data.cart)
+			emitCartUpdated()
+		}
+		catch (e) {
+			setError(e instanceof Error
+				? e.message
+				: 'Не удалось обновить корзину')
+		}
+		finally {
+			setPendingLineId(null)
+		}
+	}
+
+	const removeLine = async (lineId: string) => {
+		if (!cart?.id) {
+			return
+		}
+
+		setPendingLineId(lineId)
+		setError(null)
+		try {
+			const res = await fetch(`/api/carts/${cart.id}`, {
+				method: 'PUT',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					action: 'remove_line_item',
+					line_id: lineId,
+				}),
+			})
+			const data = await res.json().catch(() => ({})) as {cart?: Cart, error?: string}
+			if (!res.ok || !data.cart) {
+				throw new Error(data.error ?? 'Не удалось удалить товар')
+			}
+			setCart(data.cart)
+			emitCartUpdated()
+		}
+		catch (e) {
+			setError(e instanceof Error
+				? e.message
+				: 'Не удалось удалить товар')
+		}
+		finally {
+			setPendingLineId(null)
+		}
+	}
+
+	const hasItems = itemsCount > 0
 
 	return (
 		<div className="container mx-auto px-4 py-12">
@@ -71,6 +142,14 @@ function CartPage() {
 						</CardHeader>
 						<CardContent>
 							{loading && <p className="text-muted-foreground text-center py-8">{'Загрузка...'}</p>}
+							{error && (
+								<p
+									className="mb-4 text-sm text-destructive"
+									role="alert"
+								>
+									{error}
+								</p>
+							)}
 							{!loading && (!cart?.items || cart.items.length === 0) && (
 								<p className="text-muted-foreground text-center py-8">{'Корзина пуста'}</p>
 							)}
@@ -79,13 +158,74 @@ function CartPage() {
 									{cart.items.map(item => (
 										<div
 											key={item.id}
-											className="flex items-center justify-between"
+											className="grid gap-3 border-b pb-4 last:border-b-0 last:pb-0 sm:grid-cols-[1fr_auto_auto]"
 										>
-											<div>
-												<p>{item.title ?? 'Товар'}</p>
-												<p className="text-sm text-muted-foreground">{`Количество: ${item.quantity}`}</p>
+											<div className="min-w-0">
+												<p className="font-medium">{item.title ?? 'Товар'}</p>
+												{item.variant?.title
+													? (
+														<p className="text-sm text-muted-foreground">
+															{item.variant.title}
+														</p>
+													)
+													: null}
+												{item.variant?.sku
+													? (
+														<p className="text-xs text-muted-foreground">
+															{`SKU: ${item.variant.sku}`}
+														</p>
+													)
+													: null}
+												<p className="mt-1 text-sm text-muted-foreground">
+													{`Цена: ${formatCartMoney(item.unit_price ?? 0)}`}
+												</p>
 											</div>
-											<div>{`${((item.unit_price ?? 0) * item.quantity / 100).toFixed(2)} ₽`}</div>
+											<div className="flex items-center gap-2">
+												<Button
+													type="button"
+													variant="outline"
+													size="icon-sm"
+													aria-label="Уменьшить количество"
+													disabled={pendingLineId === item.id || item.quantity <= 1}
+													onClick={() => {
+														updateLineQuantity(item.id, item.quantity - 1).catch(() => undefined)
+													}}
+												>
+													<Minus className="size-4" />
+												</Button>
+												<span className="min-w-8 text-center text-sm font-medium">
+													{item.quantity}
+												</span>
+												<Button
+													type="button"
+													variant="outline"
+													size="icon-sm"
+													aria-label="Увеличить количество"
+													disabled={pendingLineId === item.id}
+													onClick={() => {
+														updateLineQuantity(item.id, item.quantity + 1).catch(() => undefined)
+													}}
+												>
+													<Plus className="size-4" />
+												</Button>
+											</div>
+											<div className="flex items-center justify-between gap-3 sm:min-w-32 sm:justify-end">
+												<div className="font-semibold">
+													{formatCartMoney(item.total ?? (item.unit_price ?? 0) * item.quantity)}
+												</div>
+												<Button
+													type="button"
+													variant="ghost"
+													size="icon-sm"
+													aria-label="Удалить товар"
+													disabled={pendingLineId === item.id}
+													onClick={() => {
+														removeLine(item.id).catch(() => undefined)
+													}}
+												>
+													<Trash2 className="size-4 text-destructive" />
+												</Button>
+											</div>
 										</div>
 									))}
 								</div>
@@ -102,27 +242,39 @@ function CartPage() {
 							<div className="space-y-2">
 								<div className="flex justify-between">
 									<span>{'Товары:'}</span>
-									<span className="font-semibold">{`${(total / 100).toFixed(2)} ₽`}</span>
+									<span className="font-semibold">{formatCartMoney(total)}</span>
 								</div>
 								<div className="flex justify-between">
 									<span>{'Доставка:'}</span>
-									<span className="font-semibold">{'0 ₽'}</span>
+									<span className="font-semibold">{formatCartMoney(0)}</span>
 								</div>
 								<div className="border-t pt-2 mt-2">
 									<div className="flex justify-between text-lg font-bold">
 										<span>{'Всего:'}</span>
-										<span>{`${(total / 100).toFixed(2)} ₽`}</span>
+										<span>{formatCartMoney(total)}</span>
 									</div>
 								</div>
 							</div>
 						</CardContent>
 						<CardFooter>
-							<Link
-								href="/checkout"
-								className="w-full inline-flex items-center justify-center rounded-md border px-4 py-2 disabled:opacity-50"
-							>
-								{'Оформить заказ'}
-							</Link>
+							{hasItems
+								? (
+									<Link
+										href="/checkout"
+										className="w-full inline-flex items-center justify-center rounded-md border px-4 py-2"
+									>
+										{'Оформить заказ'}
+									</Link>
+								)
+								: (
+									<Button
+										type="button"
+										className="w-full"
+										state="disabled"
+									>
+										{'Оформить заказ'}
+									</Button>
+								)}
 						</CardFooter>
 					</Card>
 				</div>
@@ -132,4 +284,3 @@ function CartPage() {
 }
 
 export {CartPage as default}
-
