@@ -7,13 +7,13 @@ import {
 	useEffect,
 	useState,
 } from 'react'
-import {type MedusaProduct, listProducts} from '../../../entities/product'
+import {type StoreProduct, listProducts} from '../../../entities/product'
 import {SearchHits} from '../../../features/search'
 
 function SearchPageContent() {
 	const searchParams = useSearchParams()
 	const q = searchParams.get('q') ?? ''
-	const [products, setProducts] = useState<MedusaProduct[]>([])
+	const [products, setProducts] = useState<StoreProduct[]>([])
 	const [loading, setLoading] = useState(true)
 
 	const load = useCallback(async () => {

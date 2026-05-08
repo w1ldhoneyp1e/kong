@@ -1,7 +1,7 @@
 import {buildCategoryTree, categoriesApi} from '../../entities/category'
 import {
 	listPopularProducts,
-	mapMedusaProductToCardProps,
+	mapStoreProductToCardProps,
 	ProductCard,
 } from '../../entities/product'
 import {BentoBanner} from '../../shared'
@@ -32,7 +32,7 @@ async function Home() {
 									{popularProducts.map(product => (
 										<ProductCard
 											key={product.id}
-											{...mapMedusaProductToCardProps(product)}
+											{...mapStoreProductToCardProps(product)}
 											view="grid"
 										/>
 									))}

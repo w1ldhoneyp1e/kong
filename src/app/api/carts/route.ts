@@ -5,15 +5,6 @@ import {errorMessage} from '../_shared/proxyToBackend'
 
 const CUSTOMER_TOKEN_COOKIE = 'kong_customer_token'
 
-function publishableApiKey(): string | undefined {
-	const fromEnv = process.env.MEDUSA_PUBLISHABLE_KEY
-		?? process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-
-	return typeof fromEnv === 'string' && fromEnv.length > 0
-		? fromEnv
-		: undefined
-}
-
 async function GET(request: NextRequest) {
 	try {
 		const id = request.nextUrl.searchParams.get('id')
@@ -22,10 +13,6 @@ async function GET(request: NextRequest) {
 		}
 
 		const headers = new Headers()
-		const key = publishableApiKey()
-		if (key) {
-			headers.set('x-publishable-api-key', key)
-		}
 
 		const token = (await cookies()).get(CUSTOMER_TOKEN_COOKIE)?.value
 		if (token) {
@@ -53,10 +40,6 @@ async function POST(request: NextRequest) {
 			region_id?: string,
 		}
 		const headers = new Headers({'Content-Type': 'application/json'})
-		const key = publishableApiKey()
-		if (key) {
-			headers.set('x-publishable-api-key', key)
-		}
 
 		const token = (await cookies()).get(CUSTOMER_TOKEN_COOKIE)?.value
 		if (token) {

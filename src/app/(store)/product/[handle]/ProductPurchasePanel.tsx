@@ -1,11 +1,11 @@
 'use client'
 
 import {useMemo, useState} from 'react'
-import {type MedusaProduct} from '../../../../entities/product'
+import {type StoreProduct} from '../../../../entities/product'
 import {AddToCartButton} from '../../../../features/cart'
 import {Button, cn} from '../../../../shared'
 
-type StorefrontVariant = NonNullable<MedusaProduct['variants']>[number]
+type StorefrontVariant = NonNullable<StoreProduct['variants']>[number]
 
 function variantIsAvailable(variant: StorefrontVariant): boolean {
 	return variant.metadata?.available !== false
@@ -33,7 +33,7 @@ function formatPrice(amount: number | null): string {
 function ProductPurchasePanel({
 	variants = [],
 }: Readonly<{
-	variants?: MedusaProduct['variants'],
+	variants?: StoreProduct['variants'],
 }>) {
 	const firstAvailableId = useMemo(
 		() => variants.find(variantIsAvailable)?.id ?? variants[0]?.id ?? null,

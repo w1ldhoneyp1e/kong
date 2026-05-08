@@ -1,6 +1,6 @@
 import {getCatalogBackendUrlOptional} from '../../shared'
 
-type MedusaProduct = {
+type StoreProduct = {
 	id: string,
 	title: string | null,
 	description: string | null,
@@ -22,24 +22,8 @@ type MedusaProduct = {
 }
 
 type ListProductsResponse = {
-	products: MedusaProduct[],
+	products: StoreProduct[],
 	count: number,
-}
-
-function publishableApiKey(): string | undefined {
-	const key = process.env.MEDUSA_PUBLISHABLE_KEY
-		?? process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-
-	return typeof key === 'string' && key.length > 0
-		? key
-		: undefined
-}
-
-function buildStoreHeaders(): HeadersInit | undefined {
-	const key = publishableApiKey()
-	return key
-		? {'x-publishable-api-key': key}
-		: undefined
 }
 
 async function listProducts(params: {
@@ -67,7 +51,6 @@ async function listProducts(params: {
 	}
 	const url = `${getCatalogBackendUrlOptional()}/store/products?${searchParams}`
 	const res = await fetch(url, {
-		headers: buildStoreHeaders(),
 		next: params.q
 			? {revalidate: 0}
 			: undefined,
@@ -87,7 +70,7 @@ const POPULAR_TAGS = new Set([
 	'популярное',
 ])
 
-function productPopularityScore(product: MedusaProduct): number {
+function productPopularityScore(product: StoreProduct): number {
 	// TODO: Replace tag-based popularity with storefront statistics
 	// once views, cart additions, and order counts are collected.
 	const tagValues = product.tags?.map(tag => tag.value.trim().toLowerCase()) ?? []
@@ -116,14 +99,13 @@ async function listPopularProducts(limit = 8): Promise<ListProductsResponse> {
 	}
 }
 
-async function getProductByHandle(handle: string): Promise<MedusaProduct | null> {
+async function getProductByHandle(handle: string): Promise<StoreProduct | null> {
 	const searchParams = new URLSearchParams()
 	searchParams.set('handle', handle)
 	searchParams.set('limit', '1')
 	const url = `${getCatalogBackendUrlOptional()}/store/products?${searchParams}`
 	const res = await fetch(url, {
 		cache: 'no-store',
-		headers: buildStoreHeaders(),
 	})
 	if (!res.ok) {
 		throw new Error('Failed to fetch product by handle')
@@ -136,4 +118,4 @@ async function getProductByHandle(handle: string): Promise<MedusaProduct | null>
 export {
 	getProductByHandle, listPopularProducts, listProducts,
 }
-export type {MedusaProduct, ListProductsResponse}
+export type {ListProductsResponse, StoreProduct}

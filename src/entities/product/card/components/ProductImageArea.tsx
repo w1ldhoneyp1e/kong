@@ -12,8 +12,8 @@ type ProductImageAreaProps = {
 	available: boolean,
 	isGrid: boolean,
 	isFavorite: boolean,
-	onLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void,
-	onFavoriteClick: (e: MouseEvent<HTMLButtonElement>) => void,
+	onLinkClick: (e: React.MouseEvent<HTMLAnchorElement>) => void,
+	onFavoriteClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
 }
 
 function ProductImageArea({

@@ -31,8 +31,8 @@ export type {
 export {
 	getProductByHandle, listPopularProducts, listProducts,
 } from './api'
-export type {MedusaProduct, ListProductsResponse} from './api'
-export {mapMedusaProductToCardProps} from './mapMedusaToCard'
+export type {ListProductsResponse, StoreProduct} from './api'
+export {mapStoreProductToCardProps} from './mapStoreProductToCard'
 export {ProductCard} from './card/ProductCard'
 export type {ProductCardProps} from './card/ProductCard'
 export {ProductDescription} from './card/components/ProductDescription'

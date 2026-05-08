@@ -3,7 +3,7 @@ import {Button, cn} from '@/shared'
 
 type ProductFavoriteButtonProps = {
 	isFavorite: boolean,
-	onFavoriteClick: (e: MouseEvent<HTMLButtonElement>) => void,
+	onFavoriteClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
 }
 
 function ProductFavoriteButton({

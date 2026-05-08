@@ -1,6 +1,5 @@
 function getBackendUrl(): string {
 	const url = process.env.NEXT_PUBLIC_BACKEND_URL
-		?? process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 	if (!url) {
 		throw new Error('NEXT_PUBLIC_BACKEND_URL не задан')
 	}
@@ -10,14 +9,12 @@ function getBackendUrl(): string {
 
 function getBackendUrlOptional(): string {
 	return process.env.NEXT_PUBLIC_BACKEND_URL
-		?? process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
-		?? 'http://localhost:9000'
+		?? 'http://localhost:9001'
 }
 
 function getCatalogBackendUrl(): string {
 	const url = process.env.NEXT_PUBLIC_BACKEND_URL
 		?? process.env.NEXT_PUBLIC_CATALOG_BACKEND_URL
-		?? process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 	if (!url) {
 		throw new Error('NEXT_PUBLIC_CATALOG_BACKEND_URL не задан')
 	}
@@ -28,8 +25,7 @@ function getCatalogBackendUrl(): string {
 function getCatalogBackendUrlOptional(): string {
 	return process.env.NEXT_PUBLIC_BACKEND_URL
 		?? process.env.NEXT_PUBLIC_CATALOG_BACKEND_URL
-		?? process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
-		?? 'http://localhost:9000'
+		?? 'http://localhost:9001'
 }
 
 function getApiBase(): string {

@@ -4,7 +4,7 @@ import {notFound} from 'next/navigation'
 import {categoriesApi} from '../../../../entities/category'
 import {
 	listProducts,
-	mapMedusaProductToCardProps,
+	mapStoreProductToCardProps,
 	ProductCard,
 } from '../../../../entities/product'
 
@@ -93,7 +93,7 @@ async function CatalogPage({params, searchParams}: PageProps) {
 				{productsResponse.products.map(product => (
 					<ProductCard
 						key={product.id}
-						{...mapMedusaProductToCardProps(product)}
+						{...mapStoreProductToCardProps(product)}
 						view="grid"
 					/>
 				))}

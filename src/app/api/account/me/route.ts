@@ -18,20 +18,6 @@ type StaffMeResponse = {
 	permissions?: string[],
 }
 
-function publishableApiKey(): string | undefined {
-	const fromEnv = process.env.MEDUSA_PUBLISHABLE_KEY
-		?? process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-	if (typeof fromEnv === 'string' && fromEnv.length > 0) {
-		return fromEnv
-	}
-
-	if (process.env.NODE_ENV === 'development') {
-		return 'pk_test_123'
-	}
-
-	return undefined
-}
-
 function extractCustomerEmail(data: unknown): string | null {
 	if (!data || typeof data !== 'object') {
 		return null
@@ -88,12 +74,8 @@ async function fetchStoreCustomerMe(
 		ok: boolean,
 		email: string | null,
 	}> {
-	const key = publishableApiKey()
 	const headers: Record<string, string> = {
 		Authorization: `Bearer ${token}`,
-	}
-	if (key) {
-		headers['x-publishable-api-key'] = key
 	}
 
 	for (const path of ['/store/customers/me', '/customers/me'] as const) {

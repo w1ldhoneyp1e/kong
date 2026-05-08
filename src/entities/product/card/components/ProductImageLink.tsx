@@ -4,7 +4,7 @@ type ProductImageLinkProps = {
 	url: string,
 	image?: string,
 	title?: string,
-	onLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void,
+	onLinkClick: (e: React.MouseEvent<HTMLAnchorElement>) => void,
 }
 
 function ProductImageLink({

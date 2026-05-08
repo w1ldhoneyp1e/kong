@@ -14,7 +14,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
 	title: 'Kong Store - Интернет-магазин',
-	description: 'Современный интернет-магазин на Next.js и Medusa',
+	description: 'Современный интернет-магазин на Next.js и NestJS',
 	viewport: {
 		width: 'device-width',
 		initialScale: 1,

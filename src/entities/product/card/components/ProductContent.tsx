@@ -18,7 +18,7 @@ type ProductContentProps = {
 	rating?: number,
 	reviews?: number,
 	isGrid: boolean,
-	onLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void,
+	onLinkClick: (e: React.MouseEvent<HTMLAnchorElement>) => void,
 }
 
 function ProductContent({
