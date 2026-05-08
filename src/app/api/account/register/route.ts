@@ -40,6 +40,8 @@ async function registerCustomer(params: {
 		body: JSON.stringify({
 			email,
 			password,
+			first_name: firstName,
+			last_name: lastName,
 		}),
 		cache: 'no-store',
 	})
@@ -53,24 +55,6 @@ async function registerCustomer(params: {
 	const token = (regData as any)?.token
 	if (typeof token !== 'string') {
 		throw new Error('Медуса не вернула token при регистрации')
-	}
-
-	const createRes = await fetch(`${baseUrl}/customers`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
-		body: JSON.stringify({
-			email,
-			first_name: firstName,
-			last_name: lastName,
-		}),
-		cache: 'no-store',
-	})
-
-	if (!createRes.ok) {
-		return token
 	}
 	return token
 }
@@ -123,4 +107,3 @@ export async function POST(request: NextRequest) {
 		)
 	}
 }
-

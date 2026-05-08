@@ -70,6 +70,7 @@ type Order = {
 	email: string | null,
 	customer_id: string | null,
 	currency_code: string | null,
+	total?: number | null,
 	created_at: string,
 	updated_at: string,
 	items: OrderItem[],

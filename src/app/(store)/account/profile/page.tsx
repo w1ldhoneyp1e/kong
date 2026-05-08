@@ -1,19 +1,17 @@
 import {redirect} from 'next/navigation'
-import {getBackendUrl} from '../../../../shared'
+import {cookies} from 'next/headers'
 import {type AccountMe} from '../../../api/account/_lib/accountMeTypes'
 
-const CUSTOMER_TOKEN_COOKIE = 'kong_customer_token'
-
 async function getProfile(): Promise<AccountMe | null> {
-	const {cookies} = await import('next/headers')
-	const cookieStore = await cookies()
-	const token = cookieStore.get(CUSTOMER_TOKEN_COOKIE)?.value
-	if (!token) {
-		return null
-	}
-
-	const res = await fetch(`${getBackendUrl()}/customer/me`, {
-		headers: {Authorization: `Bearer ${token}`},
+	const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+	const cookieHeader = (await cookies())
+		.getAll()
+		.map(cookie => `${cookie.name}=${cookie.value}`)
+		.join('; ')
+	const res = await fetch(`${origin}/api/account/me`, {
+		headers: cookieHeader
+			? {cookie: cookieHeader}
+			: undefined,
 		cache: 'no-store',
 	})
 	if (!res.ok) {
@@ -21,15 +19,11 @@ async function getProfile(): Promise<AccountMe | null> {
 	}
 
 	const data = await res.json().catch(() => ({})) as {
-		customer?: {email?: string | null},
+		account?: AccountMe,
 	}
-
-	return {
-		authenticated: true,
-		actorType: 'customer',
-		roleCode: 'customer',
-		email: data.customer?.email ?? null,
-	}
+	return data.account?.authenticated
+		? data.account
+		: null
 }
 
 type Order = {
@@ -39,22 +33,15 @@ type Order = {
 }
 
 async function getOrders(): Promise<Order[]> {
-	const {cookies} = await import('next/headers')
-	const cookieStore = await cookies()
-	const token = cookieStore.get(CUSTOMER_TOKEN_COOKIE)?.value
-	if (!token) {
-		return []
-	}
-
-	const key = process.env.MEDUSA_PUBLISHABLE_KEY
-		?? process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-	const headers: Record<string, string> = {Authorization: `Bearer ${token}`}
-	if (key) {
-		headers['x-publishable-api-key'] = key
-	}
-
-	const res = await fetch(`${getBackendUrl()}/store/orders`, {
-		headers,
+	const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+	const cookieHeader = (await cookies())
+		.getAll()
+		.map(cookie => `${cookie.name}=${cookie.value}`)
+		.join('; ')
+	const res = await fetch(`${origin}/api/account/orders`, {
+		headers: cookieHeader
+			? {cookie: cookieHeader}
+			: undefined,
 		cache: 'no-store',
 	})
 	if (!res.ok) {

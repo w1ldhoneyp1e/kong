@@ -62,6 +62,7 @@ export class FileOrderRepository extends OrderRepository {
 				email: customer?.email ?? null,
 				customer_id: customer?.id ?? null,
 				currency_code: 'rub',
+				total: cart.total,
 				created_at: now,
 				updated_at: now,
 				items: cart.items.map(item => ({
@@ -243,6 +244,7 @@ export class FileOrderRepository extends OrderRepository {
 			email: 'customer@example.com',
 			customer_id: null,
 			currency_code: 'rub',
+			total: 12990,
 			created_at: now,
 			updated_at: now,
 			items: [{

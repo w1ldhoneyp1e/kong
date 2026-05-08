@@ -26,6 +26,8 @@ export class CustomerAuthController {
 		const result = await this.customerAuthService.register({
 			email: input.email,
 			password: input.password,
+			first_name: input.first_name,
+			last_name: input.last_name,
 		})
 
 		return {
