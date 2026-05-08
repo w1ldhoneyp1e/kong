@@ -17,11 +17,6 @@ function middleware(req: NextRequest) {
 	return NextResponse.next()
 }
 
-const config = {
-	matcher: ['/admin/:path*'],
-}
-
 export {
 	middleware,
-	config,
 }
