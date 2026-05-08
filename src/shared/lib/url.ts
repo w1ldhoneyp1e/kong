@@ -1,14 +1,17 @@
 function getBackendUrl(): string {
-	const url = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+	const url = process.env.NEXT_PUBLIC_BACKEND_URL
+		?? process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 	if (!url) {
-		throw new Error('NEXT_PUBLIC_MEDUSA_BACKEND_URL не задан')
+		throw new Error('NEXT_PUBLIC_BACKEND_URL не задан')
 	}
 
 	return url
 }
 
 function getBackendUrlOptional(): string {
-	return process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? 'http://localhost:9000'
+	return process.env.NEXT_PUBLIC_BACKEND_URL
+		?? process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+		?? 'http://localhost:9000'
 }
 
 function getApiBase(): string {
