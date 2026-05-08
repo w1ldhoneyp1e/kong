@@ -7,7 +7,13 @@ abstract class OrderRepository {
 	abstract listOrders(query?: ListOrdersQueryDto): Promise<Order[]>
 	abstract countOrders(query?: ListOrdersQueryDto): Promise<number>
 	abstract getOrderById(id: string): Promise<Order | null>
-	abstract createOrderFromCart(cart: Cart): Promise<Order>
+	abstract createOrderFromCart(
+		cart: Cart,
+		customer?: {
+			id: string,
+			email: string | null,
+		},
+	): Promise<Order>
 	abstract updateOrder(id: string, input: UpdateOrderDto): Promise<Order | null>
 	abstract deleteOrder(id: string): Promise<boolean>
 	abstract listOrdersByCustomerId(

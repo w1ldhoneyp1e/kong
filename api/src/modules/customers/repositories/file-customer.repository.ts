@@ -1,5 +1,6 @@
 import {Injectable} from '@nestjs/common'
 import {mkdir, readFile, writeFile} from 'node:fs/promises'
+import {randomBytes} from 'node:crypto'
 import path from 'node:path'
 import {CreateCustomerDto} from '../dto/create-customer.dto'
 import {ListCustomersQueryDto} from '../dto/list-customers-query.dto'
@@ -18,7 +19,12 @@ function resolveApiDataPath(fileName: string): string {
 const CUSTOMERS_FILE_PATH = resolveApiDataPath('customers.json')
 
 type CustomerStore = {
-	customers: Customer[],
+	customers: Array<Customer & {passwordHash?: string | null}>,
+	sessions: Array<{
+		token: string,
+		customerId: string,
+		expires_at: string,
+	}>,
 }
 
 @Injectable()
@@ -46,15 +52,82 @@ export class FileCustomerRepository extends CustomerRepository {
 	}
 
 	async getCustomerByEmail(email: string): Promise<Customer | null> {
+		const customer = await this.getCustomerAccountByEmail(email)
+		return customer
+			? this.toPublicCustomer(customer)
+			: null
+	}
+
+	async getCustomerAccountByEmail(
+		email: string,
+	): Promise<(Customer & {passwordHash?: string | null}) | null> {
 		const normalized = email.trim().toLowerCase()
 		const store = await this.readStore()
 		return store.customers.find(customer => customer.email.toLowerCase() === normalized) ?? null
 	}
 
+	async createCustomerAccount(input: {
+		email: string,
+		passwordHash: string,
+		first_name?: string | null,
+		last_name?: string | null,
+	}): Promise<{token: string, customer: Customer}> {
+		return this.mutateStore(store => {
+			const now = new Date().toISOString()
+			const customer: Customer & {passwordHash?: string | null} = {
+				id: this.createId(),
+				email: input.email.trim().toLowerCase(),
+				first_name: this.normalizeValue(input.first_name),
+				last_name: this.normalizeValue(input.last_name),
+				created_at: now,
+				updated_at: now,
+				has_account: true,
+				passwordHash: input.passwordHash,
+			}
+			const session = this.createSession(customer.id)
+			store.customers.unshift(customer)
+			store.sessions.unshift(session)
+			return {
+				nextStore: store,
+				result: {
+					token: session.token,
+					customer: this.toPublicCustomer(customer),
+				},
+			}
+		})
+	}
+
+	async createCustomerSession(customerId: string): Promise<{token: string}> {
+		return this.mutateStore(store => {
+			const session = this.createSession(customerId)
+			store.sessions.unshift(session)
+			return {
+				nextStore: {
+					customers: store.customers,
+					sessions: this.cleanupSessions(store.sessions),
+				},
+				result: {token: session.token},
+			}
+		})
+	}
+
+	async getCustomerByToken(token: string): Promise<Customer | null> {
+		const store = await this.readStore()
+		const session = this.cleanupSessions(store.sessions).find(item => item.token === token)
+		if (!session) {
+			return null
+		}
+
+		const customer = store.customers.find(item => item.id === session.customerId)
+		return customer
+			? this.toPublicCustomer(customer)
+			: null
+	}
+
 	async createCustomer(input: CreateCustomerDto): Promise<Customer> {
 		return this.mutateStore(store => {
 			const now = new Date().toISOString()
-			const customer: Customer = {
+			const customer: Customer & {passwordHash?: string | null} = {
 				id: this.createId(),
 				email: input.email.trim().toLowerCase(),
 				first_name: this.normalizeValue(input.first_name),
@@ -66,7 +139,7 @@ export class FileCustomerRepository extends CustomerRepository {
 			store.customers.unshift(customer)
 			return {
 				nextStore: store,
-				result: customer,
+				result: this.toPublicCustomer(customer),
 			}
 		})
 	}
@@ -89,7 +162,7 @@ export class FileCustomerRepository extends CustomerRepository {
 				}
 			}
 
-			const updated: Customer = {
+			const updated: Customer & {passwordHash?: string | null} = {
 				...existing,
 				email: input.email === undefined || input.email === null
 					? existing.email
@@ -105,7 +178,7 @@ export class FileCustomerRepository extends CustomerRepository {
 			store.customers[index] = updated
 			return {
 				nextStore: store,
-				result: updated,
+				result: this.toPublicCustomer(updated),
 			}
 		})
 	}
@@ -116,6 +189,7 @@ export class FileCustomerRepository extends CustomerRepository {
 			return {
 				nextStore: {
 					customers: nextCustomers,
+					sessions: store.sessions.filter(session => session.customerId !== id),
 				},
 				result: nextCustomers.length !== store.customers.length,
 			}
@@ -143,11 +217,22 @@ export class FileCustomerRepository extends CustomerRepository {
 			const content = await readFile(CUSTOMERS_FILE_PATH, 'utf8')
 			const parsed = JSON.parse(content) as CustomerStore
 			return Array.isArray(parsed.customers)
-				? parsed
-				: {customers: []}
+				? {
+					customers: parsed.customers,
+					sessions: Array.isArray(parsed.sessions)
+						? this.cleanupSessions(parsed.sessions)
+						: [],
+				}
+				: {
+					customers: [],
+					sessions: [],
+				}
 		}
 		catch {
-			return {customers: []}
+			return {
+				customers: [],
+				sessions: [],
+			}
 		}
 	}
 
@@ -177,10 +262,40 @@ export class FileCustomerRepository extends CustomerRepository {
 		return `cus_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
 	}
 
+	private createSession(customerId: string): {
+		token: string,
+		customerId: string,
+		expires_at: string,
+	} {
+		return {
+			token: `cust_tok_${randomBytes(24).toString('hex')}`,
+			customerId,
+			expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
+		}
+	}
+
+	private cleanupSessions(sessions: Array<{
+		token: string,
+		customerId: string,
+		expires_at: string,
+	}>): Array<{
+		token: string,
+		customerId: string,
+		expires_at: string,
+	}> {
+		const now = Date.now()
+		return sessions.filter(session => new Date(session.expires_at).getTime() > now)
+	}
+
 	private normalizeValue(value?: string | null): string | null {
 		const normalized = value?.trim()
 		return normalized
 			? normalized
 			: null
+	}
+
+	private toPublicCustomer(customer: Customer & {passwordHash?: string | null}): Customer {
+		const {passwordHash: _passwordHash, ...publicCustomer} = customer
+		return publicCustomer
 	}
 }

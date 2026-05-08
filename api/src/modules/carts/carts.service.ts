@@ -4,6 +4,7 @@ import {
 	NotFoundException,
 } from '@nestjs/common'
 import {CatalogRepository} from '../catalog/repositories/catalog.repository'
+import {CustomerAuthService} from '../customers/customer-auth.service'
 import {OrdersService} from '../orders/orders.service'
 import {CreateCartDto} from './dto/create-cart.dto'
 import {CartLineItemDto} from './dto/cart-line-item.dto'
@@ -18,6 +19,7 @@ export class CartsService {
 		@Inject(CatalogRepository)
 		private readonly catalogRepository: CatalogRepository,
 		private readonly ordersService: OrdersService,
+		private readonly customerAuthService: CustomerAuthService,
 	) {}
 
 	async getCart(id: string): Promise<{cart: Cart}> {
@@ -101,9 +103,18 @@ export class CartsService {
 		}
 	}
 
-	async completeCart(id: string): Promise<{type: 'order', order: {id: string}}> {
+	async completeCart(
+		id: string,
+		authorization?: string,
+	): Promise<{type: 'order', order: {id: string}}> {
 		const cart = await this.requireCart(id)
-		const order = await this.ordersService.createOrderFromCart(cart)
+		const customer = await this.resolveCustomerFromAuthorization(authorization)
+		const order = await this.ordersService.createOrderFromCart(cart, customer
+			? {
+				id: customer.id,
+				email: customer.email,
+			}
+			: undefined)
 		await this.cartRepository.deleteCart(id)
 		return {
 			type: 'order',
@@ -171,5 +182,29 @@ export class CartsService {
 
 	private createLineId(): string {
 		return `line_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
+	}
+
+	private async resolveCustomerFromAuthorization(
+		authorization?: string,
+	): Promise<{id: string, email: string | null} | null> {
+		if (!authorization) {
+			return null
+		}
+
+		const [type, token] = authorization.split(' ')
+		if (type?.toLowerCase() !== 'bearer' || !token) {
+			return null
+		}
+
+		try {
+			const customer = await this.customerAuthService.getCustomerByToken(token)
+			return {
+				id: customer.id,
+				email: customer.email,
+			}
+		}
+		catch {
+			return null
+		}
 	}
 }

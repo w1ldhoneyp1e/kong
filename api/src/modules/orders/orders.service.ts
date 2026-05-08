@@ -35,8 +35,14 @@ export class OrdersService {
 		return {order}
 	}
 
-	async createOrderFromCart(cart: Cart) {
-		return this.orderRepository.createOrderFromCart(cart)
+	async createOrderFromCart(
+		cart: Cart,
+		customer?: {
+			id: string,
+			email: string | null,
+		},
+	) {
+		return this.orderRepository.createOrderFromCart(cart, customer)
 	}
 
 	async updateOrder(token: string, id: string, input: UpdateOrderDto) {
@@ -66,6 +72,16 @@ export class OrdersService {
 		},
 	) {
 		await this.staffService.requirePermission(token, 'customers:manage')
+		return this.orderRepository.listOrdersByCustomerId(customerId, query)
+	}
+
+	async listOrdersForCustomer(
+		customerId: string,
+		query?: {
+			limit?: number,
+			offset?: number,
+		},
+	) {
 		return this.orderRepository.listOrdersByCustomerId(customerId, query)
 	}
 }

@@ -3,6 +3,7 @@ import {
 	Controller,
 	Delete,
 	Get,
+	Headers,
 	HttpCode,
 	Param,
 	Post,
@@ -62,8 +63,9 @@ export class StoreCartsController {
 	@Post(':id/complete')
 	completeCart(
 		@Param('id') id: string,
+		@Headers('authorization') authorization: string | undefined,
 		@Query() _query: Record<string, unknown>,
 	) {
-		return this.cartsService.completeCart(id)
+		return this.cartsService.completeCart(id, authorization)
 	}
 }

@@ -45,7 +45,13 @@ export class FileOrderRepository extends OrderRepository {
 		return store.orders.find(order => order.id === id) ?? null
 	}
 
-	async createOrderFromCart(cart: Cart): Promise<Order> {
+	async createOrderFromCart(
+		cart: Cart,
+		customer?: {
+			id: string,
+			email: string | null,
+		},
+	): Promise<Order> {
 		return this.mutateStore(store => {
 			const now = new Date().toISOString()
 			const maxDisplayId = store.orders.reduce((max, order) => Math.max(max, order.display_id), 1000)
@@ -53,8 +59,8 @@ export class FileOrderRepository extends OrderRepository {
 				id: `order_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
 				status: 'pending',
 				display_id: maxDisplayId + 1,
-				email: null,
-				customer_id: null,
+				email: customer?.email ?? null,
+				customer_id: customer?.id ?? null,
 				currency_code: 'rub',
 				created_at: now,
 				updated_at: now,
@@ -85,6 +91,7 @@ export class FileOrderRepository extends OrderRepository {
 				billing_address: null,
 				metadata: {
 					cart_id: cart.id,
+					customer_id: customer?.id ?? null,
 				},
 			}
 			store.orders.unshift(order)
