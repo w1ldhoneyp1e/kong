@@ -6,7 +6,11 @@ export {scrollToTop} from './lib/scrollToTop'
 export {useClipboardFilePaste} from './lib/useClipboardFilePaste'
 export type {UseClipboardFilePasteParams} from './lib/useClipboardFilePaste'
 export {
-	getBackendUrl, getBackendUrlOptional, getApiBase,
+	getBackendUrl,
+	getBackendUrlOptional,
+	getCatalogBackendUrl,
+	getCatalogBackendUrlOptional,
+	getApiBase,
 } from './lib/url'
 export {fetchSuggestions} from './lib/yandex-suggest'
 export {

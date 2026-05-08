@@ -1,6 +1,6 @@
 import {cookies} from 'next/headers'
 import {NextResponse} from 'next/server'
-import {getBackendUrl} from '../../../shared'
+import {getBackendUrl, getCatalogBackendUrl} from '../../../shared'
 
 const STAFF_TOKEN_COOKIE = 'kong_staff_token'
 const CUSTOMER_TOKEN_COOKIE = 'kong_customer_token'
@@ -41,8 +41,22 @@ async function proxyToBackend(
 	path: string,
 	init?: RequestInit,
 ): Promise<NextResponse> {
+	return proxyRequest(getBackendUrl(), path, init)
+}
+
+async function proxyToCatalogBackend(
+	path: string,
+	init?: RequestInit,
+): Promise<NextResponse> {
+	return proxyRequest(getCatalogBackendUrl(), path, init)
+}
+
+async function proxyRequest(
+	base: string,
+	path: string,
+	init?: RequestInit,
+): Promise<NextResponse> {
 	try {
-		const base = getBackendUrl()
 		const staffToken = (await cookies()).get(STAFF_TOKEN_COOKIE)?.value
 		const customerToken = (await cookies()).get(CUSTOMER_TOKEN_COOKIE)?.value
 
@@ -80,4 +94,5 @@ async function proxyToBackend(
 export {
 	errorMessage,
 	proxyToBackend,
+	proxyToCatalogBackend,
 }

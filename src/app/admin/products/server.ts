@@ -1,6 +1,6 @@
 import {cookies} from 'next/headers'
 import {type AdminProduct} from '../../../entities/product'
-import {getBackendUrl} from '../../../shared'
+import {getCatalogBackendUrl} from '../../../shared'
 
 const STAFF_TOKEN_COOKIE = 'kong_staff_token'
 
@@ -11,7 +11,7 @@ async function fetchAdminProductsServer(): Promise<AdminProduct[] | undefined> {
 	}
 
 	try {
-		const res = await fetch(`${getBackendUrl()}/products`, {
+		const res = await fetch(`${getCatalogBackendUrl()}/products`, {
 			headers: {Authorization: `Bearer ${token}`},
 			cache: 'no-store',
 		})
@@ -35,7 +35,7 @@ async function fetchAdminProductServer(id: string): Promise<AdminProduct | undef
 	}
 
 	try {
-		const res = await fetch(`${getBackendUrl()}/products/${id}`, {
+		const res = await fetch(`${getCatalogBackendUrl()}/products/${id}`, {
 			headers: {Authorization: `Bearer ${token}`},
 			cache: 'no-store',
 		})

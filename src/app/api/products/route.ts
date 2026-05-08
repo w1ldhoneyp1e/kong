@@ -1,14 +1,14 @@
 import {type NextRequest} from 'next/server'
-import {errorMessage, proxyToBackend} from '../_shared/proxyToBackend'
+import {errorMessage, proxyToCatalogBackend} from '../_shared/proxyToBackend'
 
 async function GET() {
-	return proxyToBackend('/products')
+	return proxyToCatalogBackend('/products')
 }
 
 async function POST(request: NextRequest) {
 	try {
 		const body = await request.json()
-		return proxyToBackend('/products', {
+		return proxyToCatalogBackend('/products', {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(body),

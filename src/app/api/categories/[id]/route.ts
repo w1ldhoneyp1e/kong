@@ -1,12 +1,12 @@
 import {type NextRequest} from 'next/server'
-import {errorMessage, proxyToBackend} from '../../_shared/proxyToBackend'
+import {errorMessage, proxyToCatalogBackend} from '../../_shared/proxyToBackend'
 
 async function GET(
 	_request: NextRequest,
 	context: {params: Promise<{id: string}>},
 ) {
 	const {id} = await context.params
-	return proxyToBackend(`/categories/${id}`)
+	return proxyToCatalogBackend(`/categories/${id}`)
 }
 
 async function PUT(
@@ -16,7 +16,7 @@ async function PUT(
 	const {id} = await context.params
 	try {
 		const body = await request.json()
-		return proxyToBackend(`/categories/${id}`, {
+		return proxyToCatalogBackend(`/categories/${id}`, {
 			method: 'PUT',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(body),
@@ -35,7 +35,7 @@ async function DELETE(
 	context: {params: Promise<{id: string}>},
 ) {
 	const {id} = await context.params
-	return proxyToBackend(`/categories/${id}`, {method: 'DELETE'})
+	return proxyToCatalogBackend(`/categories/${id}`, {method: 'DELETE'})
 }
 
 export {

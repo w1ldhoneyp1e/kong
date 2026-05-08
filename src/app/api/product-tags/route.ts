@@ -1,7 +1,7 @@
-import {proxyToBackend} from '../_shared/proxyToBackend'
+import {proxyToCatalogBackend} from '../_shared/proxyToBackend'
 
 async function GET() {
-	return proxyToBackend('/product-tags')
+	return proxyToCatalogBackend('/product-tags')
 }
 
 export {GET}

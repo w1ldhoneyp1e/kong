@@ -1,4 +1,4 @@
-import {getBackendUrlOptional} from '../../shared'
+import {getCatalogBackendUrlOptional} from '../../shared'
 
 type MedusaProduct = {
 	id: string,
@@ -65,7 +65,7 @@ async function listProducts(params: {
 	if (params.order) {
 		searchParams.set('order', params.order)
 	}
-	const url = `${getBackendUrlOptional()}/store/products?${searchParams}`
+	const url = `${getCatalogBackendUrlOptional()}/store/products?${searchParams}`
 	const res = await fetch(url, {
 		headers: buildStoreHeaders(),
 		next: params.q
@@ -120,7 +120,7 @@ async function getProductByHandle(handle: string): Promise<MedusaProduct | null>
 	const searchParams = new URLSearchParams()
 	searchParams.set('handle', handle)
 	searchParams.set('limit', '1')
-	const url = `${getBackendUrlOptional()}/store/products?${searchParams}`
+	const url = `${getCatalogBackendUrlOptional()}/store/products?${searchParams}`
 	const res = await fetch(url, {
 		cache: 'no-store',
 		headers: buildStoreHeaders(),
