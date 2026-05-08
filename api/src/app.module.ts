@@ -8,6 +8,7 @@ import {HealthModule} from './modules/health/health.module'
 import {OrdersModule} from './modules/orders/orders.module'
 import {PrismaModule} from './modules/prisma/prisma.module'
 import {StaffModule} from './modules/staff/staff.module'
+import {StoreModule} from './modules/store/store.module'
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import {StaffModule} from './modules/staff/staff.module'
 		PrismaModule,
 		HealthModule,
 		StaffModule,
+		StoreModule,
 		OrdersModule,
 		CartsModule,
 		CustomersModule,
