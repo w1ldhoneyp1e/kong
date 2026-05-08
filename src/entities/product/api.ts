@@ -129,5 +129,7 @@ async function getProductByHandle(handle: string): Promise<MedusaProduct | null>
 	return data.products[0] ?? null
 }
 
-export {getProductByHandle, listPopularProducts, listProducts}
+export {
+	getProductByHandle, listPopularProducts, listProducts,
+}
 export type {MedusaProduct, ListProductsResponse}
