@@ -1,4 +1,4 @@
-type ProductStatus = 'draft' | 'proposed' | 'published' | 'rejected'
+type ProductStatus = 'draft' | 'published' | 'archived'
 
 type ProductStatusOption = {
 	value: ProductStatus,
@@ -11,16 +11,12 @@ const PRODUCT_STATUS_OPTIONS: ProductStatusOption[] = [
 		label: 'Черновик',
 	},
 	{
-		value: 'proposed',
-		label: 'На модерации',
-	},
-	{
 		value: 'published',
 		label: 'Опубликован',
 	},
 	{
-		value: 'rejected',
-		label: 'Отклонён',
+		value: 'archived',
+		label: 'В архиве',
 	},
 ]
 

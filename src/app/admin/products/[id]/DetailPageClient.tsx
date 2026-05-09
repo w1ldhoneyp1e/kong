@@ -1,7 +1,11 @@
 'use client'
 
 import {useRouter} from 'next/navigation'
-import {type AdminProduct, getProductStatusLabel} from '../../../../entities/product'
+import {
+	type AdminProduct,
+	getProductStatusLabel,
+	type UpdateProductPayload,
+} from '../../../../entities/product'
 import {
 	Button,
 	ConfirmDialog,
@@ -13,6 +17,52 @@ import {ProductMainInfoCard} from './MainInfoCard'
 import {ProductMediaCard} from './MediaCard'
 import {ProductOptionsCard} from './OptionsCard'
 import {ProductVariantsCard} from './VariantsCard'
+
+function buildProductUpdatePayload(product: AdminProduct, status: 'draft' | 'published'): UpdateProductPayload {
+	const primaryThumbnail = product.thumbnail ?? product.images?.[0]?.url ?? null
+
+	return {
+		title: product.title ?? '',
+		subtitle: product.subtitle ?? null,
+		description: product.description ?? null,
+		handle: product.handle ?? undefined,
+		status,
+		thumbnail: primaryThumbnail,
+		images: (product.images ?? [])
+			.map(image => image.url?.trim())
+			.filter((url): url is string => Boolean(url))
+			.map(url => ({url})),
+		material: product.material ?? null,
+		weight: product.weight ?? null,
+		length: product.length ?? null,
+		width: product.width ?? null,
+		height: product.height ?? null,
+		tag_ids: (product.tags ?? [])
+			.map(tag => tag.id)
+			.filter(Boolean),
+		category_ids: (product.categories ?? [])
+			.map(category => category.id)
+			.filter(Boolean),
+		variants: (product.variants ?? []).map(variant => ({
+			id: variant.id,
+			title: variant.title?.trim() || 'Основной',
+			sku: variant.sku ?? undefined,
+			prices: (variant.prices ?? [])
+				.filter(price => typeof price.amount === 'number' && Boolean(price.currency_code))
+				.map(price => ({
+					amount: price.amount as number,
+					currency_code: price.currency_code as string,
+				})),
+			metadata: {
+				...(variant.metadata ?? {}),
+				available: variant.metadata?.available !== false,
+			},
+		})),
+		metadata: {
+			documents: product.metadata?.documents ?? [],
+		},
+	}
+}
 
 function formatCreatedAt(value: string | null | undefined): string {
 	if (!value) {
@@ -55,6 +105,8 @@ function ProductDetailPageClient({
 	}
 
 	const p = vm.product
+	const publishPayload = buildProductUpdatePayload(p, 'published')
+	const unpublishPayload = buildProductUpdatePayload(p, 'draft')
 
 	return (
 		<div>
@@ -63,6 +115,36 @@ function ProductDetailPageClient({
 				backHref="/admin/products"
 				actions={(
 					<>
+						{p.status !== 'published'
+							? (
+								<Button
+									type="button"
+									onClick={() => {
+										vm.updateMutation.mutate({
+											id,
+											payload: publishPayload,
+										})
+									}}
+									disabled={vm.updateMutation.isPending}
+								>
+									{'Опубликовать'}
+								</Button>
+							)
+							: (
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => {
+										vm.updateMutation.mutate({
+											id,
+											payload: unpublishPayload,
+										})
+									}}
+									disabled={vm.updateMutation.isPending}
+								>
+									{'Снять с публикации'}
+								</Button>
+							)}
 						<Button
 							type="button"
 							variant="outline"

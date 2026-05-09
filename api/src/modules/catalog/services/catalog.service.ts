@@ -42,23 +42,27 @@ export class CatalogService {
 		const params = {
 			categoryId: query['category_id[]'],
 			handle: query.handle,
-			limit: query.limit,
-			offset: query.offset,
 			order: query.order,
 			query: query.q,
 		}
-		const [products, count] = await Promise.all([
-			this.catalogRepository.listProducts(params),
-			this.catalogRepository.countProducts(params),
-		])
+		const products = await this.catalogRepository.listProducts(params)
+		const publishedProducts = products.filter(product => product.status === 'published')
+		const offset = query.offset ?? 0
+		const pagedProducts = query.limit === undefined
+			? publishedProducts.slice(offset)
+			: publishedProducts.slice(offset, offset + query.limit)
 		return {
-			products,
-			count,
+			products: pagedProducts,
+			count: publishedProducts.length,
 		}
 	}
 
 	async getStoreProductByHandle(handle: string): Promise<{product: CatalogProduct | null}> {
 		const product = await this.catalogRepository.getProductByHandle(handle)
-		return {product}
+		return {
+			product: product?.status === 'published'
+				? product
+				: null,
+		}
 	}
 }

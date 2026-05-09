@@ -23,12 +23,42 @@ async function parseBody(request: NextRequest): Promise<{
 	}
 }
 
+function messageFromRegisterError(data: unknown, fallback: string): string {
+	if (!data || typeof data !== 'object') {
+		return fallback
+	}
+
+	const candidate = data as {
+		error?: unknown,
+		message?: unknown,
+	}
+
+	if (typeof candidate.error === 'string' && candidate.error.trim()) {
+		return candidate.error
+	}
+
+	if (typeof candidate.message === 'string' && candidate.message.trim()) {
+		return candidate.message
+	}
+
+	if (Array.isArray(candidate.message)) {
+		const text = candidate.message
+			.filter(item => typeof item === 'string' && item.trim())
+			.join(', ')
+		if (text) {
+			return text
+		}
+	}
+
+	return fallback
+}
+
 async function registerCustomer(params: {
 	baseUrl: string,
 	email: string,
 	password: string,
 	firstName: string,
-	lastName: string,
+	lastName?: string,
 }): Promise<string> {
 	const {
 		baseUrl, email, password, firstName, lastName,
@@ -41,7 +71,7 @@ async function registerCustomer(params: {
 			email,
 			password,
 			first_name: firstName,
-			last_name: lastName,
+			last_name: lastName || undefined,
 		}),
 		cache: 'no-store',
 	})
@@ -49,12 +79,12 @@ async function registerCustomer(params: {
 	const regData = await regRes.json().catch(() => ({}))
 
 	if (!regRes.ok) {
-		throw new Error((regData as any)?.error ?? (regData as any)?.message ?? `HTTP ${regRes.status}`)
+		throw new Error(messageFromRegisterError(regData, `HTTP ${regRes.status}`))
 	}
 
 	const token = (regData as any)?.token
 	if (typeof token !== 'string') {
-		throw new Error('Медуса не вернула token при регистрации')
+		throw new Error('Backend не вернул token при регистрации')
 	}
 	return token
 }
@@ -66,8 +96,8 @@ export async function POST(request: NextRequest) {
 	} = body
 
 	if (!email || typeof email !== 'string' || !password || typeof password !== 'string'
-		|| !firstName || typeof firstName !== 'string' || !lastName || typeof lastName !== 'string') {
-		return NextResponse.json({error: 'Заполни email, пароль, имя и фамилию'}, {status: 400})
+		|| !firstName || typeof firstName !== 'string') {
+		return NextResponse.json({error: 'Заполни email, пароль и имя'}, {status: 400})
 	}
 
 	const baseUrl = getBackendUrl()
@@ -78,7 +108,9 @@ export async function POST(request: NextRequest) {
 			email: email.trim().toLowerCase(),
 			password,
 			firstName: firstName.trim(),
-			lastName: lastName.trim(),
+			lastName: typeof lastName === 'string'
+				? lastName.trim()
+				: undefined,
 		})
 
 		const account = await buildCustomerAccountPreview(token)

@@ -1,4 +1,5 @@
 import {
+	ConflictException,
 	Inject,
 	Injectable,
 	UnauthorizedException,
@@ -20,6 +21,11 @@ export class CustomerAuthService {
 		first_name?: string | null,
 		last_name?: string | null,
 	}): Promise<{token: string, customer: Customer}> {
+		const existing = await this.customerRepository.getCustomerAccountByEmail(params.email)
+		if (existing) {
+			throw new ConflictException('Покупатель с таким email уже существует')
+		}
+
 		return this.customerRepository.createCustomerAccount({
 			...params,
 			passwordHash: FileStaffRepository.hashPassword(params.password),

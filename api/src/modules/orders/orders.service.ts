@@ -1,5 +1,6 @@
 import {Inject, Injectable, NotFoundException} from '@nestjs/common'
 import {Cart} from '../carts/types/cart.types'
+import {CompleteCartDto} from '../carts/dto/complete-cart.dto'
 import {StaffService} from '../staff/staff.service'
 import {ListOrdersQueryDto} from './dto/list-orders-query.dto'
 import {UpdateOrderDto} from './dto/update-order.dto'
@@ -41,8 +42,9 @@ export class OrdersService {
 			id: string,
 			email: string | null,
 		},
+		checkout?: CompleteCartDto,
 	) {
-		return this.orderRepository.createOrderFromCart(cart, customer)
+		return this.orderRepository.createOrderFromCart(cart, customer, checkout)
 	}
 
 	async updateOrder(token: string, id: string, input: UpdateOrderDto) {

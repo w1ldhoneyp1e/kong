@@ -112,6 +112,9 @@ export default function AccountRegisterPage() {
 								onChange={e => setPassword(e.target.value)}
 								className="mt-1"
 							/>
+							<p className="mt-1 text-xs text-muted-foreground">
+								{'Подойдет любой непустой пароль.'}
+							</p>
 						</div>
 						{error && <p className="text-destructive text-sm">{error}</p>}
 						<Button
@@ -131,4 +134,3 @@ export default function AccountRegisterPage() {
 		</div>
 	)
 }
-

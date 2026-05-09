@@ -32,10 +32,29 @@ type Cart = {
 	items?: CartItem[],
 }
 
+type CheckoutForm = {
+	email: string,
+	firstName: string,
+	lastName: string,
+	phone: string,
+	address: string,
+	city: string,
+	postalCode: string,
+}
+
 function CheckoutPage() {
 	const [cart, setCart] = useState<Cart | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [submitState, setSubmitState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+	const [form, setForm] = useState<CheckoutForm>({
+		email: '',
+		firstName: '',
+		lastName: '',
+		phone: '',
+		address: '',
+		city: '',
+		postalCode: '',
+	})
 
 	useEffect(() => {
 		const load = async () => {
@@ -68,8 +87,26 @@ function CheckoutPage() {
 			return
 		}
 
+		if (!form.email.trim() || !form.firstName.trim() || !form.phone.trim() || !form.address.trim()) {
+			setSubmitState('error')
+			return
+		}
+
 		setSubmitState('loading')
-		const res = await fetch(`/api/carts/${cart.id}/complete`, {method: 'POST'})
+		const res = await fetch(`/api/carts/${cart.id}/complete`, {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({
+				email: form.email.trim().toLowerCase(),
+				first_name: form.firstName.trim(),
+				last_name: form.lastName.trim() || undefined,
+				phone: form.phone.trim(),
+				address_1: form.address.trim(),
+				city: form.city.trim() || undefined,
+				postal_code: form.postalCode.trim() || undefined,
+				country_code: 'ru',
+			}),
+		})
 		if (!res.ok) {
 			setSubmitState('error')
 			return
@@ -88,22 +125,97 @@ function CheckoutPage() {
 					<CardHeader>
 						<CardTitle>{'Контактные данные'}</CardTitle>
 					</CardHeader>
-					<CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div className="sm:col-span-2">
 							<Label htmlFor="checkout-email">{'Email'}</Label>
-							<Input id="checkout-email" />
+							<Input
+								id="checkout-email"
+								value={form.email}
+								onChange={event => {
+									setForm(current => ({
+										...current,
+										email: event.target.value,
+									}))
+								}}
+							/>
 						</div>
 						<div>
-							<Label htmlFor="checkout-name">{'Имя'}</Label>
-							<Input id="checkout-name" />
+							<Label htmlFor="checkout-first-name">{'Имя'}</Label>
+							<Input
+								id="checkout-first-name"
+								value={form.firstName}
+								onChange={event => {
+									setForm(current => ({
+										...current,
+										firstName: event.target.value,
+									}))
+								}}
+							/>
+						</div>
+						<div>
+							<Label htmlFor="checkout-last-name">{'Фамилия'}</Label>
+							<Input
+								id="checkout-last-name"
+								value={form.lastName}
+								onChange={event => {
+									setForm(current => ({
+										...current,
+										lastName: event.target.value,
+									}))
+								}}
+							/>
 						</div>
 						<div>
 							<Label htmlFor="checkout-phone">{'Телефон'}</Label>
-							<Input id="checkout-phone" />
+							<Input
+								id="checkout-phone"
+								value={form.phone}
+								onChange={event => {
+									setForm(current => ({
+										...current,
+										phone: event.target.value,
+									}))
+								}}
+							/>
 						</div>
 						<div className="sm:col-span-2">
 							<Label htmlFor="checkout-address">{'Адрес доставки'}</Label>
-							<Input id="checkout-address" />
+							<Input
+								id="checkout-address"
+								value={form.address}
+								onChange={event => {
+									setForm(current => ({
+										...current,
+										address: event.target.value,
+									}))
+								}}
+							/>
+						</div>
+						<div>
+							<Label htmlFor="checkout-city">{'Город'}</Label>
+							<Input
+								id="checkout-city"
+								value={form.city}
+								onChange={event => {
+									setForm(current => ({
+										...current,
+										city: event.target.value,
+									}))
+								}}
+							/>
+						</div>
+						<div>
+							<Label htmlFor="checkout-postal-code">{'Индекс'}</Label>
+							<Input
+								id="checkout-postal-code"
+								value={form.postalCode}
+								onChange={event => {
+									setForm(current => ({
+										...current,
+										postalCode: event.target.value,
+									}))
+								}}
+							/>
 						</div>
 					</CardContent>
 				</Card>
@@ -114,8 +226,8 @@ function CheckoutPage() {
 					<CardContent className="space-y-3">
 						{loading && <p className="text-sm text-muted-foreground">{'Загрузка корзины...'}</p>}
 						{!loading && <p className="text-sm text-muted-foreground">{`Сумма: ${(total / 100).toFixed(2)} ₽`}</p>}
-						{submitState === 'done' && <p className="text-sm text-muted-foreground">{'Заказ оформлен.'}</p>}
-						{submitState === 'error' && <p className="text-sm text-destructive">{'Не удалось оформить заказ'}</p>}
+						{submitState === 'done' && <p className="text-sm text-muted-foreground">{'Заказ оформлен. Мы сохранили контакты и адрес доставки.'}</p>}
+						{submitState === 'error' && <p className="text-sm text-destructive">{'Проверьте email, имя, телефон и адрес доставки.'}</p>}
 						<Button
 							className="w-full"
 							onClick={handleCheckout}

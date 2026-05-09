@@ -30,6 +30,21 @@ type Order = {
 	id: string,
 	display_id?: number,
 	total?: number,
+	status?: string,
+	created_at?: string,
+}
+
+function formatOrderDate(value?: string): string {
+	if (!value) {
+		return '—'
+	}
+
+	const date = new Date(value)
+	if (Number.isNaN(date.getTime())) {
+		return value
+	}
+
+	return date.toLocaleString('ru-RU')
 }
 
 async function getOrders(): Promise<Order[]> {
@@ -77,6 +92,8 @@ export default async function AccountProfilePage() {
 								className="rounded-md border p-3 text-sm"
 							>
 								<p>{`Заказ #${order.display_id ?? order.id}`}</p>
+								<p className="text-muted-foreground">{`Статус: ${order.status ?? 'pending'}`}</p>
+								<p className="text-muted-foreground">{`Создан: ${formatOrderDate(order.created_at)}`}</p>
 								<p className="text-muted-foreground">{`Сумма: ${((order.total ?? 0) / 100).toFixed(2)} ₽`}</p>
 							</div>
 						))}

@@ -62,6 +62,24 @@ function lineUnitPrice(row: AdminOrderItem): string {
 	return '—'
 }
 
+function customerName(order: AdminOrder): string | null {
+	const shippingName = [
+		order.shipping_address?.first_name,
+		order.shipping_address?.last_name,
+	]
+		.filter(Boolean)
+		.join(' ')
+
+	if (shippingName) {
+		return shippingName
+	}
+
+	const metadataName = order.metadata?.customer_name
+	return typeof metadataName === 'string' && metadataName.trim()
+		? metadataName
+		: null
+}
+
 function OrderDetailPageClient({
 	id,
 	initialOrder,
@@ -181,9 +199,21 @@ function OrderDetailPageClient({
 				<CardContent className="space-y-2 text-sm">
 					<p>
 						<span className="text-muted-foreground">
+							{'Имя: '}
+						</span>
+						{customerName(o) ?? '—'}
+					</p>
+					<p>
+						<span className="text-muted-foreground">
 							{'Email: '}
 						</span>
 						{o.email ?? '—'}
+					</p>
+					<p>
+						<span className="text-muted-foreground">
+							{'Телефон: '}
+						</span>
+						{o.shipping_address?.phone ?? '—'}
 					</p>
 					{o.customer_id
 						? (
@@ -254,18 +284,34 @@ function OrderDetailPageClient({
 				<CardContent className="text-sm">
 					{o.shipping_address
 						? (
-							<p>
-								{[
-									o.shipping_address.first_name,
-									o.shipping_address.last_name,
-									o.shipping_address.address_1,
-									o.shipping_address.city,
-									o.shipping_address.postal_code,
-									o.shipping_address.country_code,
-								]
-									.filter(Boolean)
-									.join(', ')}
-							</p>
+							<div className="space-y-1">
+								<p>
+									{[
+										o.shipping_address.first_name,
+										o.shipping_address.last_name,
+									]
+										.filter(Boolean)
+										.join(' ')
+										|| '—'}
+								</p>
+								<p>
+									{[
+										o.shipping_address.address_1,
+										o.shipping_address.city,
+										o.shipping_address.postal_code,
+										o.shipping_address.country_code,
+									]
+										.filter(Boolean)
+										.join(', ')}
+								</p>
+								{o.shipping_address.phone
+									? (
+										<p className="text-muted-foreground">
+											{`Телефон: ${o.shipping_address.phone}`}
+										</p>
+									)
+									: null}
+							</div>
 						)
 						: (
 							<p className="text-muted-foreground">

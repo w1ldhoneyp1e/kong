@@ -8,6 +8,7 @@ import {CustomerAuthService} from '../customers/customer-auth.service'
 import {OrdersService} from '../orders/orders.service'
 import {CreateCartDto} from './dto/create-cart.dto'
 import {CartLineItemDto} from './dto/cart-line-item.dto'
+import {CompleteCartDto} from './dto/complete-cart.dto'
 import {CartRepository} from './repositories/cart.repository'
 import {Cart, CartLine} from './types/cart.types'
 
@@ -105,6 +106,7 @@ export class CartsService {
 
 	async completeCart(
 		id: string,
+		input: CompleteCartDto,
 		authorization?: string,
 	): Promise<{type: 'order', order: {id: string}}> {
 		const cart = await this.requireCart(id)
@@ -114,7 +116,7 @@ export class CartsService {
 				id: customer.id,
 				email: customer.email,
 			}
-			: undefined)
+			: undefined, input)
 		await this.cartRepository.deleteCart(id)
 		return {
 			type: 'order',

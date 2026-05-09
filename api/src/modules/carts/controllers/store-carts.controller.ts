@@ -10,6 +10,7 @@ import {
 	Query,
 } from '@nestjs/common'
 import {CartLineItemDto} from '../dto/cart-line-item.dto'
+import {CompleteCartDto} from '../dto/complete-cart.dto'
 import {CreateCartDto} from '../dto/create-cart.dto'
 import {CartsService} from '../carts.service'
 
@@ -64,8 +65,9 @@ export class StoreCartsController {
 	completeCart(
 		@Param('id') id: string,
 		@Headers('authorization') authorization: string | undefined,
+		@Body() input: CompleteCartDto,
 		@Query() _query: Record<string, unknown>,
 	) {
-		return this.cartsService.completeCart(id, authorization)
+		return this.cartsService.completeCart(id, input, authorization)
 	}
 }

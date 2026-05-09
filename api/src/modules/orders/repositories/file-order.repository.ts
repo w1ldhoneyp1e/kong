@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common'
 import {mkdir, readFile, writeFile} from 'node:fs/promises'
 import path from 'node:path'
 import {Cart} from '../../carts/types/cart.types'
+import {CompleteCartDto} from '../../carts/dto/complete-cart.dto'
 import {ListOrdersQueryDto} from '../dto/list-orders-query.dto'
 import {UpdateOrderDto} from '../dto/update-order.dto'
 import {OrderRepository} from './order.repository'
@@ -51,15 +52,35 @@ export class FileOrderRepository extends OrderRepository {
 			id: string,
 			email: string | null,
 		},
+		checkout?: CompleteCartDto,
 	): Promise<Order> {
 		return this.mutateStore(store => {
 			const now = new Date().toISOString()
 			const maxDisplayId = store.orders.reduce((max, order) => Math.max(max, order.display_id), 1000)
+			const normalizedEmail = checkout?.email?.trim() || customer?.email || null
+			const normalizedFirstName = checkout?.first_name?.trim() || null
+			const normalizedLastName = checkout?.last_name?.trim() || null
+			const normalizedPhone = checkout?.phone?.trim() || null
+			const normalizedAddress = checkout?.address_1?.trim() || null
+			const normalizedCity = checkout?.city?.trim() || null
+			const normalizedPostalCode = checkout?.postal_code?.trim() || null
+			const normalizedCountryCode = checkout?.country_code?.trim().toLowerCase() || 'ru'
+			const shippingAddress = normalizedAddress
+				? {
+					first_name: normalizedFirstName,
+					last_name: normalizedLastName,
+					address_1: normalizedAddress,
+					city: normalizedCity,
+					postal_code: normalizedPostalCode,
+					country_code: normalizedCountryCode,
+					phone: normalizedPhone,
+				}
+				: null
 			const order: Order = {
 				id: `order_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
 				status: 'pending',
 				display_id: maxDisplayId + 1,
-				email: customer?.email ?? null,
+				email: normalizedEmail,
 				customer_id: customer?.id ?? null,
 				currency_code: 'rub',
 				total: cart.total,
@@ -88,11 +109,16 @@ export class FileOrderRepository extends OrderRepository {
 				}],
 				shipping_methods: [],
 				transactions: [],
-				shipping_address: null,
-				billing_address: null,
+				shipping_address: shippingAddress,
+				billing_address: shippingAddress,
 				metadata: {
 					cart_id: cart.id,
 					customer_id: customer?.id ?? null,
+					customer_name: [normalizedFirstName, normalizedLastName]
+						.filter(Boolean)
+						.join(' ')
+						|| null,
+					customer_phone: normalizedPhone,
 				},
 			}
 			store.orders.unshift(order)

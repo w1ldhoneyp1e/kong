@@ -2,6 +2,7 @@ import {ListOrdersQueryDto} from '../dto/list-orders-query.dto'
 import {UpdateOrderDto} from '../dto/update-order.dto'
 import {Order} from '../types/order.types'
 import {Cart} from '../../carts/types/cart.types'
+import {CompleteCartDto} from '../../carts/dto/complete-cart.dto'
 
 abstract class OrderRepository {
 	abstract listOrders(query?: ListOrdersQueryDto): Promise<Order[]>
@@ -13,6 +14,7 @@ abstract class OrderRepository {
 			id: string,
 			email: string | null,
 		},
+		checkout?: CompleteCartDto,
 	): Promise<Order>
 	abstract updateOrder(id: string, input: UpdateOrderDto): Promise<Order | null>
 	abstract deleteOrder(id: string): Promise<boolean>
