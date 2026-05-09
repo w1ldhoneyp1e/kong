@@ -69,6 +69,7 @@ type AdminProductFormViewmodel = {
 		tagOptions: {
 			id: string,
 			value?: string | null,
+			color?: string | null,
 		}[],
 		disabled: boolean,
 		onToggleTag: (id: string) => void,

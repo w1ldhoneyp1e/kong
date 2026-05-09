@@ -44,6 +44,48 @@ function useProductTagsQuery() {
 	})
 }
 
+function useCreateProductTagMutation() {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (payload: {
+			value: string,
+			color?: string,
+		}) => adminProductApi.createTag(payload),
+		onSuccess: () =>
+			queryClient.invalidateQueries({queryKey: adminProductTagsQueryKey}),
+	})
+}
+
+function useUpdateProductTagMutation() {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: ({
+			id,
+			payload,
+		}: {
+			id: string,
+			payload: {
+				value: string,
+				color?: string,
+			},
+		}) => adminProductApi.updateTag(id, payload),
+		onSuccess: () =>
+			queryClient.invalidateQueries({queryKey: adminProductTagsQueryKey}),
+	})
+}
+
+function useDeleteProductTagMutation() {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: (id: string) => adminProductApi.deleteTag(id),
+		onSuccess: () =>
+			queryClient.invalidateQueries({queryKey: adminProductTagsQueryKey}),
+	})
+}
+
 function useProductQuery(
 	id: string | undefined,
 	options?: UseProductQueryOptions,
@@ -90,6 +132,50 @@ function useUpdateProductMutation() {
 	})
 }
 
+function useUpdateProductStockMutation() {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: ({
+			id,
+			quantity,
+		}: {
+			id: string,
+			quantity: number,
+		}) => adminProductApi.updateProductStock(id, quantity),
+		onSuccess: (product, variables) => {
+			queryClient.setQueryData<AdminProduct[] | undefined>(
+				adminProductsQueryKey,
+				current => {
+					if (!Array.isArray(current)) {
+						return current
+					}
+
+					return current.map(item => item.id === variables.id
+						? product
+						: item)
+				},
+			)
+
+			queryClient.setQueryData<AdminProduct | undefined>(
+				adminProductQueryKey(variables.id),
+				product,
+			)
+
+			return Promise.all([
+				queryClient.invalidateQueries({
+					queryKey: adminProductsQueryKey,
+					refetchType: 'none',
+				}),
+				queryClient.invalidateQueries({
+					queryKey: adminProductQueryKey(variables.id),
+					refetchType: 'none',
+				}),
+			])
+		},
+	})
+}
+
 function useDeleteProductMutation() {
 	const queryClient = useQueryClient()
 
@@ -108,12 +194,16 @@ export {
 	adminProductsQueryKey,
 	adminProductDetailIdleKey,
 	adminProductTagsQueryKey,
+	useCreateProductTagMutation,
+	useDeleteProductTagMutation,
 	useCreateProductMutation,
 	useDeleteProductMutation,
 	useProductQuery,
 	useProductTagsQuery,
+	useUpdateProductTagMutation,
 	useProductsQuery,
 	useUpdateProductMutation,
+	useUpdateProductStockMutation,
 }
 export type {
 	UseProductQueryOptions,

@@ -10,9 +10,11 @@ type AdminProductVariant = {
 	title?: string | null,
 	sku?: string | null,
 	barcode?: string | null,
+	stock_quantity?: number | null,
 	prices?: AdminMoneyAmount[],
 	metadata?: {
 		available?: boolean,
+		stock_quantity?: number | null,
 	} & Record<string, unknown>,
 }
 
@@ -34,6 +36,7 @@ type AdminProductOption = {
 type AdminProductTag = {
 	id: string,
 	value?: string | null,
+	color?: string | null,
 }
 
 type AdminProductCategory = {
@@ -44,6 +47,7 @@ type AdminProductCategory = {
 type AdminTagOption = {
 	id: string,
 	value?: string | null,
+	color?: string | null,
 }
 
 type AdminProductDocumentKind = 'instruction' | 'reference' | 'certificate' | 'other'
@@ -105,6 +109,7 @@ type CreateProductPayload = {
 		id?: string,
 		title: string,
 		sku?: string,
+		stock_quantity?: number,
 		prices?: {
 			amount: number,
 			currency_code: string,

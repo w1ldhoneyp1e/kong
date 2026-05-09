@@ -4,6 +4,7 @@ import {
 	type AdminProduct,
 	useDeleteProductMutation,
 	useProductsQuery,
+	useUpdateProductStockMutation,
 } from '../../../../entities/product'
 import {useProductsListStore} from './productsListStore'
 
@@ -18,6 +19,7 @@ function useProductsListVm(initialProducts?: AdminProduct[]) {
 	})
 
 	const deleteMutation = useDeleteProductMutation()
+	const updateStockMutation = useUpdateProductStockMutation()
 
 	const deleteConfirmId = useProductsListStore(s => s.deleteConfirmId)
 	const setDeleteConfirmId = useProductsListStore(s => s.setDeleteConfirmId)
@@ -31,6 +33,7 @@ function useProductsListVm(initialProducts?: AdminProduct[]) {
 	const error
 		= (queryError && errorMessage(queryError))
 		?? (deleteMutation.error && errorMessage(deleteMutation.error))
+		?? (updateStockMutation.error && errorMessage(updateStockMutation.error))
 		?? ''
 
 	return {
@@ -40,6 +43,7 @@ function useProductsListVm(initialProducts?: AdminProduct[]) {
 		deleteConfirmId,
 		setDeleteConfirmId,
 		deleteMutation,
+		updateStockMutation,
 	}
 }
 

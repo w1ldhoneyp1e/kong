@@ -101,6 +101,54 @@ export class FileCatalogRepository extends CatalogRepository {
 		})
 	}
 
+	async updateProductStock(id: string, quantity: number): Promise<CatalogProduct | null> {
+		return this.mutateStore(store => {
+			const index = store.products.findIndex(product => product.id === id)
+			if (index < 0) {
+				return {
+					nextStore: store,
+					result: null,
+				}
+			}
+
+			const existing = store.products[index]
+			if (!existing) {
+				return {
+					nextStore: store,
+					result: null,
+				}
+			}
+
+			const variants = (existing.variants ?? []).map((variant, variantIndex) => {
+				if (variantIndex !== 0) {
+					return variant
+				}
+
+				return {
+					...variant,
+					stock_quantity: quantity,
+					metadata: {
+						...(variant.metadata ?? {}),
+						stock_quantity: quantity,
+						available: variant.metadata?.available !== false,
+					},
+				}
+			})
+
+			const updated: CatalogProduct = {
+				...existing,
+				updated_at: new Date().toISOString(),
+				variants,
+			}
+
+			store.products[index] = updated
+			return {
+				nextStore: store,
+				result: updated,
+			}
+		})
+	}
+
 	async deleteProduct(id: string): Promise<boolean> {
 		return this.mutateStore(store => {
 			const nextProducts = store.products.filter(product => product.id !== id)
@@ -213,27 +261,35 @@ export class FileCatalogRepository extends CatalogRepository {
 				rank: index,
 			})),
 			options: [],
-			tags: (input.tag_ids ?? []).map(tagId => ({
-				id: tagId,
-				value: tagId,
-			})),
+			tags: [],
+			tag_ids: input.tag_ids ?? [],
 			categories: (input.category_ids ?? []).map(categoryId => ({
 				id: categoryId,
 				name: categoryId,
 			})),
 			category_ids: input.category_ids ?? [],
 			collection_id: null,
-			variants: input.variants.map(variant => ({
+			variants: input.variants.map(variant => {
+				const rawStockQuantity = typeof variant.stock_quantity === 'number'
+					? variant.stock_quantity
+					: (typeof variant.metadata?.stock_quantity === 'number'
+						? variant.metadata.stock_quantity
+						: null)
+
+				return ({
 				id: variant.id ?? this.createId('variant'),
 				title: variant.title,
 				sku: variant.sku ?? null,
 				available: variant.metadata?.available !== false,
+				stock_quantity: rawStockQuantity,
 				prices: variant.prices,
 				metadata: {
 					available: variant.metadata?.available !== false,
+					stock_quantity: rawStockQuantity,
 					...(variant.metadata ?? {}),
 				},
-			})),
+			})
+			}),
 		}
 	}
 

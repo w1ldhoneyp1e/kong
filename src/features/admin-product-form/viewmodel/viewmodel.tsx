@@ -62,6 +62,7 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 	const primaryVariant = initialProduct.variants?.[0]
 	const primaryVariantPrice = primaryVariant?.prices?.[0]?.amount
 	const variantAvailable = primaryVariant?.metadata?.available
+	const variantStockQuantity = primaryVariant?.stock_quantity ?? primaryVariant?.metadata?.stock_quantity ?? null
 	const selectedCategoryId = initialProduct.categories?.[0]?.id ?? null
 	const galleryImages = [
 		...(initialProduct.images ?? []),
@@ -105,6 +106,9 @@ function syncStoreWithProduct(initialProduct: AdminProduct | undefined) {
 		variantAvailable: typeof variantAvailable === 'boolean'
 			? variantAvailable
 			: true,
+		variantStockQuantity: typeof variantStockQuantity === 'number'
+			? variantStockQuantity
+			: null,
 		selectedCategoryId,
 		galleryImages,
 		documents: docs,
@@ -181,6 +185,7 @@ function useAdminProductFormViewmodel(params: {
 			metadata: {
 				available: store.variantAvailable,
 			},
+			stock_quantity: store.variantStockQuantity ?? undefined,
 		}
 
 		const payload = {

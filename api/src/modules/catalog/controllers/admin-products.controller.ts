@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common'
 import {CatalogService} from '../services/catalog.service'
 import {ListProductsQueryDto} from '../dto/list-products-query.dto'
+import {UpdateProductStockDto} from '../dto/update-product-stock.dto'
 import {UpsertProductDto} from '../dto/upsert-product.dto'
 
 @Controller('products')
@@ -48,6 +49,14 @@ export class AdminProductsController {
 		@Body() input: UpsertProductDto,
 	) {
 		return this.catalogService.updateAdminProduct(id, input)
+	}
+
+	@Put(':id/stock')
+	updateProductStock(
+		@Param('id') id: string,
+		@Body() input: UpdateProductStockDto,
+	) {
+		return this.catalogService.updateAdminProductStock(id, input)
 	}
 
 	@Delete(':id')

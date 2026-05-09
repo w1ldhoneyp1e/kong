@@ -7,9 +7,11 @@ import {CategoryRepository} from './repositories/category.repository'
 import {CatalogRepository} from './repositories/catalog.repository'
 import {FileCategoryRepository} from './repositories/file-category.repository'
 import {FileCatalogRepository} from './repositories/file-catalog.repository'
+import {FileTagRepository} from './repositories/file-tag.repository'
+import {TagRepository} from './repositories/tag.repository'
 import {CategoryService} from './services/category.service'
 import {CatalogService} from './services/catalog.service'
-import {ProductTagService} from './services/product-tag.service'
+import {TagService} from './services/tag.service'
 
 @Module({
 	controllers: [
@@ -21,7 +23,7 @@ import {ProductTagService} from './services/product-tag.service'
 	providers: [
 		CategoryService,
 		CatalogService,
-		ProductTagService,
+		TagService,
 		{
 			provide: CategoryRepository,
 			useClass: FileCategoryRepository,
@@ -30,10 +32,15 @@ import {ProductTagService} from './services/product-tag.service'
 			provide: CatalogRepository,
 			useClass: FileCatalogRepository,
 		},
+		{
+			provide: TagRepository,
+			useClass: FileTagRepository,
+		},
 	],
 	exports: [
 		CatalogService,
 		CatalogRepository,
+		TagRepository,
 	],
 })
 export class CatalogModule {}

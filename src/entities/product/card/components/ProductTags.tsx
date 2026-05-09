@@ -17,6 +17,12 @@ function ProductTags({tags}: ProductTagsProps) {
 					key={tag.label}
 					variant={(tag.theme as any) || 'default'}
 					className="uppercase text-[10px] tracking-wider px-2 py-0.5 shadow-sm backdrop-blur-md"
+					style={tag.color
+						? {
+							backgroundColor: tag.color,
+							color: '#ffffff',
+						}
+						: undefined}
 				>
 					{tag.label}
 				</Badge>

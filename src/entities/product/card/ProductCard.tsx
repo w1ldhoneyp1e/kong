@@ -12,6 +12,7 @@ import {ProductImageArea} from './components/ProductImageArea'
 type ProductTagType = {
 	label: string,
 	theme?: string,
+	color?: string,
 }
 
 type ProductPriceCurrency = 'RUB' | 'USD' | 'EUR' | string

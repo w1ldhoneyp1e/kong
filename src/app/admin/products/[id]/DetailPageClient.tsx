@@ -47,6 +47,7 @@ function buildProductUpdatePayload(product: AdminProduct, status: 'draft' | 'pub
 			id: variant.id,
 			title: variant.title?.trim() || 'Основной',
 			sku: variant.sku ?? undefined,
+			stock_quantity: variant.stock_quantity ?? variant.metadata?.stock_quantity ?? undefined,
 			prices: (variant.prices ?? [])
 				.filter(price => typeof price.amount === 'number' && Boolean(price.currency_code))
 				.map(price => ({

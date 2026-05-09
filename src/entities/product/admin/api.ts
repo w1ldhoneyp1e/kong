@@ -76,6 +76,74 @@ const adminProductApi = {
 		return data.tags ?? []
 	},
 
+	createTag: async (payload: {
+		value: string,
+		color?: string,
+	}): Promise<AdminTagOption> => {
+		const res = await fetch(`${getApiBase()}/product-tags`, {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify(payload),
+		})
+		const raw = await parseRes(res)
+		const data = raw as {tag?: AdminTagOption}
+
+		if (!res.ok) {
+			throw new Error(messageFromErrorData(raw))
+		}
+
+		if (!data.tag) {
+			throw new Error('Ответ без тега')
+		}
+
+		return data.tag
+	},
+
+	updateTag: async (
+		id: string,
+		payload: {
+			value: string,
+			color?: string,
+		},
+	): Promise<AdminTagOption> => {
+		const res = await fetch(`${getApiBase()}/product-tags/${id}`, {
+			method: 'PUT',
+			credentials: 'same-origin',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify(payload),
+		})
+		const raw = await parseRes(res)
+		const data = raw as {tag?: AdminTagOption}
+
+		if (!res.ok) {
+			throw new Error(messageFromErrorData(raw))
+		}
+
+		if (!data.tag) {
+			throw new Error('Ответ без тега')
+		}
+
+		return data.tag
+	},
+
+	deleteTag: async (id: string): Promise<void> => {
+		const res = await fetch(`${getApiBase()}/product-tags/${id}`, {
+			method: 'DELETE',
+			credentials: 'same-origin',
+		})
+
+		if (res.status === 204) {
+			return
+		}
+
+		const raw = await parseRes(res)
+
+		if (!res.ok) {
+			throw new Error(messageFromErrorData(raw))
+		}
+	},
+
 	getProduct: async (id: string): Promise<AdminProduct> => {
 		const res = await fetch(`${getApiBase()}/products/${id}`, {
 			credentials: 'same-origin',
@@ -131,6 +199,30 @@ const adminProductApi = {
 			credentials: 'same-origin',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(payload),
+		})
+		const raw = await parseRes(res)
+		const data = raw as {product?: AdminProduct}
+
+		if (!res.ok) {
+			throw new Error(messageFromErrorData(raw))
+		}
+
+		if (!data.product) {
+			throw new Error('Ответ без товара')
+		}
+
+		return data.product
+	},
+
+	updateProductStock: async (
+		id: string,
+		quantity: number,
+	): Promise<AdminProduct> => {
+		const res = await fetch(`${getApiBase()}/products/${id}/stock`, {
+			method: 'PUT',
+			credentials: 'same-origin',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({quantity}),
 		})
 		const raw = await parseRes(res)
 		const data = raw as {product?: AdminProduct}

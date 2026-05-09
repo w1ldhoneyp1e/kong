@@ -8,9 +8,11 @@ export type CatalogVariant = {
 	title: string,
 	sku: string | null,
 	available: boolean,
+	stock_quantity?: number | null,
 	prices: CatalogMoneyAmount[],
 	metadata?: {
 		available?: boolean,
+		stock_quantity?: number | null,
 	} & Record<string, unknown>,
 }
 
@@ -46,7 +48,9 @@ export type CatalogProduct = {
 	tags?: Array<{
 		id: string,
 		value?: string | null,
+		color?: string | null,
 	}>,
+	tag_ids?: string[],
 	categories?: Array<{
 		id: string,
 		name?: string | null,

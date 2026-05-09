@@ -4,12 +4,16 @@ export {
 	PRODUCT_STATUS_OPTIONS,
 	adminProductQueryKey,
 	adminProductsQueryKey,
+	useCreateProductTagMutation,
 	useCreateProductMutation,
+	useDeleteProductTagMutation,
 	useDeleteProductMutation,
 	useProductQuery,
 	useProductTagsQuery,
 	useProductsQuery,
+	useUpdateProductTagMutation,
 	useUpdateProductMutation,
+	useUpdateProductStockMutation,
 } from './admin'
 export type {
 	AdminMoneyAmount,

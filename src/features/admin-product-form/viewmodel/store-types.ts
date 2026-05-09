@@ -18,6 +18,7 @@ type ProductCreateSalesState = {
 	variantSku: string,
 	variantPrice: string,
 	variantAvailable: boolean,
+	variantStockQuantity: number | null,
 }
 
 type ProductCreateSpecsState = {
@@ -71,6 +72,7 @@ type ProductCreateSalesActions = {
 	setVariantSku: (value: string) => void,
 	setVariantPrice: (value: string) => void,
 	setVariantAvailable: (value: boolean) => void,
+	setVariantStockQuantity: (value: number | null) => void,
 }
 
 type ProductCreateSpecsActions = {

@@ -7,12 +7,16 @@ export type {ProductStatus, ProductStatusOption} from './status'
 export {
 	adminProductQueryKey,
 	adminProductsQueryKey,
+	useCreateProductTagMutation,
 	useCreateProductMutation,
+	useDeleteProductTagMutation,
 	useDeleteProductMutation,
 	useProductQuery,
 	useProductTagsQuery,
 	useProductsQuery,
+	useUpdateProductTagMutation,
 	useUpdateProductMutation,
+	useUpdateProductStockMutation,
 } from './queries'
 export type {
 	AdminMoneyAmount,

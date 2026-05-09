@@ -23,6 +23,8 @@ abstract class CatalogRepository {
 
 	abstract updateProduct(id: string, input: UpsertProductDto): Promise<CatalogProduct | null>
 
+	abstract updateProductStock(id: string, quantity: number): Promise<CatalogProduct | null>
+
 	abstract deleteProduct(id: string): Promise<boolean>
 }
 

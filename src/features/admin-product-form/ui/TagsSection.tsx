@@ -36,6 +36,11 @@ function TagsSection({
 									disabled={tags.disabled}
 								/>
 								<span>
+									<span
+										aria-hidden="true"
+										className="mr-2 inline-block size-2.5 rounded-full border border-black/10 align-middle"
+										style={{backgroundColor: tag.color ?? '#334155'}}
+									/>
 									{tag.value ?? tag.id}
 								</span>
 							</label>

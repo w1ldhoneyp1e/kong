@@ -16,7 +16,10 @@ type StoreProduct = {
 			available?: boolean,
 		} & Record<string, unknown>,
 	}[],
-	tags?: {value: string}[],
+	tags?: {
+		value: string,
+		color?: string | null,
+	}[],
 	collection_id?: string | null,
 	category_ids?: string[],
 }

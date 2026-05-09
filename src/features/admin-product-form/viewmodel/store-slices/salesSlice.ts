@@ -8,11 +8,13 @@ type SalesSlice = Pick<
 	| 'variantSku'
 	| 'variantPrice'
 	| 'variantAvailable'
+	| 'variantStockQuantity'
 	| 'setVariantId'
 	| 'setVariantTitle'
 	| 'setVariantSku'
 	| 'setVariantPrice'
 	| 'setVariantAvailable'
+	| 'setVariantStockQuantity'
 >
 
 function getSalesSliceInitialState() {
@@ -22,6 +24,7 @@ function getSalesSliceInitialState() {
 		variantSku: '',
 		variantPrice: '',
 		variantAvailable: true,
+		variantStockQuantity: null,
 	}
 }
 
@@ -32,6 +35,7 @@ const createSalesSlice: StateCreator<ProductCreateStore, [], [], SalesSlice> = s
 	setVariantSku: value => set({variantSku: value}),
 	setVariantPrice: value => set({variantPrice: value}),
 	setVariantAvailable: value => set({variantAvailable: value}),
+	setVariantStockQuantity: value => set({variantStockQuantity: value}),
 })
 
 export {

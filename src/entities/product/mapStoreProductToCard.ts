@@ -25,6 +25,7 @@ function mapStoreProductToCardProps(
 		tags: product.tags?.map(t => ({
 			label: t.value,
 			theme: 'popular' as const,
+			color: t.color ?? undefined,
 		})),
 		available: Boolean(firstAvailableVariant && amount !== undefined && amount !== null),
 		view: 'grid',

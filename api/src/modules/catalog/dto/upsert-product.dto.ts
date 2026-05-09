@@ -38,6 +38,12 @@ export class UpsertProductVariantDto {
 	prices!: UpsertProductVariantPriceDto[]
 
 	@IsOptional()
+	@Type(() => Number)
+	@IsInt()
+	@Min(0)
+	stock_quantity?: number
+
+	@IsOptional()
 	@IsObject()
 	metadata?: {
 		available?: boolean,
