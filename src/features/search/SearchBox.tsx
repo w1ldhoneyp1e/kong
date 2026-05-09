@@ -8,12 +8,12 @@ import {
 	useRef,
 	useState,
 } from 'react'
-import {fetchSuggestions} from '../../shared'
+import {type SearchResponse, type SearchResultItem} from './searchTypes'
 
 function SearchBox() {
 	const router = useRouter()
 	const [query, setQuery] = useState('')
-	const [suggestions, setSuggestions] = useState<string[]>([])
+	const [suggestions, setSuggestions] = useState<SearchResultItem[]>([])
 	const [open, setOpen] = useState(false)
 	const [loading, setLoading] = useState(false)
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -25,8 +25,9 @@ function SearchBox() {
 			return
 		}
 		setLoading(true)
-		const list = await fetchSuggestions(q)
-		setSuggestions(list)
+		const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&limit=8`)
+		const data = await res.json().catch(() => ({results: []})) as SearchResponse
+		setSuggestions(data.results ?? [])
 		setLoading(false)
 		setOpen(true)
 	}, [])
@@ -72,6 +73,18 @@ function SearchBox() {
 		[router],
 	)
 
+	const typeLabel = (type: SearchResultItem['type']): string => {
+		if (type === 'category') {
+			return 'Категория'
+		}
+
+		if (type === 'page') {
+			return 'Страница'
+		}
+
+		return 'Товар'
+	}
+
 	return (
 		<div
 			className="relative w-full"
@@ -104,16 +117,24 @@ function SearchBox() {
 						: (
 							suggestions.map(s => (
 								<li
-									key={s}
+									key={`${s.type}-${s.id}`}
 									role="option"
 									className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
 									onMouseDown={e => {
 										e.preventDefault()
-										setQuery(s)
-										submit(s)
+										setQuery(s.title)
+										setOpen(false)
+										setSuggestions([])
+										router.push(s.href)
 									}}
 								>
-									{s}
+									<div className="flex items-center justify-between gap-3">
+										<span className="font-medium">{s.title}</span>
+										<span className="text-xs text-gray-500">{typeLabel(s.type)}</span>
+									</div>
+									{s.description
+										? <div className="mt-0.5 line-clamp-1 text-xs text-gray-500">{s.description}</div>
+										: null}
 								</li>
 							))
 						)}
