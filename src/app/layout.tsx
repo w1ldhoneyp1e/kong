@@ -1,5 +1,5 @@
 import {type Metadata} from 'next'
-import {Inter} from 'next/font/google'
+import localFont from 'next/font/local'
 import {ServiceWorkerRegistration} from '../features/pwa'
 import {SearchProvider} from '../features/search'
 import {Footer} from '../widgets/footer'
@@ -7,9 +7,31 @@ import {AccountSessionProvider, ScrollOnNavigate} from '../widgets/header'
 import './globals.css'
 import {QueryProvider} from './QueryProvider'
 
-const inter = Inter({
-	subsets: ['latin', 'cyrillic'],
+const inter = localFont({
+	src: [
+		{
+			path: '../../public/fonts/Inter-400.ttf',
+			weight: '400',
+			style: 'normal',
+		},
+		{
+			path: '../../public/fonts/Inter-500.ttf',
+			weight: '500',
+			style: 'normal',
+		},
+		{
+			path: '../../public/fonts/Inter-600.ttf',
+			weight: '600',
+			style: 'normal',
+		},
+		{
+			path: '../../public/fonts/Inter-700.ttf',
+			weight: '700',
+			style: 'normal',
+		},
+	],
 	variable: '--font-inter',
+	display: 'swap',
 })
 
 export const metadata: Metadata = {
