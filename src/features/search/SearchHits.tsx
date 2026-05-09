@@ -1,13 +1,13 @@
 'use client'
 
 import {
-	type MedusaProduct,
-	mapMedusaProductToCardProps,
+	type StoreProduct,
+	mapStoreProductToCardProps,
 	ProductCard,
 } from '../../entities/product'
 
 type SearchHitsProps = {
-	products: MedusaProduct[],
+	products: StoreProduct[],
 }
 
 function SearchHits({products}: SearchHitsProps) {
@@ -24,7 +24,7 @@ function SearchHits({products}: SearchHitsProps) {
 			{products.map(product => (
 				<ProductCard
 					key={product.id}
-					{...mapMedusaProductToCardProps(product)}
+					{...mapStoreProductToCardProps(product)}
 				/>
 			))}
 		</div>
