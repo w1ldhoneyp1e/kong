@@ -6,6 +6,7 @@ import {EnvironmentModule} from './modules/config/environment.module'
 import {CustomersModule} from './modules/customers/customers.module'
 import {HealthModule} from './modules/health/health.module'
 import {OrdersModule} from './modules/orders/orders.module'
+import {PagesModule} from './modules/pages/pages.module'
 import {PrismaModule} from './modules/prisma/prisma.module'
 import {StaffModule} from './modules/staff/staff.module'
 import {StoreModule} from './modules/store/store.module'
@@ -21,6 +22,7 @@ import {StoreModule} from './modules/store/store.module'
 		HealthModule,
 		StaffModule,
 		StoreModule,
+		PagesModule,
 		OrdersModule,
 		CartsModule,
 		CustomersModule,
