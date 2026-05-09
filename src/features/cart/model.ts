@@ -5,6 +5,7 @@ const CART_UPDATED_EVENT = 'kong_cart_updated'
 
 type CartLine = {
 	id: string,
+	variant_id?: string | null,
 	title?: string | null,
 	quantity: number,
 	unit_price?: number | null,

@@ -45,7 +45,6 @@ async function PUT(
 			line_id?: string,
 			quantity?: number,
 		}
-		const headers = await buildHeaders(true)
 		let path = `${getBackendUrl()}/store/carts/${id}`
 		let method = 'POST'
 		let payload: Record<string, unknown> = {}
@@ -70,6 +69,7 @@ async function PUT(
 			}
 		}
 
+		const headers = await buildHeaders(method !== 'DELETE')
 		const res = await fetch(path, {
 			method,
 			headers,

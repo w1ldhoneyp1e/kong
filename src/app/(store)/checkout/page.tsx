@@ -5,6 +5,8 @@ import {
 	useMemo,
 	useState,
 } from 'react'
+import {useRouter} from 'next/navigation'
+import {clearStoredCartId, emitCartUpdated} from '../../../features/cart'
 import {
 	Button,
 	Card,
@@ -14,10 +16,6 @@ import {
 	Input,
 	Label,
 } from '../../../shared'
-import {
-	clearStoredCartId,
-	emitCartUpdated,
-} from '../../../features/cart'
 
 const CART_ID_KEY = 'kong_cart_id'
 
@@ -42,11 +40,19 @@ type CheckoutForm = {
 	postalCode: string,
 }
 
+type CompleteCartResponse = {
+	type?: 'order',
+	order?: {
+		id?: string,
+	},
+}
+
 function CheckoutPage() {
+	const router = useRouter()
 	const [cart, setCart] = useState<Cart | null>(null)
 	const [commerceEnabled, setCommerceEnabled] = useState(true)
 	const [loading, setLoading] = useState(true)
-	const [submitState, setSubmitState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+	const [submitState, setSubmitState] = useState<'idle' | 'loading' | 'error'>('idle')
 	const [form, setForm] = useState<CheckoutForm>({
 		email: '',
 		firstName: '',
@@ -129,15 +135,20 @@ function CheckoutPage() {
 			return
 		}
 
+		const data = await res.json().catch(() => ({})) as CompleteCartResponse
+
 		clearStoredCartId()
 		emitCartUpdated()
-		setSubmitState('done')
+		setCart(null)
+		router.push(data.order?.id
+			? `/checkout/success?order=${encodeURIComponent(data.order.id)}`
+			: '/checkout/success')
 	}
 
 	return (
 		<div className="container mx-auto px-4 py-10 lg:py-14">
 			<h1 className="text-3xl font-semibold">{'Оформление заказа'}</h1>
-			<div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
 				<Card className="lg:col-span-2">
 					<CardHeader>
 						<CardTitle>{'Контактные данные'}</CardTitle>
@@ -254,13 +265,20 @@ function CheckoutPage() {
 					</CardHeader>
 					<CardContent className="space-y-3">
 						{loading && <p className="text-sm text-muted-foreground">{'Загрузка корзины...'}</p>}
-						{!loading && <p className="text-sm text-muted-foreground">{commerceEnabled
-							? `Сумма: ${(total / 100).toFixed(2)} ₽`
-							: 'Сумма скрыта'}</p>}
-						{submitState === 'done' && <p className="text-sm text-muted-foreground">{'Заказ оформлен. Мы сохранили контакты и адрес доставки.'}</p>}
-						{submitState === 'error' && <p className="text-sm text-destructive">{commerceEnabled
-							? 'Проверьте email, имя, телефон и адрес доставки.'
-							: 'Оформление заказа сейчас отключено.'}</p>}
+						{!loading && (
+							<p className="text-sm text-muted-foreground">
+								{commerceEnabled
+									? `Сумма: ${(total / 100).toFixed(2)} ₽`
+									: 'Сумма скрыта'}
+							</p>
+						)}
+						{submitState === 'error' && (
+							<p className="text-sm text-destructive">
+								{commerceEnabled
+									? 'Проверьте email, имя, телефон и адрес доставки.'
+									: 'Оформление заказа сейчас отключено.'}
+							</p>
+						)}
 						<Button
 							className="w-full"
 							onClick={handleCheckout}

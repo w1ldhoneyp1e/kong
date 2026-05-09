@@ -1,8 +1,17 @@
 'use client'
 
-import {useState} from 'react'
+import {
+	Minus,
+	Plus,
+	Trash2,
+} from 'lucide-react'
+import {
+	useEffect,
+	useState,
+} from 'react'
 import {Button} from '../../../shared'
 import {
+	type Cart,
 	emitCartUpdated,
 	getStoredCartId,
 	setStoredCartId,
@@ -37,8 +46,41 @@ async function ensureCartId(): Promise<string> {
 function AddToCartButton({variantId}: AddToCartButtonProps) {
 	const [loading, setLoading] = useState(false)
 	const [message, setMessage] = useState<string | null>(null)
+	const [quantity, setQuantity] = useState(0)
+	const [lineId, setLineId] = useState<string | null>(null)
 
-	const handleClick = async () => {
+	const syncFromCart = async () => {
+		const cartId = getStoredCartId()
+		if (!cartId || !variantId) {
+			setQuantity(0)
+			setLineId(null)
+			return
+		}
+
+		const res = await fetch(`/api/carts?id=${cartId}`)
+		const data = await res.json().catch(() => ({})) as {cart?: Cart}
+		const line = data.cart?.items?.find(item => item.variant_id === variantId)
+		setQuantity(line?.quantity ?? 0)
+		setLineId(line?.id ?? null)
+	}
+
+	useEffect(() => {
+		syncFromCart().catch(() => undefined)
+		if (!variantId) {
+			return
+		}
+
+		const onCartUpdated = () => {
+			syncFromCart().catch(() => undefined)
+		}
+
+		window.addEventListener('kong_cart_updated', onCartUpdated)
+		return () => {
+			window.removeEventListener('kong_cart_updated', onCartUpdated)
+		}
+	}, [variantId])
+
+	const addOne = async () => {
 		if (!variantId) {
 			setMessage('У товара нет доступного варианта')
 			return
@@ -60,8 +102,9 @@ function AddToCartButton({variantId}: AddToCartButtonProps) {
 			if (!res.ok) {
 				throw new Error('Не удалось добавить товар')
 			}
+			setQuantity(current => current + 1)
 			emitCartUpdated()
-			setMessage('Товар добавлен в корзину')
+			await syncFromCart()
 		}
 		catch (e) {
 			setMessage(e instanceof Error
@@ -73,12 +116,114 @@ function AddToCartButton({variantId}: AddToCartButtonProps) {
 		}
 	}
 
+	const updateQuantity = async (nextQuantity: number) => {
+		if (!lineId) {
+			return
+		}
+
+		const cartId = getStoredCartId()
+		if (!cartId) {
+			return
+		}
+
+		setLoading(true)
+		setMessage(null)
+		try {
+			if (nextQuantity <= 0) {
+				const res = await fetch(`/api/carts/${cartId}`, {
+					method: 'PUT',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({
+						action: 'remove_line_item',
+						line_id: lineId,
+					}),
+				})
+				if (!res.ok) {
+					throw new Error('Не удалось удалить товар')
+				}
+			}
+			else {
+				const res = await fetch(`/api/carts/${cartId}`, {
+					method: 'PUT',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({
+						action: 'update_line_item',
+						line_id: lineId,
+						quantity: nextQuantity,
+					}),
+				})
+				if (!res.ok) {
+					throw new Error('Не удалось обновить количество')
+				}
+			}
+
+			emitCartUpdated()
+			await syncFromCart()
+		}
+		catch (e) {
+			setMessage(e instanceof Error
+				? e.message
+				: 'Ошибка корзины')
+		}
+		finally {
+			setLoading(false)
+		}
+	}
+
+	if (quantity > 0) {
+		return (
+			<div className="space-y-2">
+				<div className="flex items-center gap-2">
+					<Button
+						type="button"
+						variant="outline"
+						size="icon-sm"
+						disabled={loading}
+						onClick={() => {
+							updateQuantity(quantity - 1).catch(() => undefined)
+						}}
+					>
+						<Minus className="size-4" />
+					</Button>
+					<div className="flex h-10 min-w-14 items-center justify-center rounded-md border px-3 text-sm font-medium">
+						{quantity}
+					</div>
+					<Button
+						type="button"
+						variant="outline"
+						size="icon-sm"
+						disabled={loading}
+						onClick={() => {
+							updateQuantity(quantity + 1).catch(() => undefined)
+						}}
+					>
+						<Plus className="size-4" />
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon-sm"
+						disabled={loading}
+						onClick={() => {
+							updateQuantity(0).catch(() => undefined)
+						}}
+					>
+						<Trash2 className="size-4 text-destructive" />
+					</Button>
+				</div>
+				{message && <p className="text-sm text-muted-foreground">{message}</p>}
+			</div>
+		)
+	}
+
 	return (
 		<div className="space-y-2">
 			<Button
 				size="lg"
 				className="w-full"
-				onClick={handleClick}
+				onClick={() => {
+					addOne().catch(() => undefined)
+				}}
 				state={loading
 					? 'loading'
 					: variantId
