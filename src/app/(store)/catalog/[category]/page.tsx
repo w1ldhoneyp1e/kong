@@ -2,6 +2,7 @@ import {type Metadata} from 'next'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {categoriesApi} from '../../../../entities/category'
+import {getStoreSettings} from '../../../../entities/store'
 import {
 	listProducts,
 	mapStoreProductToCardProps,
@@ -46,6 +47,8 @@ async function CatalogPage({params, searchParams}: PageProps) {
 	if (!currentCategory) {
 		notFound()
 	}
+	const store = await getStoreSettings()
+	const commerceEnabled = store?.commerce_enabled ?? true
 	const productsResponse = await listProducts({
 		categoryId: currentCategory.id,
 		limit: PER_PAGE,
@@ -93,7 +96,7 @@ async function CatalogPage({params, searchParams}: PageProps) {
 				{productsResponse.products.map(product => (
 					<ProductCard
 						key={product.id}
-						{...mapStoreProductToCardProps(product)}
+						{...mapStoreProductToCardProps(product, {showPrice: commerceEnabled})}
 						view="grid"
 					/>
 				))}

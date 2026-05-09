@@ -30,6 +30,7 @@ import {
 
 function CartPage() {
 	const [cart, setCart] = useState<Cart | null>(null)
+	const [commerceEnabled, setCommerceEnabled] = useState(true)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 	const [pendingLineId, setPendingLineId] = useState<string | null>(null)
@@ -52,6 +53,17 @@ function CartPage() {
 			setLoading(false)
 		}
 		load().catch(() => undefined)
+	}, [])
+
+	useEffect(() => {
+		fetch('/api/store')
+			.then(res => res.json().catch(() => ({})))
+			.then((data: {store?: {commerce_enabled?: boolean}}) => {
+				setCommerceEnabled(data.store?.commerce_enabled !== false)
+			})
+			.catch(() => {
+				setCommerceEnabled(true)
+			})
 	}, [])
 
 	const total = useMemo(() => {
@@ -141,6 +153,11 @@ function CartPage() {
 							<CardTitle>{'Товары'}</CardTitle>
 						</CardHeader>
 						<CardContent>
+							{!commerceEnabled && (
+								<p className="mb-4 text-sm text-muted-foreground">
+									{'Покупка на сайте сейчас отключена. Цены скрыты, оформление заказа недоступно.'}
+								</p>
+							)}
 							{loading && <p className="text-muted-foreground text-center py-8">{'Загрузка...'}</p>}
 							{error && (
 								<p
@@ -177,7 +194,9 @@ function CartPage() {
 													)
 													: null}
 												<p className="mt-1 text-sm text-muted-foreground">
-													{`Цена: ${formatCartMoney(item.unit_price ?? 0)}`}
+													{commerceEnabled
+														? `Цена: ${formatCartMoney(item.unit_price ?? 0)}`
+														: 'Цена скрыта'}
 												</p>
 											</div>
 											<div className="flex items-center gap-2">
@@ -211,7 +230,9 @@ function CartPage() {
 											</div>
 											<div className="flex items-center justify-between gap-3 sm:min-w-32 sm:justify-end">
 												<div className="font-semibold">
-													{formatCartMoney(item.total ?? (item.unit_price ?? 0) * item.quantity)}
+													{commerceEnabled
+														? formatCartMoney(item.total ?? (item.unit_price ?? 0) * item.quantity)
+														: '—'}
 												</div>
 												<Button
 													type="button"
@@ -242,22 +263,28 @@ function CartPage() {
 							<div className="space-y-2">
 								<div className="flex justify-between">
 									<span>{'Товары:'}</span>
-									<span className="font-semibold">{formatCartMoney(total)}</span>
+									<span className="font-semibold">{commerceEnabled
+										? formatCartMoney(total)
+										: '—'}</span>
 								</div>
 								<div className="flex justify-between">
 									<span>{'Доставка:'}</span>
-									<span className="font-semibold">{formatCartMoney(0)}</span>
+									<span className="font-semibold">{commerceEnabled
+										? formatCartMoney(0)
+										: '—'}</span>
 								</div>
 								<div className="border-t pt-2 mt-2">
 									<div className="flex justify-between text-lg font-bold">
 										<span>{'Всего:'}</span>
-										<span>{formatCartMoney(total)}</span>
+										<span>{commerceEnabled
+											? formatCartMoney(total)
+											: '—'}</span>
 									</div>
 								</div>
 							</div>
 						</CardContent>
 						<CardFooter>
-							{hasItems
+							{hasItems && commerceEnabled
 								? (
 									<Link
 										href="/checkout"

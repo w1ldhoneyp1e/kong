@@ -44,6 +44,7 @@ type CheckoutForm = {
 
 function CheckoutPage() {
 	const [cart, setCart] = useState<Cart | null>(null)
+	const [commerceEnabled, setCommerceEnabled] = useState(true)
 	const [loading, setLoading] = useState(true)
 	const [submitState, setSubmitState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
 	const [form, setForm] = useState<CheckoutForm>({
@@ -74,6 +75,17 @@ function CheckoutPage() {
 		load().catch(() => undefined)
 	}, [])
 
+	useEffect(() => {
+		fetch('/api/store')
+			.then(res => res.json().catch(() => ({})))
+			.then((data: {store?: {commerce_enabled?: boolean}}) => {
+				setCommerceEnabled(data.store?.commerce_enabled !== false)
+			})
+			.catch(() => {
+				setCommerceEnabled(true)
+			})
+	}, [])
+
 	const total = useMemo(() => {
 		if (!cart?.items) {
 			return 0
@@ -84,6 +96,11 @@ function CheckoutPage() {
 
 	const handleCheckout = async () => {
 		if (!cart?.id) {
+			return
+		}
+
+		if (!commerceEnabled) {
+			setSubmitState('error')
 			return
 		}
 
@@ -126,6 +143,11 @@ function CheckoutPage() {
 						<CardTitle>{'Контактные данные'}</CardTitle>
 					</CardHeader>
 					<CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+						{!commerceEnabled && (
+							<p className="sm:col-span-2 text-sm text-muted-foreground">
+								{'Покупка на сайте сейчас отключена. Цены скрыты, а оформление заказа недоступно.'}
+							</p>
+						)}
 						<div className="sm:col-span-2">
 							<Label htmlFor="checkout-email">{'Email'}</Label>
 							<Input
@@ -137,6 +159,7 @@ function CheckoutPage() {
 										email: event.target.value,
 									}))
 								}}
+								disabled={!commerceEnabled}
 							/>
 						</div>
 						<div>
@@ -150,6 +173,7 @@ function CheckoutPage() {
 										firstName: event.target.value,
 									}))
 								}}
+								disabled={!commerceEnabled}
 							/>
 						</div>
 						<div>
@@ -163,6 +187,7 @@ function CheckoutPage() {
 										lastName: event.target.value,
 									}))
 								}}
+								disabled={!commerceEnabled}
 							/>
 						</div>
 						<div>
@@ -176,6 +201,7 @@ function CheckoutPage() {
 										phone: event.target.value,
 									}))
 								}}
+								disabled={!commerceEnabled}
 							/>
 						</div>
 						<div className="sm:col-span-2">
@@ -189,6 +215,7 @@ function CheckoutPage() {
 										address: event.target.value,
 									}))
 								}}
+								disabled={!commerceEnabled}
 							/>
 						</div>
 						<div>
@@ -202,6 +229,7 @@ function CheckoutPage() {
 										city: event.target.value,
 									}))
 								}}
+								disabled={!commerceEnabled}
 							/>
 						</div>
 						<div>
@@ -215,6 +243,7 @@ function CheckoutPage() {
 										postalCode: event.target.value,
 									}))
 								}}
+								disabled={!commerceEnabled}
 							/>
 						</div>
 					</CardContent>
@@ -225,15 +254,21 @@ function CheckoutPage() {
 					</CardHeader>
 					<CardContent className="space-y-3">
 						{loading && <p className="text-sm text-muted-foreground">{'Загрузка корзины...'}</p>}
-						{!loading && <p className="text-sm text-muted-foreground">{`Сумма: ${(total / 100).toFixed(2)} ₽`}</p>}
+						{!loading && <p className="text-sm text-muted-foreground">{commerceEnabled
+							? `Сумма: ${(total / 100).toFixed(2)} ₽`
+							: 'Сумма скрыта'}</p>}
 						{submitState === 'done' && <p className="text-sm text-muted-foreground">{'Заказ оформлен. Мы сохранили контакты и адрес доставки.'}</p>}
-						{submitState === 'error' && <p className="text-sm text-destructive">{'Проверьте email, имя, телефон и адрес доставки.'}</p>}
+						{submitState === 'error' && <p className="text-sm text-destructive">{commerceEnabled
+							? 'Проверьте email, имя, телефон и адрес доставки.'
+							: 'Оформление заказа сейчас отключено.'}</p>}
 						<Button
 							className="w-full"
 							onClick={handleCheckout}
 							state={submitState === 'loading'
 								? 'loading'
-								: 'default'}
+								: commerceEnabled
+									? 'default'
+									: 'disabled'}
 						>
 							{'Подтвердить заказ'}
 						</Button>

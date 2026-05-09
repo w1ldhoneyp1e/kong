@@ -8,9 +8,13 @@ import {
 
 type SearchHitsProps = {
 	products: StoreProduct[],
+	showPrice?: boolean,
 }
 
-function SearchHits({products}: SearchHitsProps) {
+function SearchHits({
+	products,
+	showPrice = true,
+}: SearchHitsProps) {
 	if (products.length === 0) {
 		return (
 			<div className="text-center py-12">
@@ -24,7 +28,7 @@ function SearchHits({products}: SearchHitsProps) {
 			{products.map(product => (
 				<ProductCard
 					key={product.id}
-					{...mapStoreProductToCardProps(product)}
+					{...mapStoreProductToCardProps(product, {showPrice})}
 				/>
 			))}
 		</div>

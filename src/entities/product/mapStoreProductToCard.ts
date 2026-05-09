@@ -1,10 +1,16 @@
 import {type StoreProduct} from './api'
 import {type ProductCardProps} from './card/ProductCard'
 
-function mapStoreProductToCardProps(product: StoreProduct): Partial<ProductCardProps> {
+function mapStoreProductToCardProps(
+	product: StoreProduct,
+	options?: {
+		showPrice?: boolean,
+	},
+): Partial<ProductCardProps> {
 	const firstAvailableVariant = product.variants?.find(variant => variant.metadata?.available !== false)
 	const displayVariant = firstAvailableVariant ?? product.variants?.[0]
 	const amount = displayVariant?.prices?.[0]?.amount
+	const showPrice = options?.showPrice ?? true
 
 	return {
 		url: product.handle
@@ -13,7 +19,7 @@ function mapStoreProductToCardProps(product: StoreProduct): Partial<ProductCardP
 		title: product.title ?? undefined,
 		description: product.description ?? undefined,
 		image: product.thumbnail ?? undefined,
-		price: amount !== undefined && amount !== null
+		price: showPrice && amount !== undefined && amount !== null
 			? amount / 100
 			: undefined,
 		tags: product.tags?.map(t => ({

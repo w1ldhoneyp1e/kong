@@ -2,6 +2,7 @@ import {type Metadata} from 'next'
 import Image from 'next/image'
 import {notFound} from 'next/navigation'
 import {getProductByHandle} from '../../../../entities/product'
+import {getStoreSettings} from '../../../../entities/store'
 import {Badge} from '../../../../shared'
 import {ProductPurchasePanel} from './ProductPurchasePanel'
 
@@ -24,6 +25,7 @@ async function generateMetadata({params}: PageProps): Promise<Metadata> {
 async function ProductPage({params}: PageProps) {
 	const {handle} = await params
 	const product = await getProductByHandle(handle)
+	const store = await getStoreSettings()
 	if (!product) {
 		notFound()
 	}
@@ -63,7 +65,10 @@ async function ProductPage({params}: PageProps) {
 						<h1 className="text-3xl font-bold mb-2">{product.title ?? 'Без названия'}</h1>
 						<p className="text-gray-600">{product.description ?? 'Описание появится позже.'}</p>
 					</div>
-					<ProductPurchasePanel variants={product.variants} />
+					<ProductPurchasePanel
+						variants={product.variants}
+						commerceEnabled={store?.commerce_enabled ?? true}
+					/>
 				</div>
 			</div>
 		</div>

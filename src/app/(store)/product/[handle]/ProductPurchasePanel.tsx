@@ -32,8 +32,10 @@ function formatPrice(amount: number | null): string {
 
 function ProductPurchasePanel({
 	variants = [],
+	commerceEnabled,
 }: Readonly<{
 	variants?: StoreProduct['variants'],
+	commerceEnabled: boolean,
 }>) {
 	const firstAvailableId = useMemo(
 		() => variants.find(variantIsAvailable)?.id ?? variants[0]?.id ?? null,
@@ -57,6 +59,19 @@ function ProductPurchasePanel({
 					{'Нет доступных вариантов'}
 				</p>
 				<AddToCartButton variantId={null} />
+			</div>
+		)
+	}
+
+	if (!commerceEnabled) {
+		return (
+			<div className="space-y-3">
+				<p className="text-lg font-medium">
+					{'Покупка на сайте сейчас отключена'}
+				</p>
+				<p className="text-sm text-muted-foreground">
+					{'Цены скрыты, а оформление заказа временно недоступно.'}
+				</p>
 			</div>
 		)
 	}

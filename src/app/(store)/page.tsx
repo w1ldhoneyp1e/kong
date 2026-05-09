@@ -1,4 +1,5 @@
 import {buildCategoryTree, categoriesApi} from '../../entities/category'
+import {getStoreSettings} from '../../entities/store'
 import {
 	listPopularProducts,
 	mapStoreProductToCardProps,
@@ -10,6 +11,8 @@ import {CategoryNav} from '../../widgets/category-nav'
 async function Home() {
 	const categories = await categoriesApi.getAll().catch(() => [])
 	const tree = buildCategoryTree(categories)
+	const store = await getStoreSettings()
+	const commerceEnabled = store?.commerce_enabled ?? true
 	const popularProducts = await listPopularProducts(8)
 		.then(response => response.products)
 		.catch(() => [])
@@ -32,7 +35,7 @@ async function Home() {
 									{popularProducts.map(product => (
 										<ProductCard
 											key={product.id}
-											{...mapStoreProductToCardProps(product)}
+											{...mapStoreProductToCardProps(product, {showPrice: commerceEnabled})}
 											view="grid"
 										/>
 									))}

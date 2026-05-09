@@ -19,6 +19,12 @@ export const adminNavItems: AdminNavItem[] = [
 		requiredPermission: 'catalog:manage',
 	},
 	{
+		id: 'store',
+		href: '/admin/store',
+		label: 'Настройки магазина',
+		requiredPermission: 'catalog:manage',
+	},
+	{
 		id: 'orders',
 		href: '/admin/orders',
 		label: 'Заказы',

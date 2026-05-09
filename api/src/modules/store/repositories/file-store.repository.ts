@@ -32,17 +32,9 @@ export class FileStoreRepository extends StoreRepository {
 		return this.mutateStore(file => {
 			const nextStore: StoreSettings = {
 				...file.store,
-				name: input.name?.trim() || file.store.name,
-				supported_currency_codes: input.supported_currency_codes?.map(code => code.trim().toLowerCase())
-					?? file.store.supported_currency_codes,
-				default_currency_code: input.default_currency_code?.trim().toLowerCase()
-					|| file.store.default_currency_code,
-				default_region_id: input.default_region_id === undefined
-					? file.store.default_region_id
-					: input.default_region_id,
-				default_sales_channel_id: input.default_sales_channel_id === undefined
-					? file.store.default_sales_channel_id
-					: input.default_sales_channel_id,
+				commerce_enabled: input.commerce_enabled === undefined
+					? file.store.commerce_enabled
+					: input.commerce_enabled,
 			}
 
 			return {
@@ -66,10 +58,7 @@ export class FileStoreRepository extends StoreRepository {
 			store: {
 				id: 'store_default',
 				name: 'Kong',
-				supported_currency_codes: ['rub'],
-				default_currency_code: 'rub',
-				default_region_id: null,
-				default_sales_channel_id: null,
+				commerce_enabled: true,
 			},
 		}
 	}
